@@ -10,7 +10,7 @@
  * One photo resistor on pin A0.
  *
  * The led goes on when the photo-resistor goes below 40 (THRESHOLD).
- * It can be overriden by an input from the serial port 0 (off), or 1 (on).
+ * It can be overridden by an input from the serial port 0 (off), or 1 (on).
  */
 const int LED = 13;
 const int THRESHOLD = 40;

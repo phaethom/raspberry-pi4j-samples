@@ -6,8 +6,64 @@ import com.pi4j.io.serial.SerialDataListener;
 import com.pi4j.io.serial.SerialFactory;
 import com.pi4j.io.serial.SerialPortException;
 
-public class SeriaLevellReader
+/**
+ * Reads the Arduino through its serial port.
+ * Reads the data returned by the level_detector.ino.
+ * Payload is a NMEA-like sentence, like $OSLVL,LEVEL,5,1022*0B
+ */
+public class SerialLevelReader
 {
+  private static int previousLevel = -1;
+  private static StringBuffer stream = null;
+
+  public synchronized static void setPreviousLevel(int pl)
+  {
+    previousLevel = pl;
+  }
+
+  public synchronized static int getPreviousLevel()
+  {
+    return previousLevel;
+  }
+  
+  public synchronized static void appendToStream(String str)
+  {
+    if (stream == null)
+      stream = new StringBuffer();
+    stream.append(str);
+  }
+  
+  public synchronized static void processStream() 
+  {
+    String str = stream.toString();
+    String[] elem = str.split("\n");
+    StringBuffer newStr = new StringBuffer();
+    for (int i=0; i<elem.length; i++)
+    {
+      String s = elem[i];
+      if (validCheckSum(s, false))
+      {
+        int level = parseMessage(s);
+        if ("true".equals(System.getProperty("verbose", "false")))
+          System.out.println("\tLevel is " + level);
+        if (level != getPreviousLevel())
+        {
+          System.out.println("Arduino said level is :" + level);
+          setPreviousLevel(level);
+        }
+      }
+      else
+      {
+        if (i == elem.length - 1)
+          newStr.append(s);
+        else
+          System.err.println("\t>>> Oops! Invalid String [" + s + "]");
+      }
+    }
+    // Reset 
+    stream = newStr;
+  }
+  
   // NMEA Style
   public static int calculateCheckSum(String str)
   {
@@ -33,7 +89,7 @@ public class SeriaLevellReader
         return false;
       String csKey = sentence.substring(starIndex + 1);
       int csk = Integer.parseInt(csKey, 16);
-      String str2validate = sentence.substring(1, sentence.indexOf("*"));
+      String str2validate = sentence.substring(1, starIndex); // sentence.indexOf("*"));
       int calcCheckSum = calculateCheckSum(str2validate);
       b = (calcCheckSum == csk);
     }
@@ -44,27 +100,27 @@ public class SeriaLevellReader
     return b;
   }
 
-  /*
+  /**
    * Sample payload:
-$OSMSG,LEVEL,4,1021*09
-$OSMSG,LEVEL,0,0*3F
-$OSMSG,LEVEL,5,1023*0A
-$OSMSG,LEVEL,0,0*3F
-$OSMSG,LEVEL,5,1022*0B
-$OSMSG,LEVEL,3,1020*0F
-$OSMSG,LEVEL,4,1018*03
-$OSMSG,LEVEL,3,1019*05
-$OSMSG,LEVEL,2,1019*04
-$OSMSG,LEVEL,1,1020*0D
-$OSMSG,LEVEL,5,1021*08
-$OSMSG,LEVEL,1,1021*0C
-$OSMSG,LEVEL,0,0*3F
-$OSMSG,LEVEL,5,1023*0A
-$OSMSG,LEVEL,0,0*3F
-$OSMSG,LEVEL,4,1020*08
-$OSMSG,LEVEL,0,0*3F
+    $OSLVL,LEVEL,4,1021*09
+    $OSLVL,LEVEL,0,0*3F
+    $OSLVL,LEVEL,5,1023*0A
+    $OSLVL,LEVEL,0,0*3F
+    $OSLVL,LEVEL,5,1022*0B
+    $OSLVL,LEVEL,3,1020*0F
+    $OSLVL,LEVEL,4,1018*03
+    $OSLVL,LEVEL,3,1019*05
+    $OSLVL,LEVEL,2,1019*04
+    $OSLVL,LEVEL,1,1020*0D
+    $OSLVL,LEVEL,5,1021*08
+    $OSLVL,LEVEL,1,1021*0C
+    $OSLVL,LEVEL,0,0*3F
+    $OSLVL,LEVEL,5,1023*0A
+    $OSLVL,LEVEL,0,0*3F
+    $OSLVL,LEVEL,4,1020*08
+    $OSLVL,LEVEL,0,0*3F
 
-The message is assumed to be valid
+    The message is assumed to be valid
    */
   private static int parseMessage(String message)
   {
@@ -105,6 +161,28 @@ The message is assumed to be valid
     // create an instance of the serial communications class
     final Serial serial = SerialFactory.createInstance();
 
+    Runtime.getRuntime().addShutdownHook(new Thread()
+     {
+       public void run()
+       {
+         try
+         {
+           System.out.println("\n------------------------------------");
+           System.out.println("Shutting down.");
+           System.out.println("Closing Serial port.");
+           serial.close();
+         }
+         catch (Exception ex)
+         {
+           ex.printStackTrace();
+         }
+         finally
+         {
+           System.out.println("Bye.");
+         }
+       }
+     });
+    
     // create and register the serial data listener
     serial.addListener(new SerialDataListener()
     {
@@ -113,13 +191,11 @@ The message is assumed to be valid
       {
         // print out the data received to the console
         String payload = event.getData();
-        if (validCheckSum(payload, false))
-        {
-          int level = parseMessage(payload);
-          System.out.print("Arduino said level is :" + level);
-        }
-        else
-          System.out.println("\tOops! Invalid String [" + payload + "]");
+        if ("true".equals(System.getProperty("verbose", "false")))
+          System.out.println("Payload [" + payload + "]");
+        
+        appendToStream(payload);
+        processStream();
       }
     });
 
@@ -129,6 +205,7 @@ The message is assumed to be valid
       System.out.println("Opening port [" + port + ":" + Integer.toString(br) + "]");
       serial.open(port, br);
       System.out.println("Port is opened.");
+      System.out.println("------------------------------------");
 
       Thread me = Thread.currentThread();
       synchronized (me)
@@ -139,6 +216,7 @@ The message is assumed to be valid
     catch (SerialPortException ex)
     {
       System.out.println(" ==>> Serial Setup Failed : " + ex.getMessage());
+      ex.printStackTrace();
       return;
     }
   }
