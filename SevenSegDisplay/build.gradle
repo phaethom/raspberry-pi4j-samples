@@ -2,6 +2,9 @@ apply plugin: 'java'
 apply plugin: 'maven'
 
 def userprofile = System.getenv()['USERPROFILE'] // On Windows...
+if ( userprofile == null ) { // Linux?
+  userprofile = '~'
+}
 
 group = 'oliv.cool.stuff'
 version = '1.0'
