@@ -52,4 +52,13 @@ task tellMeProxy (description: "Spits out the proxy settings.") << {
   println "UserProfile: " + System.getenv()['USERPROFILE']
 }
 
-compileJava.dependsOn(tellMeProxy)
+// compileJava.dependsOn(tellMeProxy)
+
+// Warning: Must be run as root
+task runOled(type: JavaExec, dependsOn: build, description: "Run the OLED Demo") {
+  main = 'adafruitspi.oled.OLEDSSD1306Sample'
+  systemProperty 'verbose', 'true'
+  classpath project.configurations.default
+  classpath sourceSets.main.output.classesDir
+}
+

@@ -1,5 +1,7 @@
 #!/bin/bash
 PI4J_HOME=/opt/pi4j
-CP=./classes
+# CP=./classes
+# CP=./build/classes/main
+CP=./build/libs/AdafruitI2C-1.0.jar
 CP=$CP:$PI4J_HOME/lib/pi4j-core.jar
 sudo java -cp $CP -Dverbose=true adafruitspi.oled.OLEDSSD1306Sample
