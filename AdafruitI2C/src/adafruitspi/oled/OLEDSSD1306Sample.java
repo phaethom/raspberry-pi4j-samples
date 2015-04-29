@@ -42,7 +42,7 @@ public class OLEDSSD1306Sample
     }
     
     if ("true".equals(System.getProperty("verbose", "false")))
-      System.out.println("One...");
+      System.out.println("Let's go...");
     ImgInterface img = new Java32x32();
     sb.image(img, 0, 0, ScreenBuffer.Mode.BLACK_ON_WHITE);
     sb.text("I speak Java!", 36, 20, ScreenBuffer.Mode.BLACK_ON_WHITE);
@@ -53,7 +53,7 @@ public class OLEDSSD1306Sample
     try { Thread.sleep(2000); } catch (Exception ex) {}
     // Blinking
     if ("true".equals(System.getProperty("verbose", "false")))
-      System.out.println("Two...");
+      System.out.println("Blinking...");
     sb.clear(ScreenBuffer.Mode.WHITE_ON_BLACK);
     sb.image(img, 0, 0, ScreenBuffer.Mode.WHITE_ON_BLACK);
     sb.text("I speak Java!", 36, 20, ScreenBuffer.Mode.WHITE_ON_BLACK);
@@ -88,7 +88,7 @@ public class OLEDSSD1306Sample
     oled.display();
     // Marquee
     if ("true".equals(System.getProperty("verbose", "false")))
-      System.out.println("Three...");
+      System.out.println("Marquee...");
     for (int i=0; i<128; i++)
     {
       oled.clear();
@@ -102,7 +102,7 @@ public class OLEDSSD1306Sample
     
     // Circles
     if ("true".equals(System.getProperty("verbose", "false")))
-      System.out.println("Four...");
+      System.out.println("Geometric shapes...");
     sb.clear();
     sb.circle(64, 16, 15);
     oled.setBuffer(sb.getScreenBuffer());          
@@ -178,7 +178,7 @@ public class OLEDSSD1306Sample
 
     // Shape
     if ("true".equals(System.getProperty("verbose", "false")))
-      System.out.println("Five...");
+      System.out.println("More shapes...");
     sb.clear();
     int[] x = new int[] { 64, 73, 50, 78, 55 };
     int[] y = new int[] {  1, 30, 12, 12, 30 };
@@ -189,6 +189,8 @@ public class OLEDSSD1306Sample
     try { Thread.sleep(1000); } catch (Exception ex) {}
   
   // Centered text
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("More text...");
     sb.clear();
     String txt = "Centered";
     int len = sb.strlen(txt);
@@ -206,7 +208,7 @@ public class OLEDSSD1306Sample
   
   // Vertical marquee
   if ("true".equals(System.getProperty("verbose", "false")))
-    System.out.println("Six...");
+    System.out.println("Vertical marquee...");
     String[] txtA = new String[] {
       "Centered",
       "This is line one",
@@ -232,7 +234,7 @@ public class OLEDSSD1306Sample
     
     // Text Snake...
     if ("true".equals(System.getProperty("verbose", "false")))
-      System.out.println("Seven...");
+      System.out.println("Text snake...");
     String snake = "This text is displayed like a snake, waving across the screen...";
     char[] ca = snake.toCharArray();
     int strlen = sb.strlen(snake);
@@ -262,7 +264,7 @@ public class OLEDSSD1306Sample
     
     // A curve
     if ("true".equals(System.getProperty("verbose", "false")))
-      System.out.println("Eight...");
+      System.out.println("Curve...");
     sb.clear();
     // Axis
     sb.line(0, 16, 128, 16);
@@ -309,7 +311,7 @@ public class OLEDSSD1306Sample
     
     // Bouncing
     if ("true".equals(System.getProperty("verbose", "false")))
-      System.out.println("Nine...");
+      System.out.println("Bouncing...");
     for (int _x=0; _x<130; _x++)
     {
       sb.clear();
