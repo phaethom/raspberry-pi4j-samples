@@ -29,3 +29,4 @@ PI4J.TheProject/
 .gradle*/
 build/
 gen/*
+.idea/

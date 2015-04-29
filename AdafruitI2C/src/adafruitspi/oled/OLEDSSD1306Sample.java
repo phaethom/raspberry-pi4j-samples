@@ -13,15 +13,25 @@ public class OLEDSSD1306Sample
   @SuppressWarnings("oracle.jdeveloper.java.insufficient-catch-block")
   public static void main(String[] args)
   {
-    AdafruitSSD1306 oled = null; // new AdafruitSSD1306(); // Default pins (look in the AdafruitSSD1306 code)
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("Starting...");
+    AdafruitSSD1306 oled = null; 
+    oled = new AdafruitSSD1306(); // Default pins (look in the AdafruitSSD1306 code)
     // Override the default pins        Clock             MOSI              CS                RST               DC
-    oled = new AdafruitSSD1306(RaspiPin.GPIO_12, RaspiPin.GPIO_13, RaspiPin.GPIO_14, RaspiPin.GPIO_15, RaspiPin.GPIO_16);
+//  oled = new AdafruitSSD1306(RaspiPin.GPIO_12, RaspiPin.GPIO_13, RaspiPin.GPIO_14, RaspiPin.GPIO_15, RaspiPin.GPIO_16);
+    if ("true".equals(System.getProperty("verbose", "false")))
+    {
+      System.out.println("Object created, default pins...");
+//    System.out.println("Object created, Clock GPIO_12, MOSI GPIO_13, CS GPIO_14, RST GPIO_15, DC GPIO_16");
+    }
 
     oled.begin();
     oled.clear();
 //  oled.display();
     ScreenBuffer sb = new ScreenBuffer(128, 32);
     sb.clear(ScreenBuffer.Mode.BLACK_ON_WHITE);
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("Screenbuffer ready...");
     
     if (false)
     {
@@ -31,6 +41,8 @@ public class OLEDSSD1306Sample
       sb.line(0, 32, 125, 19);
     }
     
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("One...");
     ImgInterface img = new Java32x32();
     sb.image(img, 0, 0, ScreenBuffer.Mode.BLACK_ON_WHITE);
     sb.text("I speak Java!", 36, 20, ScreenBuffer.Mode.BLACK_ON_WHITE);
@@ -40,6 +52,8 @@ public class OLEDSSD1306Sample
 
     try { Thread.sleep(2000); } catch (Exception ex) {}
     // Blinking
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("Two...");
     sb.clear(ScreenBuffer.Mode.WHITE_ON_BLACK);
     sb.image(img, 0, 0, ScreenBuffer.Mode.WHITE_ON_BLACK);
     sb.text("I speak Java!", 36, 20, ScreenBuffer.Mode.WHITE_ON_BLACK);
@@ -73,6 +87,8 @@ public class OLEDSSD1306Sample
     oled.setBuffer(sb.getScreenBuffer());
     oled.display();
     // Marquee
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("Three...");
     for (int i=0; i<128; i++)
     {
       oled.clear();
@@ -85,6 +101,8 @@ public class OLEDSSD1306Sample
     }
     
     // Circles
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("Four...");
     sb.clear();
     sb.circle(64, 16, 15);
     oled.setBuffer(sb.getScreenBuffer());          
@@ -159,6 +177,8 @@ public class OLEDSSD1306Sample
     try { Thread.sleep(1000); } catch (Exception ex) {}
 
     // Shape
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("Five...");
     sb.clear();
     int[] x = new int[] { 64, 73, 50, 78, 55 };
     int[] y = new int[] {  1, 30, 12, 12, 30 };
@@ -185,6 +205,8 @@ public class OLEDSSD1306Sample
     try { Thread.sleep(1000); } catch (Exception ex) {}
   
   // Vertical marquee
+  if ("true".equals(System.getProperty("verbose", "false")))
+    System.out.println("Six...");
     String[] txtA = new String[] {
       "Centered",
       "This is line one",
@@ -209,6 +231,8 @@ public class OLEDSSD1306Sample
     }
     
     // Text Snake...
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("Seven...");
     String snake = "This text is displayed like a snake, waving across the screen...";
     char[] ca = snake.toCharArray();
     int strlen = sb.strlen(snake);
@@ -237,6 +261,8 @@ public class OLEDSSD1306Sample
     }
     
     // A curve
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("Eight...");
     sb.clear();
     // Axis
     sb.line(0, 16, 128, 16);
@@ -282,6 +308,8 @@ public class OLEDSSD1306Sample
     try { Thread.sleep(1000); } catch (Exception ex) {}
     
     // Bouncing
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("Nine...");
     for (int _x=0; _x<130; _x++)
     {
       sb.clear();
@@ -305,6 +333,8 @@ public class OLEDSSD1306Sample
     
     try { Thread.sleep(1000); } catch (Exception ex) {}
     
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("Closing...");
     sb.clear();
     oled.clear();
     sb.text("Bye-bye!", 36, 20);
@@ -313,5 +343,7 @@ public class OLEDSSD1306Sample
     oled.display();
     
     oled.shutdown();
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("Done.");
   }
 }
