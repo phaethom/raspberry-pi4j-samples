@@ -2,14 +2,7 @@ package adafruiti2c.sensor.main;
 
 import adafruiti2c.sensor.AdafruitVCNL4000;
 
-import com.pi4j.system.SystemInfo;
-
 import java.io.IOException;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
 
 import sevensegdisplay.SevenSegment;
 

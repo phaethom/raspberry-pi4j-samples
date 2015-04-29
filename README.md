@@ -4,6 +4,19 @@ It uses the [PI4J library](http://pi4j.com).
 
 ---
 
+To build it, clone this project, make sure the scripts named <code>makeall</code> and <code>gradlew</code> are executable, and execute <code>makeall</code>.
+<pre>
+ Prompt> chmod +x makeall gradlew
+ Prompt> ./makeall
+</pre>
+<i>Note:</i> If you are behind a firewall, you need a proxy. Mention it in all the files named <code>gradle.propetries</code>, and in all the <code>build.gradle</code>, uncomment the following two lines:
+<pre>
+// ant.setproxy(proxyhost: "$proxyHost", proxyport: "$proxyPort") //, proxyuser="user", proxypassword="password") 
+// compileJava.dependsOn(tellMeProxy)
+</pre>
+
+---
+
 ### Raspberry PI, a possible thing of the Internet of things... ###
   * The Raspberry PI is a fully featured Linux computer, which can - as such - connect to the Internet.
   * The Raspberry PI has a General Purpose Input Output (GPIO) interface that allows it to drive all kind of electronic components, from a simple LED to a complex robot, and including all kind of sensors (GPS, light resistors, pressure sensors, temperature sensors, all kinds!).
