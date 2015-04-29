@@ -49,4 +49,4 @@ task tellMeProxy (description: "Spits out the proxy settings.") << {
   println "UserProfile: " + System.getenv()['USERPROFILE']
 }
 
-compileJava.dependsOn(tellMeProxy)
+// compileJava.dependsOn(tellMeProxy)

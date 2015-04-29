@@ -1,22 +1,19 @@
 #!/bin/bash
-# @deprecated
-echo Compiling everything (Deprecated, use gradle).
-cd AdafruitI2C
-./compile
-cd ..
-cd ADC
-./compile
-cd ..
-cd DAC
-./compile
-cd ..
-cd ./GPIO.01
-./compile
-cd ..
-cd GPSandSun
-./compile
-cd ..
-cd GPS.sun.servo
-./compile
-cd ..
-
+buildProject() {
+  WORK_DIR=$1
+  cd $WORK_DIR
+  echo Building $WORK_DIR
+  ../gradlew clean build install
+  cd ..
+}
+echo Building everything...
+buildProject SevenSegDisplay
+buildProject AdafruitI2C
+buildProject ADC
+buildProject DAC
+buildProject GPIO.01
+# buildProject GPS.sun.servo
+buildProject PhoneKeyboard3x4
+buildProject RangeSensor
+buildProject Relay
+echo Done!

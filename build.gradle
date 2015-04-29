@@ -12,6 +12,7 @@ if (userprofile == null) { // Linux ?
 // ant.setproxy(proxyhost: "$proxyHost", proxyport: "$proxyPort") //, proxyuser="user", proxypassword="password") 
 
 dependencies {
+  compile project(':SevenSegDisplay')
   compile project(':AdafruitI2C')
   compile project(':ADC')
   compile project(':Arduino.RaspberryPI')
@@ -21,7 +22,6 @@ dependencies {
   compile project(':PhoneKeyBoard3x4')
   compile project(':RangeSensor')
   compile project(':Relay') 
-  compile project(':SevenSegDisplay')
 }
 
 repositories {
