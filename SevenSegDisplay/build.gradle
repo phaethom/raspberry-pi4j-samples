@@ -9,7 +9,7 @@ if ( userprofile == null ) { // Linux?
 group = 'oliv.cool.stuff'
 version = '1.0'
 
-ant.setproxy(proxyhost: "$proxyHost", proxyport: "$proxyPort") //, proxyuser="user", proxypassword="password") 
+// ant.setproxy(proxyhost: "$proxyHost", proxyport: "$proxyPort") //, proxyuser="user", proxypassword="password") 
 
 sourceSets {
   main {
