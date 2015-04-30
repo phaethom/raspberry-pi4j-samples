@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import sevensegdisplay.SevenSegment;
+
 /*
  * Two devices on the I2C bus.
  * A BMP180, and a 7-segment backpack display HT16K33 
