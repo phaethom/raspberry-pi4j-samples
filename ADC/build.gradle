@@ -3,8 +3,11 @@ compileJava.options.encoding = 'ISO-8859-1'
 apply plugin: 'maven'
 
 def userprofile = System.getenv()['USERPROFILE'] // On Windows...
+if (userprofile == null) { // Linux ?
+  userprofile = System.getenv()['HOME']
+}
 
-group = 'oliv.cool.stuff'
+group = 'oliv.pi4j.samples'
 version = '1.0'
 
 // ant.setproxy(proxyhost: "$proxyHost", proxyport: "$proxyPort") //, proxyuser="user", proxypassword="password") 
@@ -48,4 +51,4 @@ task tellMeProxy (description: "Spits out the proxy settings.") << {
   println "UserProfile: " + System.getenv()['USERPROFILE']
 }
 
-compileJava.dependsOn(tellMeProxy)
+// compileJava.dependsOn(tellMeProxy)

@@ -2,11 +2,14 @@ apply plugin: 'java'
 apply plugin: 'maven'
 
 def userprofile = System.getenv()['USERPROFILE'] // On Windows...
+if (userprofile == null) { // Linux ?
+  userprofile = System.getenv()['HOME']
+}
 
-group = 'oliv.cool.stuff'
+group = 'oliv.pi4j.samples'
 version = '1.0'
 
-ant.setproxy(proxyhost: "$proxyHost", proxyport: "$proxyPort") //, proxyuser="user", proxypassword="password") 
+// ant.setproxy(proxyhost: "$proxyHost", proxyport: "$proxyPort") //, proxyuser="user", proxypassword="password") 
 
 sourceSets {
   main {
@@ -45,4 +48,4 @@ task tellMeProxy (description: "Spits out the proxy settings.") << {
   println "UserProfile: " + System.getenv()['USERPROFILE']
 }
 
-compileJava.dependsOn(tellMeProxy)
+// compileJava.dependsOn(tellMeProxy)

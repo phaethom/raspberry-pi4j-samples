@@ -1,0 +1,39 @@
+apply plugin: 'java'
+compileJava.options.encoding = 'ISO-8859-1'
+apply plugin: 'maven'
+
+group = 'oliv.pi4j.samples'
+version = '1.0'
+
+def userprofile = System.getenv()['USERPROFILE'] // On Windows...
+if (userprofile == null) { // Linux ?
+  userprofile = System.getenv()['HOME']
+}
+// ant.setproxy(proxyhost: "$proxyHost", proxyport: "$proxyPort") //, proxyuser="user", proxypassword="password") 
+
+dependencies {
+  compile project(':AdafruitI2C')
+  compile project(':ADC')
+  compile project(':Arduino.RaspberryPI')
+  compile project(':DAC')
+  compile project(':GPIO.01')
+  compile project(':GPS.sun.servo')
+  compile project(':PhoneKeyBoard3x4')
+  compile project(':RangeSensor')
+  compile project(':Relay') 
+  compile project(':SevenSegDisplay')
+}
+
+repositories {
+  mavenCentral()
+  maven { url "http://lediouris.net/maven2" }
+  maven { url "file:///" + userprofile + "/.m2/repository" }
+}
+
+task checkout << {
+  println "Run the script named checkout..."
+}
+
+task dropsrc << {
+  println "To Be Implemented..."
+}

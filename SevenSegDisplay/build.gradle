@@ -7,7 +7,7 @@ if (userprofile == null) { // Linux ?
   userprofile = System.getenv()['HOME']
 }
 
-group = 'oliv.cool.stuff'
+group = 'oliv.pi4j.samples'
 version = '1.0'
 
 // ant.setproxy(proxyhost: "$proxyHost", proxyport: "$proxyPort") //, proxyuser="user", proxypassword="password") 
