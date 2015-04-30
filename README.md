@@ -4,7 +4,7 @@ It uses the [PI4J library](http://pi4j.com).
 
 ---
 
-To build it, clone this project, make the script named <code>makeall</code> executable (chmod +x makeall), and execute it.
+To build it, clone this project, make the script named <code>makeall</code> executable (<code>chmod +x makeall</code>), and execute it.
 
 ---
 
