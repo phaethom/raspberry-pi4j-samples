@@ -4,6 +4,10 @@ It uses the [PI4J library](http://pi4j.com).
 
 ---
 
+To build it, clone this project, make the script named <code>makeall</code> executable (chmod +x makeall), and execute it.
+
+---
+
 ### Raspberry PI, a possible thing of the Internet of things... ###
   * The Raspberry PI is a fully featured Linux computer, which can - as such - connect to the Internet.
   * The Raspberry PI has a General Purpose Input Output (GPIO) interface that allows it to drive all kind of electronic components, from a simple LED to a complex robot, and including all kind of sensors (GPS, light resistors, pressure sensors, temperature sensors, all kinds!).
