@@ -24,7 +24,7 @@ public class SnapShot
       long after = System.currentTimeMillis();
       System.out.println("Snapshot #" + i + " done in " + Long.toString(after - before) + " ms.");
       // Detect brightest spot here
-      // TODO Analyze image here
+      // TODO Analyze image here. Determine brightest color. => findSpot
     }
   }
 }
