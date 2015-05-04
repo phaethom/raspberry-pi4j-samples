@@ -1,4 +1,11 @@
 #!/bin/bash
+#
+echo To drive and orient the camera::
+echo Start in the node directory:
+echo   Prompt\> node server.js
+echo   and in a browser, access http://localhost:9876/data/servo.pilot.html \(uses tilt.pan.client.js\)
+echo The servos are driven by raspisamples.PanTiltWebSocket.java \(script pantilt.ws\)
+#
 nap=60
 echo Will take a snapshot every $nap seconds...
 keepLooping=true
