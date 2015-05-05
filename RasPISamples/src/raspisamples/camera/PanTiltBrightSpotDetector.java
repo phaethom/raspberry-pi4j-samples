@@ -4,6 +4,9 @@ import image.util.ImageUtil;
 import java.awt.Image;
 import java.awt.Point;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import raspisamples.servo.StandardServo;
 
 /**
@@ -14,13 +17,12 @@ import raspisamples.servo.StandardServo;
  */
 public class PanTiltBrightSpotDetector
 {
-  private final static String IMG_NAME    = "snap.jpg";
   private final static int    SNAP_WIDTH  = 200;
   private final static int    SNAP_HEIGHT = 150;
-  private final static String SNAPSHOT_COMMAND = "raspistill -rot 180 --width " + SNAP_WIDTH + 
+  private final static String SNAPSHOT_COMMAND = "raspistill -rot 270 --width " + SNAP_WIDTH + 
                                                                     " --height " + SNAP_HEIGHT + 
-                                                                    " --timeout 1 --output " + IMG_NAME + 
-                                                                    " --nopreview";
+                                                                    " --timeout 1 --nopreview" +
+                                                                    " --output ";
   
   private static StandardServo ssUD = null, 
                                ssLR = null;
@@ -28,7 +30,14 @@ public class PanTiltBrightSpotDetector
   private static float udAngle = 0f,
                        lrAngle = 0f;
 
-  private final static float INCREMENT = 1f;
+  private final static float INCREMENT = 2f;
+  private static boolean keepLooping = true;
+
+  private final static NumberFormat NF  = new DecimalFormat("00000");
+  private static String genSnapName(int idx) 
+  {
+    return "pix/snap_" + NF.format(idx) + ".jpg";
+  }
   
   public static void main(String[] args) throws Exception
   {
@@ -52,53 +61,70 @@ public class PanTiltBrightSpotDetector
 //  StandardServo.waitfor(2000);
     
     // The image/spot detection loop
-    boolean keepLooping = true;
     Runtime rt = Runtime.getRuntime();
+    int index = 0;
     while (keepLooping)
     {
       long before = System.currentTimeMillis();
-      Process snap = rt.exec(SNAPSHOT_COMMAND);
+      String snapName = genSnapName(index++);
+      String command = SNAPSHOT_COMMAND + snapName;
+      Process snap = rt.exec(command);
       snap.waitFor(); // Sync
       long after = System.currentTimeMillis();
       System.out.println("Snapshot taken in " + Long.toString(after - before) + " ms.");
       // Detect brightest spot here
       // Analyze image here. Determine brightest color. => findSpot
-      Image snapshot = ImageUtil.readImage(IMG_NAME);
-      Point spot = ImageUtil.findMaxLum(snapshot);
+      Image snapshot = ImageUtil.readImage(snapName);
+      try { Thread.sleep(100L); } catch (Exception ex) {}
+      Point spot = null;
+      try { spot = ImageUtil.findMaxLum(snapshot); } catch (Exception ex) { ex.printStackTrace(); }
       // Drive servos here
       if (spot != null)
       {
-        if (spot.x > (SNAP_WIDTH / 2)) // turn left
-        {
-          udAngle -= INCREMENT;
-          ssUD.setAngle(udAngle);
-        }
-        else if (spot.x < (SNAP_WIDTH / 2)) // turn right
-        {
-          udAngle += INCREMENT;
-          ssUD.setAngle(udAngle);
-        }
-        if (spot.y > (SNAP_HEIGHT / 2)) // turn up
-        {
-          lrAngle += INCREMENT;
-          ssLR.setAngle(lrAngle);          
-        }
-        else if (spot.y < (SNAP_HEIGHT / 2)) // turn down
+        System.out.println("Bright Spot in " + snapName + " found at " + spot.x + "/" + spot.y + " (for " + snapshot.getWidth(null) + "x" + snapshot.getHeight(null) + ")");
+        if (spot.x > (SNAP_WIDTH / 2)) // turn right
         {
           lrAngle -= INCREMENT;
-          ssLR.setAngle(lrAngle);                    
+          ssLR.setAngle(lrAngle);
+          if ("true".equals(System.getProperty("verbose", "false")))
+            System.out.println("Truning Right - LR:" + lrAngle);
+        }
+        else if (spot.x < (SNAP_WIDTH / 2)) // turn left
+        {
+          lrAngle += INCREMENT;
+          ssLR.setAngle(lrAngle);
+          if ("true".equals(System.getProperty("verbose", "false")))
+            System.out.println("Truning Right - LR:" + lrAngle);
+        }
+        if (spot.y > (SNAP_HEIGHT / 2)) // look down
+        {
+          udAngle -= INCREMENT;
+          ssUD.setAngle(udAngle);          
+          if ("true".equals(System.getProperty("verbose", "false")))
+            System.out.println("Looking Up - UD:" + udAngle);
+        }
+        else if (spot.y < (SNAP_HEIGHT / 2)) // look up
+        {
+          udAngle += INCREMENT;
+          ssUD.setAngle(udAngle);                    
+          if ("true".equals(System.getProperty("verbose", "false")))
+            System.out.println("Looking Up - UD:" + udAngle);
         }
       }
+//    try { Thread.sleep(500L); } catch (Exception ex) {}
     }
+    System.out.println("Done looping.");
   }
 
   public static void close()
   {
     System.out.println("\nExiting...");
+    keepLooping = false;
+    StandardServo.waitfor(2000);
     // Reset to 0,0 before shutting down.
+    System.out.println("Reseting servos");
     ssUD.setAngle(0f);
     ssLR.setAngle(0f);
-    StandardServo.waitfor(2000);
     ssUD.stop();
     ssLR.stop();
     System.out.println("Bye");

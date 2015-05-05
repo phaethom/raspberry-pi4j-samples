@@ -718,7 +718,8 @@ public class ImageUtil
   public static void main(String[] args) throws Exception
   {
 //  final String IMG_NAME = "white.spot.jpg"; // "red.dot.jpg"; // "P8150115.JPG";
-    final String IMG_NAME = "P8150115.JPG";
+//  final String IMG_NAME = "P8150115.JPG";
+    final String IMG_NAME = "snap.jpg";
     
 //  BufferedImage bimg = ImageIO.read(new File(IMG_NAME));
 //  int width          = bimg.getWidth();
