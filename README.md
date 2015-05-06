@@ -9,7 +9,7 @@ To build it, clone this project, make sure the scripts named <code>makeall</code
  Prompt> chmod +x makeall gradlew
  Prompt> ./makeall
 </pre>
-<i>Note:</i> If you are behind a firewall, you need a proxy. Mention it in all the files named <code>gradle.propetries</code>, and in all the <code>build.gradle</code>, uncomment the following two lines:
+<i>Note:</i> If you are behind a firewall, you need a proxy. Mention it in all the files named <code>gradle.propetries</code>, and in <b>all</b> the <code>build.gradle</code> scripts, uncomment the following two lines:
 <pre>
 // ant.setproxy(proxyhost: "$proxyHost", proxyport: "$proxyPort") //, proxyuser="user", proxypassword="password") 
 // compileJava.dependsOn(tellMeProxy)
