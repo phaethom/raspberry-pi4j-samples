@@ -34,6 +34,7 @@ public class SevenADCChannels
            {
              int ch = inputChannel.ch();
              int volume = (int)(newValue / 10.23); // [0, 1023] ~ [0x0000, 0x03FF] ~ [0&0, 0&1111111111]
+//           channelValues[ch] = newValue; // volume;
              channelValues[ch] = volume;
              if (DEBUG)
                System.out.println("readAdc:" + Integer.toString(newValue) + 
@@ -41,10 +42,11 @@ public class SevenADCChannels
                                                ", 0&" + lpad(Integer.toString(newValue, 2), "0", 8) + ")"); 
              String output = "";
              for (int chan=0; chan<channel.length; chan++)
-               output += (channelValues[chan] > 80 ? "X" : " ");
-             output += "  ";
+               output += (channelValues[chan] > 80 ? "*" : " ");
+             output += " || ";
              for (int chan=0; chan<channel.length; chan++)
-               output += "Ch " + Integer.toString(chan) + ", Vol:" + lpad(Integer.toString(channelValues[chan]), " ", 3) + "%" + (chan != (channel.length - 1)?", ":"");
+  //           output += "Ch " + Integer.toString(chan) + ":" + lpad(Integer.toString(channelValues[chan]), " ", 3) + "%" + (chan != (channel.length - 1)?", ":"");
+               output += (Integer.toString(chan) + ":" + lpad(Integer.toString(channelValues[chan]), " ", 4) + (chan != (channel.length - 1)?" | ":" |"));
              System.out.println(output);
            }
          }
@@ -63,6 +65,7 @@ public class SevenADCChannels
   
   public static void main(String[] args) throws Exception
   {
+    System.out.println(args.length + " parameter(s).");
     // Channels are hard-coded
     new SevenADCChannels();
   }
