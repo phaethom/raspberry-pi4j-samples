@@ -43,5 +43,6 @@
       <hash><url n="URL" path="RGB-Led/RGB-Led.jpr"/></hash>
       <hash><url n="URL" path="SevenSegDisplay/SevenSegDisplay.jpr"/></hash>
       <hash><url n="URL" path="TwoLeds/TwoLeds.jpr"/></hash>
+      <hash><url n="URL" path="WeatherStation/WeatherStation.jpr"/></hash>
    </list>
 </jws:workspace>

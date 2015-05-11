@@ -34,7 +34,7 @@ public class SevenADCChannels
            {
              int ch = inputChannel.ch();
              int volume = (int)(newValue / 10.23); // [0, 1023] ~ [0x0000, 0x03FF] ~ [0&0, 0&1111111111]
-//           channelValues[ch] = newValue; // volume;
+//           channelValues[ch] = newValue; 
              channelValues[ch] = volume;
              if (DEBUG)
                System.out.println("readAdc:" + Integer.toString(newValue) + 
