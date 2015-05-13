@@ -25,6 +25,8 @@ public class SevenADCChannels
   
   private int currentLevel = 0;
 
+  final ADCObserver obs;
+  
   public SevenADCChannels() throws Exception
   {
     channel = new ADCObserver.MCP3008_input_channels[] 
@@ -37,7 +39,7 @@ public class SevenADCChannels
       ADCObserver.MCP3008_input_channels.CH5, 
       ADCObserver.MCP3008_input_channels.CH6 
     };
-    final ADCObserver obs = new ADCObserver(channel);
+    obs = new ADCObserver(channel);
     
     ADCContext.getInstance().addListener(new ADCListener()
        {
@@ -102,24 +104,48 @@ public class SevenADCChannels
            }
          }
        });
-    obs.start();         
-    
-    Runtime.getRuntime().addShutdownHook(new Thread()
-       {
-         public void run()
-         {
-           if (obs != null)
-             obs.stop();
-           System.out.println("\nProgram stopped by user's request.");
-         }
-       });    
+    System.out.println("Start observing.");
+    Thread observer = new Thread()
+      {
+        public void run()
+        {
+          obs.start();
+        }
+      };
+    observer.start();         
+  }
+  
+  private void quit()
+  {
+    System.out.println("Stop observing.");
+    if (obs != null)
+      obs.stop();    
   }
   
   public static void main(String[] args) throws Exception
   {
-    System.out.println(args.length + " parameter(s).");
+    System.out.println(args.length + " parameter(s).");    
     // Channels are hard-coded
-    new SevenADCChannels();
+    final SevenADCChannels sac = new SevenADCChannels();
+    final Thread me = Thread.currentThread();
+    Runtime.getRuntime().addShutdownHook(new Thread()
+       {
+         public void run()
+         {
+           sac.quit();
+           synchronized (me)
+           {
+             me.notify();
+           }
+           System.out.println("\nProgram stopped by user's request.");
+         }
+       });
+    synchronized (me)
+    {
+      System.out.println("Main thread waiting...");
+      me.wait();
+    }
+    System.out.println("Done.");
   }
 
   private static String lpad(String str, String with, int len)
