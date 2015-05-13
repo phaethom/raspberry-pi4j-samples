@@ -15,23 +15,21 @@ public class Utilities
     
   public enum Voltage
   {
-    V3_3,
-    V5
+    V3_3(0.66f),
+    V5(1.0f);
+
+    private final float adjust;
+    Voltage(float adjust)
+    {
+      this.adjust = adjust;
+    }
+    
+    public float adjust() { return this.adjust; }
   }
   
   private static double getAdjustment(Voltage v)
   {
-    double adj33 = 0.66;
-    double adj5  = 1.0;
-    
-    double ret = 0.0;
-    
-    if (v.equals(Voltage.V3_3))
-      ret = adj33;
-    else if (v.equals(Voltage.V5))
-      ret = adj5;
-    
-    return ret;
+    return v.adjust();
   }
   
   public static double voltageToDegrees(double value, double defaultWindDir)
