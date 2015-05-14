@@ -69,6 +69,7 @@ public class SevenADCChannels
                  System.out.println(output);
                }
                AnsiConsole.out.println(EscapeSeq.ANSI_CLS);
+               AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 1));
                boolean ansiBox = false;
                // See http://en.wikipedia.org/wiki/Box-drawing_character
                String str = (ansiBox ? "\u2554\u2550\u2550\u2550\u2564\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2564\u2550\u2550\u2550\u2550\u2550\u2550\u2557" :
@@ -109,7 +110,7 @@ public class SevenADCChannels
       {
         public void run()
         {
-          obs.start();
+          obs.start(0L);
         }
       };
     observer.start();         
@@ -132,12 +133,13 @@ public class SevenADCChannels
        {
          public void run()
          {
+           System.out.println();
            sac.quit();
            synchronized (me)
            {
              me.notify();
            }
-           System.out.println("\nProgram stopped by user's request.");
+           System.out.println("Program stopped by user's request.");
          }
        });
     synchronized (me)

@@ -22,6 +22,9 @@ public class ADCObserver
   private static Pin spiMiso = RaspiPin.GPIO_04; // Pin #23, data in.  MISO: Master In Slave Out
   private static Pin spiMosi = RaspiPin.GPIO_05; // Pin #24, data out. MOSI: Master Out Slave In
   private static Pin spiCs   = RaspiPin.GPIO_06; // Pin #25, Chip Select
+  
+  private final static int DEFAULT_TOL    = 5;
+  private final static long DEFAULT_PAUSE = 100L;
  
   private Thread parentToNotify = null;
   
@@ -60,22 +63,47 @@ public class ADCObserver
     this(new MCP3008_input_channels[] { channel })  ;
   }
   
+  public ADCObserver(MCP3008_input_channels channel, Pin clk, Pin miso, Pin mosi, Pin cs)
+  {
+    this(new MCP3008_input_channels[] { channel }, clk, miso, mosi, cs)  ;
+  }
+  
   public ADCObserver(MCP3008_input_channels[] channel)
   {
     adcChannel = channel;
   }
   
+  public ADCObserver(MCP3008_input_channels[] channel, Pin clk, Pin miso, Pin mosi, Pin cs)
+  {
+    adcChannel = channel;
+    spiClk = clk;
+    spiMiso = miso;
+    spiMosi = mosi;
+    spiCs = cs;
+  }
+
   public void start()
   {
-    start(5);
+    start(DEFAULT_TOL, DEFAULT_PAUSE);
   }
+
+  public void start(int tol)
+  {
+    start(tol, DEFAULT_PAUSE);
+  }
+
+  public void start(long p)
+  {
+    start(DEFAULT_TOL, p);
+  }
+
   /**
    * @param tol Tolerance. Broadcast the fireValueChanged event when the absolute value 
    *            of the difference between the last and the current value is greater or equal to this value.
    *            This is the value coming from the ADC, 0..1023.
    *            Default is 5
    */
-  public void start(int tol)
+  public void start(int tol, long pause)
   {
     GpioController gpio = GpioFactory.getInstance();
     mosiOutput       = gpio.provisionDigitalOutputPin(spiMosi, "MOSI", PinState.LOW);
@@ -101,7 +129,10 @@ public class ADCObserver
           lastRead[i] = adc;
         }
       }
-      try { Thread.sleep(100L); } catch (InterruptedException ie) { ie.printStackTrace(); }
+      if (pause > 0L)
+      {
+        try { Thread.sleep(pause); } catch (InterruptedException ie) { ie.printStackTrace(); }
+      }
     }
     System.out.println("Shutting down the GPIO ports...");
     gpio.shutdown();
