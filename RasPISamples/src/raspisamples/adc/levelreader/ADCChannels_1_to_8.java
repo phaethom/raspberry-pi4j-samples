@@ -11,6 +11,8 @@ import java.text.NumberFormat;
 
 import org.fusesource.jansi.AnsiConsole;
 
+import raspisamples.adc.levelreader.samples.LevelListenerInterface;
+
 public class ADCChannels_1_to_8
 {
   private final static boolean DEBUG = "true".equals(System.getProperty("verbose", "false"));
@@ -27,9 +29,10 @@ public class ADCChannels_1_to_8
 
   private final ADCObserver obs;
   
-  public ADCChannels_1_to_8(ADCObserver.MCP3008_input_channels[] ADCInput) throws Exception
+  public ADCChannels_1_to_8(ADCObserver.MCP3008_input_channels[] ADCInput, final LevelListenerInterface lli) throws Exception
   {
     channel = ADCInput;
+    System.out.println("Reading " + channel.length + " ADC Channel(s).");
     obs = new ADCObserver(channel);
     channelValues = new int[channel.length];
     channelVolumes = new int[channel.length];
@@ -87,12 +90,15 @@ public class ADCChannels_1_to_8
                maxLevel = Math.max(chan+1, maxLevel);
            }
            if (maxLevel != currentLevel)
-           {
+           {             
              System.out.print("Level : " + maxLevel + " ");
              for (int i=0; i<maxLevel; i++)
                System.out.print(">>");
              System.out.println();
              currentLevel = maxLevel;
+             
+             if (lli != null)
+               lli.setLevel(currentLevel);
            }
          }
        });
@@ -144,7 +150,7 @@ public class ADCChannels_1_to_8
       ADCObserver.MCP3008_input_channels.CH6 
     };
     
-    final ADCChannels_1_to_8 sac = new ADCChannels_1_to_8(listening2);
+    final ADCChannels_1_to_8 sac = new ADCChannels_1_to_8(listening2, null);
     final Thread me = Thread.currentThread();
     Runtime.getRuntime().addShutdownHook(new Thread()
        {

@@ -6,7 +6,6 @@ CP=$CP:../AdafruitI2C/classes
 CP=$CP:$PI4J_HOME/lib/pi4j-core.jar
 CP=$CP:./lib/jansi-1.9.jar
 #
-echo MCP3008, seven channels
 JAVA_OPTIONS=
 # JAVA_OPTIONS="$JAVA_OPTIONS -Dverbose=true"
 JAVA_OPTIONS="$JAVA_OPTIONS -Dthreshold=50"
