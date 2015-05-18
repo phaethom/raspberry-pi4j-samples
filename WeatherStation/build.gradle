@@ -1,7 +1,11 @@
 apply plugin: 'java'
+compileJava.options.encoding = 'ISO-8859-1'
 apply plugin: 'maven'
 
 def userprofile = System.getenv()['USERPROFILE'] // On Windows...
+if (userprofile == null) { // Linux ?
+  userprofile = System.getenv()['HOME']
+}
 
 group = 'oliv.pi4j.samples'
 version = '1.0'
@@ -29,12 +33,7 @@ repositories {
 
 dependencies {
   compile 'com.pi4j:pi4j-core:0.0.5'
-  compile 'org.fusesource.jansi:jansi:1.11'
-  compile 'org.json:json:20141113'
   compile 'oliv.pi4j.samples:AdafruitI2C:1.0'
-  compile 'oliv.pi4j.samples:PhoneKeyboard3x4:1.0'
-  compile 'oliv.pi4j.samples:ADC:1.0'
-  compile 'oliv.pi4j.samples:Arduino.RaspberryPI:1.0'
 }
 
 task copyResources(type: Copy) {
@@ -52,3 +51,4 @@ task tellMeProxy (description: "Spits out the proxy settings.") << {
 }
 
 // compileJava.dependsOn(tellMeProxy)
+

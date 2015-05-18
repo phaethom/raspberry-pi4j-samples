@@ -14,6 +14,9 @@ buildProject DAC
 buildProject GPIO.01
 # buildProject GPS.sun.servo
 buildProject PhoneKeyboard3x4
+buildProject Arduino.RaspberryPI
 buildProject RangeSensor
 buildProject Relay
+buildProject WeatherStation
+# buildProject RasPiSamples
 echo Done!
