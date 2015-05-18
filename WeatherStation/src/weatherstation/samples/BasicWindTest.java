@@ -12,8 +12,7 @@ import weatherstation.SDLWeather80422.AdcMode;
 import weatherstation.SDLWeather80422.SdlMode;
 
 public class BasicWindTest
-{
-  
+{  
   private final static Format SPEED_FMT = new DecimalFormat("##0.00");
   private final static Format VOLTS_FMT = new DecimalFormat("##0.000");
   private final static Format DIR_FMT   = new DecimalFormat("##0.0");
@@ -22,13 +21,18 @@ public class BasicWindTest
   private static boolean go = true;
   public static void main(String[] args)
   {
+    final Thread coreThread = Thread.currentThread();
+
     Runtime.getRuntime().addShutdownHook(new Thread()
      {
        public void run()
        {
          System.out.println("\nUser interrupted.");
          go = false;
-         try { Thread.sleep(1100L); } catch (Exception ex) { ex.printStackTrace(); }
+         synchronized (coreThread)
+         {
+           coreThread.notify();
+         }
        }
      });
       
@@ -48,7 +52,14 @@ public class BasicWindTest
       System.out.println("Wind : Dir=" + DIR_FMT.format(wd) + "\272, (" + VOLTS_FMT.format(volts) + " V) Speed:" + 
                                          SPEED_FMT.format(SDLWeather80422.toKnots(ws)) + " kts, Gust:" + 
                                          SPEED_FMT.format(SDLWeather80422.toKnots(wg)) + " kts");
-      try { Thread.sleep(1000L); } catch (Exception ex) { ex.printStackTrace(); }
+      try 
+      { 
+        synchronized (coreThread)
+        {
+          coreThread.wait(1000L); 
+        }
+      } 
+      catch (Exception ex) { ex.printStackTrace(); }
     }
     weatherStation.shutdown();
     System.out.println("Done.");
