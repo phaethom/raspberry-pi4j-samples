@@ -9,12 +9,9 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import com.pi4j.wiringpi.Gpio;
 
 import java.text.DecimalFormat;
 import java.text.Format;
-
-import org.omg.SendingContext.RunTime;
 
 import weatherstation.utils.Utilities;
 
@@ -44,6 +41,7 @@ public class SDLWeather80422
   private long shortestWindTime = 0;
   
   private long lastWindPing = 0;
+  private long lastRainPing = 0;
 
   private GpioPinDigitalInput pinAnem;
   private GpioPinDigitalInput pinRain;
@@ -58,8 +56,8 @@ public class SDLWeather80422
   private SdlMode selectedMode = SdlMode.SAMPLE;
   private long startSampleTime = 0L;
 
-  private int currentRainMin = 0;
-  private int lastRainTime = 0;
+  private long currentRainMin = 0;
+  private long lastRainTime   = 0;
 
   private AdafruitADS1x15 ads1015 = null;
   private final static AdafruitADS1x15.ICType ADC_TYPE = AdafruitADS1x15.ICType.IC_ADS1015;
@@ -72,43 +70,59 @@ public class SDLWeather80422
   }
   
   public void init(Pin anemo, Pin rain, AdcMode ADMode)
-  {
-    this.pinAnem = gpio.provisionDigitalInputPin(anemo, "Anemometer");
-    this.pinRain = gpio.provisionDigitalInputPin(rain,  "Rainmeter");
-    
+  {    
 //  Gpio.add_event_detect(pinAnem, GPIO.RISING, callback=self.serviceInterruptAnem, bouncetime=300)  
 //  GPIO.add_event_detect(pinRain, GPIO.RISING, callback=self.serviceInterruptRain, bouncetime=300)  
        
-    this.pinAnem.addListener(new GpioPinListenerDigital() 
-      {
-        @Override
-        public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) 
+    if (anemo != null)
+    {
+      this.pinAnem = gpio.provisionDigitalInputPin(anemo, "Anemometer");
+      this.pinAnem.addListener(new GpioPinListenerDigital() 
         {
-          if (event.getState().isHigh() && (System.currentTimeMillis() - lastWindPing) > 300) // bouncetime
+          @Override
+          public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) 
           {
-            long currentTime = Utilities.currentTimeMicros() - lastWindTime;
-            lastWindTime = Utilities.currentTimeMicros();
-            if (currentTime > 1000) // debounce
+            if (event.getState().isHigh() && (System.currentTimeMillis() - lastWindPing) > 300) // bouncetime
             {
-              currentWindCount += 1;
-              if (currentTime < shortestWindTime)
-                shortestWindTime = currentTime;
+              long currentTime = Utilities.currentTimeMicros() - lastWindTime;
+              lastWindTime = Utilities.currentTimeMicros();
+              if (currentTime > 1000) // debounce
+              {
+                currentWindCount += 1;
+                if (currentTime < shortestWindTime)
+                  shortestWindTime = currentTime;
+              }
+              lastWindPing = System.currentTimeMillis();
+      //      System.out.println(" --> GPIO pin state changed: " + System.currentTimeMillis() + ", " + event.getPin() + " = " + event.getState());
             }
-            lastWindPing = System.currentTimeMillis();
-    //      System.out.println(" --> GPIO pin state changed: " + System.currentTimeMillis() + ", " + event.getPin() + " = " + event.getState());
           }
-        }
-      });
-    
-    this.pinRain.addListener(new GpioPinListenerDigital() 
-      {
-        @Override
-        public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) 
+        });
+    }
+    if (rain != null)
+    {
+      this.pinRain = gpio.provisionDigitalInputPin(rain,  "Rainmeter");
+      this.pinRain.addListener(new GpioPinListenerDigital() 
         {
-          System.out.println(" --> GPIO pin state changed: " + System.currentTimeMillis() + ", " + event.getPin() + " = " + event.getState());
-        }
-      });
-
+          @Override
+          public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) 
+          {
+            if (event.getState().isHigh() && (System.currentTimeMillis() - lastRainPing) > 300) // bouncetime
+            {
+              long currentTime = Utilities.currentTimeMicros() - lastRainTime;
+              lastRainTime = Utilities.currentTimeMicros();
+              if (currentTime > 500) // debounce
+              {
+                currentRainCount += 1;
+                if (currentTime < currentRainMin)
+                  currentRainMin = currentTime;
+              }
+              lastRainPing = System.currentTimeMillis();
+      //      System.out.println(" --> GPIO pin state changed: " + System.currentTimeMillis() + ", " + event.getPin() + " = " + event.getState());
+            }
+          }
+        });
+    }
+    
     this.ads1015 = new AdafruitADS1x15(ADC_TYPE);
     this.ADMode = ADMode;
   }
@@ -182,7 +196,7 @@ public class SDLWeather80422
     {
       // km/h * 1000 msec
       this.currentWindCount = 0;
-      try { Thread.sleep(Math.round(this.sampleTime * 1000L)); } catch (Exception ex) {}
+      try { Thread.sleep(Math.round(this.sampleTime * 1000L)); } catch (Exception ex) { ex.printStackTrace(); }
       this.currentWindSpeed = ((float)(this.currentWindCount)/(float)(this.sampleTime)) * WIND_FACTOR;
     }
     return this.currentWindSpeed;
@@ -232,15 +246,15 @@ public class SDLWeather80422
      {
        public void run()
        {
-         System.out.println("\nUser interru[pted.");
+         System.out.println("\nUser interrupted.");
          go = false;
          try { Thread.sleep(1100L); } catch (Exception ex) { ex.printStackTrace(); }
        }
      });
       
     SDLWeather80422 weatherStation = new SDLWeather80422();
-    final Pin ANEMOMETER_PIN = RaspiPin.GPIO_16; // <- WiringPi number. GPIO 15, #10
-    final Pin RAIN_PIN       = RaspiPin.GPIO_01; // <- WiringPi number. GPIO 18, #12
+    final Pin ANEMOMETER_PIN = RaspiPin.GPIO_16; // <- WiringPi number. aka GPIO 15, #10
+    final Pin RAIN_PIN       = RaspiPin.GPIO_01; // <- WiringPi number. aka GPIO 18, #12
     weatherStation.init(ANEMOMETER_PIN, RAIN_PIN, AdcMode.SDL_MODE_I2C_ADS1015);
     weatherStation.setWindMode(SdlMode.SAMPLE, 5);
     
@@ -254,8 +268,9 @@ public class SDLWeather80422
       System.out.println("Wind : Dir=" + DIR_FMT.format(wd) + "\272, (" + VOLTS_FMT.format(volts) + " V) Speed:" + 
                                          SPEED_FMT.format(toKnots(ws)) + " kts, Gust:" + 
                                          SPEED_FMT.format(toKnots(wg)) + " kts");
-      try { Thread.sleep(1000L); } catch (Exception ex) {}
+      try { Thread.sleep(1000L); } catch (Exception ex) { ex.printStackTrace(); }
     }
     weatherStation.shutdown();
+    System.out.println("Done.");
   }
 }
