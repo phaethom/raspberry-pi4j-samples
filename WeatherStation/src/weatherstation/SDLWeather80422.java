@@ -6,6 +6,7 @@ import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
@@ -62,10 +63,15 @@ public class SDLWeather80422
 
   public SDLWeather80422()
   {
-    super();
+    this(RaspiPin.GPIO_16, RaspiPin.GPIO_01, AdcMode.SDL_MODE_I2C_ADS1015);
   }
   
-  public void init(Pin anemo, Pin rain, AdcMode ADMode)
+  public SDLWeather80422(Pin anemo, Pin rain, AdcMode ADMode)
+  {
+    init(anemo, rain, ADMode);
+  }
+
+  private void init(Pin anemo, Pin rain, AdcMode ADMode)
   {    
 //  Gpio.add_event_detect(pinAnem, GPIO.RISING, callback=self.serviceInterruptAnem, bouncetime=300)  
 //  GPIO.add_event_detect(pinRain, GPIO.RISING, callback=self.serviceInterruptRain, bouncetime=300)  

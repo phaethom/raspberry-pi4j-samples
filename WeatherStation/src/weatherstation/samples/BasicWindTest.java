@@ -36,10 +36,9 @@ public class BasicWindTest
        }
      });
       
-    SDLWeather80422 weatherStation = new SDLWeather80422();
     final Pin ANEMOMETER_PIN = RaspiPin.GPIO_16; // <- WiringPi number. aka GPIO 15, #10
     final Pin RAIN_PIN       = RaspiPin.GPIO_01; // <- WiringPi number. aka GPIO 18, #12
-    weatherStation.init(ANEMOMETER_PIN, RAIN_PIN, AdcMode.SDL_MODE_I2C_ADS1015);
+    SDLWeather80422 weatherStation = new SDLWeather80422(ANEMOMETER_PIN, RAIN_PIN, AdcMode.SDL_MODE_I2C_ADS1015);
     weatherStation.setWindMode(SdlMode.SAMPLE, 5);
     
     while (go)
