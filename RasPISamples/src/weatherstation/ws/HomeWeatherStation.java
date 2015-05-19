@@ -27,20 +27,55 @@ public class HomeWeatherStation
       
     SDLWeather80422 weatherStation = new SDLWeather80422(); // With default parameters.
     weatherStation.setWindMode(SDLWeather80422.SdlMode.SAMPLE, 5);
-    
-    
+        
     while (go)
     {
       double ws = weatherStation.currentWindSpeed();
       double wg = weatherStation.getWindGust();
-      float wd = weatherStation.getCurrentWindDirection();
+      float wd  = weatherStation.getCurrentWindDirection();
       double volts = weatherStation.getCurrentWindDirectionVoltage();
       JSONObject windObj = new JSONObject();
       windObj.put("dir", wd);
       windObj.put("volts", volts);
       windObj.put("speed", ws);
       windObj.put("gust", wg);
-      
+      // Add temperature, pressure, humidity
+      if (weatherStation.isBMP180Available())
+      {
+        try
+        {
+          float temp = weatherStation.readTemperature();
+          float press = weatherStation.readPressure();
+          windObj.put("temp", temp);
+          windObj.put("press", press);
+        }
+        catch (Exception ex)
+        {
+          ex.printStackTrace();
+        }
+      }
+      if (weatherStation.isHTU21DFAvailable())
+      {
+        try
+        {
+          float hum = weatherStation.readHumidity();
+          windObj.put("hum", hum);
+        }
+        catch (Exception ex)
+        {
+          ex.printStackTrace();
+        }
+      }      
+      /*
+       * Sample message:
+       * { "dir": 350.0,
+       *   "volts": 3.4567,
+       *   "speed": 12.345,
+       *   "gust": 13.456,
+       *   "press": 101300.00,
+       *   "temp": 18.34,
+       *   "hum": 58.5 }
+       */
       wsf.pushMessage(windObj.toString());
       
       try 

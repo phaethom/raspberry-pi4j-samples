@@ -2,6 +2,10 @@ package weatherstation;
 
 import adafruiti2c.adc.AdafruitADS1x15;
 
+import adafruiti2c.sensor.AdafruitBMP180;
+
+import adafruiti2c.sensor.AdafruitHTU21DF;
+
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
@@ -60,7 +64,12 @@ public class SDLWeather80422
   private final static AdafruitADS1x15.ICType ADC_TYPE = AdafruitADS1x15.ICType.IC_ADS1015;
   private int gain = 6144;
   private int sps  =  250;
-
+  
+  // Other I2C Boards (BMP180, HTU21D-F, MOD-1016, etc)
+  private AdafruitBMP180 bmp180   = null;
+  private AdafruitHTU21DF htu21df = null;
+  // TODO MOD-1016
+    
   public SDLWeather80422()
   {
     this(RaspiPin.GPIO_16, RaspiPin.GPIO_01, AdcMode.SDL_MODE_I2C_ADS1015);
@@ -123,6 +132,29 @@ public class SDLWeather80422
             }
           }
         });
+    }
+    
+    try
+    {
+      bmp180 = new AdafruitBMP180();
+    }
+    catch (Exception ex)
+    {
+      System.err.println("BMP180 not available...");
+    }
+    
+    try
+    {
+      htu21df = new AdafruitHTU21DF();
+      if (!htu21df.begin())
+      {
+        htu21df = null;
+        throw new Exception("HTU21DF not found.");
+      }
+    }
+    catch (Exception e)
+    {
+      System.err.println("HTU21DF not available...");
     }
     
     this.ads1015 = new AdafruitADS1x15(ADC_TYPE);
@@ -221,6 +253,33 @@ public class SDLWeather80422
       return (1.0 / time) * WIND_FACTOR;
   }
 
+  public boolean isBMP180Available()
+  {
+    return bmp180 != null;  
+  }
+  
+  public float readTemperature() throws Exception
+  {
+    float temp = bmp180.readTemperature();
+    return temp;
+  }
+  
+  public float readPressure() throws Exception
+  {
+    float pr = bmp180.readPressure();
+    return pr;
+  }
+  
+  public boolean isHTU21DFAvailable()
+  {
+    return htu21df != null;
+  }
+
+  public float readHumidity() throws Exception
+  {
+    return htu21df.readHumidity();  
+  }
+  
   public void shutdown()
   {
     gpio.shutdown();

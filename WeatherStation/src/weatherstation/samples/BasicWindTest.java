@@ -51,6 +51,34 @@ public class BasicWindTest
       System.out.println("Wind : Dir=" + DIR_FMT.format(wd) + "\272, (" + VOLTS_FMT.format(volts) + " V) Speed:" + 
                                          SPEED_FMT.format(SDLWeather80422.toKnots(ws)) + " kts, Gust:" + 
                                          SPEED_FMT.format(SDLWeather80422.toKnots(wg)) + " kts");
+      if (weatherStation.isBMP180Available())
+      {
+        try
+        {
+          float temp = weatherStation.readTemperature();
+          float press = weatherStation.readPressure();
+          System.out.println("    Temperature:" + DIR_FMT.format(temp) + "\272C, Pressure:" + SPEED_FMT.format(press/100) + " hPa");
+        }
+        catch (Exception ex)
+        {
+          System.err.println("Can't read BMP180:");
+          ex.printStackTrace();
+        }
+      }
+      if (weatherStation.isHTU21DFAvailable())
+      {
+        try
+        {
+          float hum = weatherStation.readHumidity();
+          System.out.println("    Humidity:" + DIR_FMT.format(hum) + " %");
+        }
+        catch (Exception e)
+        {
+          System.err.println("Can't read HTU21DF:");
+          e.printStackTrace();
+        }
+      }
+      
       try 
       { 
         synchronized (coreThread)

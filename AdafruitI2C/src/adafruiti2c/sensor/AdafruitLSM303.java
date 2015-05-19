@@ -210,7 +210,7 @@ public class AdafruitLSM303
 
   private static int accel12(byte[] list, int idx)
   {
-    int n = list[idx] | (list[idx+1] << 8); // Low, high bytes
+    int n = (list[idx] & 0xFF) | ((list[idx+1] & 0xFF) << 8); // Low, high bytes
     if (n > 32767) 
       n -= 65536;                           // 2's complement signed
     return n >> 4;                          // 12-bit resolution
@@ -218,7 +218,7 @@ public class AdafruitLSM303
   
   private static int mag16(byte[] list, int idx)
   {
-    int n = (list[idx] << 8) | list[idx+1];   // High, low bytes
+    int n = ((list[idx] & 0xFF) << 8) | (list[idx+1] & 0xFF);   // High, low bytes
     return (n < 32768 ? n : n - 65536);       // 2's complement signed
   }
                                                     
