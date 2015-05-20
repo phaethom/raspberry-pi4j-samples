@@ -9,7 +9,7 @@ def userprofile = System.getenv()['USERPROFILE'] // On Windows...
 if (userprofile == null) { // Linux ?
   userprofile = System.getenv()['HOME']
 }
-// ant.setproxy(proxyhost: "$proxyHost", proxyport: "$proxyPort") //, proxyuser="user", proxypassword="password") 
+// ant.setproxy(proxyhost: "$proxyHost", proxyport: "$proxyPort") //, proxyuser="user", proxypassword="password")
 
 dependencies {
   compile project(':SevenSegDisplay')
@@ -21,7 +21,8 @@ dependencies {
   compile project(':GPS.sun.servo')
   compile project(':PhoneKeyBoard3x4')
   compile project(':RangeSensor')
-  compile project(':Relay') 
+  compile project(':Relay')
+  compile project(':WeatherStation')
 }
 
 repositories {

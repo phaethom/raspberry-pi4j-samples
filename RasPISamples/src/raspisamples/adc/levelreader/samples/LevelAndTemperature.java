@@ -34,6 +34,7 @@ public class LevelAndTemperature implements LevelListenerInterface
   
   private static WebSocketClient webSocketClient = null;
   private static String wsUri = System.getProperty("ws.uri", "ws://localhost:9876/"); 
+  private static String customerID = System.getProperty("customer.id", "Joe Shmow"); 
 
   @Override
   public void setLevel(int level)
@@ -41,6 +42,7 @@ public class LevelAndTemperature implements LevelListenerInterface
     if (level > 0)
     {
       JSONObject obj = new JSONObject();
+      obj.put("customer-id", customerID);
       obj.put("water-level", level);
       if (webSocketClient != null)
       {

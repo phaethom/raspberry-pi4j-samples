@@ -175,10 +175,10 @@ wsServer.on('request', function(request) {
         var mess = JSON.parse(message.utf8Data);
         var userMess;
         if (mess.temperature) {
-          console.log("Temperature rising!! " + mess.temperature);
+          console.log("Situation at " + mess["customer-id"] + "'s:\n\tTemperature rising!! " + mess.temperature);
           userMess = "The temperature on your site is " + mess.temperature.toFixed(2);
         } else if (mess["water-level"]) {
-          console.log("Water Level rising!! " + mess["water-level"]);
+          console.log("Situation at " + mess["customer-id"] + "'s:\n\tWater Level rising!! " + mess["water-level"]);
           userMess = "The water level on your site is " + mess["water-level"];
         }
         // Reply to sender
