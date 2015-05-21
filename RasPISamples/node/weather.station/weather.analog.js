@@ -7,8 +7,8 @@ var displayTWD, displayTWS, displayGUST, thermometer,
 var init = function() 
 {
   displayTWD      = new Direction('twdCanvas', 100, 45, 5, true);
-  displayTWS      = new AnalogDisplay('twsCanvas', 100,   50,  10,  1, true, 40);
-  displayGUST     = new AnalogDisplay('gustCanvas', 100,   50,  10,  1, true, 40);
+  displayTWS      = new AnalogDisplay('twsCanvas', 100,   65,  10,  1, true, 40);
+  displayGUST     = new AnalogDisplay('gustCanvas', 100,   65,  10,  1, true, 40);
   thermometer     = new Thermometer('tmpCanvas', 200);
   displayBaro     = new AnalogDisplay('baroCanvas', 100, 1040,  10,  1, true, 40, 980);
   displayHum      = new AnalogDisplay('humCanvas',  100,  100,  10,  1, true, 40);
@@ -51,6 +51,7 @@ var init = function()
     var data = JSON.parse(message.data);
     setValues(data);
   };
+
 };
 
 var changeBorder = function(b) 
