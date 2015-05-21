@@ -38,7 +38,7 @@ public class SDLWeather80422
   private final static double WIND_FACTOR = 2.400;
 
   private int currentWindCount = 0;
-  private int currentRainCount = 0;
+  private float currentRainCount = 0;
   private long shortestWindTime = 0;
   
   private long lastWindPing = 0;
@@ -159,6 +159,18 @@ public class SDLWeather80422
     
     this.ads1015 = new AdafruitADS1x15(ADC_TYPE);
     this.ADMode = ADMode;
+  }
+  
+  public void resetRainTotal()
+  {
+    this.currentRainCount = 0f;  
+  }
+  
+  public float getCurrentRainTotal()
+  {
+    float rainAmount = 0.2794f * this.currentRainCount / 2f;
+    resetRainTotal();
+    return rainAmount;
   }
   
   // Wind Direction Routines
@@ -285,13 +297,33 @@ public class SDLWeather80422
     gpio.shutdown();
   }
   
+  /**
+   * km/h to mph
+   * @param val
+   * @return
+   */
   public static double toMPH(double val)
   {
     return val / 1.609;
   }
   
+  /**
+   * km/h to knots
+   * @param val
+   * @return
+   */
   public static double toKnots(double val)
   {
     return val / 1.852;
+  }
+  
+  /**
+   * mm to inches
+   * @param val value in mm
+   * @return value in inches
+   */
+  public static double toInches(double val)
+  {
+    return val / 25.4;
   }
 }

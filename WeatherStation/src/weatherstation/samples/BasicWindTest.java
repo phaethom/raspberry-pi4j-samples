@@ -41,16 +41,20 @@ public class BasicWindTest
     SDLWeather80422 weatherStation = new SDLWeather80422(ANEMOMETER_PIN, RAIN_PIN, AdcMode.SDL_MODE_I2C_ADS1015);
     weatherStation.setWindMode(SdlMode.SAMPLE, 5);
     
+    float totalRain = 0f;
+    
     while (go)
     {
       double ws = weatherStation.currentWindSpeed();
       double wg = weatherStation.getWindGust();
       float wd = weatherStation.getCurrentWindDirection();
       double volts = weatherStation.getCurrentWindDirectionVoltage();
+      totalRain += weatherStation.getCurrentRainTotal(); // in mm  
       
       System.out.println("Wind : Dir=" + DIR_FMT.format(wd) + "\272, (" + VOLTS_FMT.format(volts) + " V) Speed:" + 
                                          SPEED_FMT.format(SDLWeather80422.toKnots(ws)) + " kts, Gust:" + 
                                          SPEED_FMT.format(SDLWeather80422.toKnots(wg)) + " kts");
+      System.out.println("Rain Total:" + totalRain + " mm, " + SPEED_FMT.format(SDLWeather80422.toInches(totalRain)) + " in.");
       if (weatherStation.isBMP180Available())
       {
         try
