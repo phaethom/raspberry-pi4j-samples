@@ -87,8 +87,8 @@ var setValues = function(doc)
     try
     {
       var twd = parseFloat(json.dir.toFixed(0)) % 360;
-//    displayTWD.animate(twd);
-      displayTWD.setValue(twd);
+      displayTWD.animate(twd);
+//    displayTWD.setValue(twd);
     }
     catch (err)
     {
@@ -100,8 +100,8 @@ var setValues = function(doc)
     try
     {
       var tws = parseFloat(json.speed.toFixed(2));
-//    displayTWS.animate(tws);
-      displayTWS.setValue(tws);
+      displayTWS.animate(tws);
+//    displayTWS.setValue(tws);
     }
     catch (err)
     {
@@ -112,19 +112,19 @@ var setValues = function(doc)
     try
     {
       var gust = parseFloat(json.gust.toFixed(2));
-//    displayTWS.animate(tws);
-      displayGUST.setValue(gust);
+      displayGUST.animate(gust);
+//    displayGUST.setValue(gust);
     }
     catch (err)
     {
       errMess += ((errMess.length > 0?"\n":"") + "Problem with TWS...");
-//    displayTWS.animate(0.0);
-      displayTWS.setValue(0.0);
+//    displayGUST.animate(0.0);
+      displayGUST.setValue(0.0);
     }
     try
     {
       var temp = parseFloat(json.temp.toFixed(1));
-//    thermometer.animate(waterTemp);
+//    thermometer.animate(temp);
       thermometer.setValue(temp);
     }
     catch (err)
@@ -137,8 +137,8 @@ var setValues = function(doc)
     {
       var baro = parseFloat(json.press / 100);
       if (baro != 0) {
-//      displayBaro.animate(baro);
-        displayBaro.setValue(baro);
+        displayBaro.animate(baro);
+//      displayBaro.setValue(baro);
       }
     }
     catch (err)
@@ -153,8 +153,8 @@ var setValues = function(doc)
         var hum = parseFloat(json.hum);
         document.getElementById('humCanvas').style.display = 'inline';
         if (hum > 0) {
-  //      displayHum.animate(airTemp);
-          displayHum.setValue(hum);
+          displayHum.animate(hum);
+  //      displayHum.setValue(hum);
         }
       } else {
         document.getElementById('humCanvas').style.display = 'none';
