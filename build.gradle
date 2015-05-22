@@ -14,15 +14,15 @@ if (userprofile == null) { // Linux ?
 dependencies {
   compile project(':SevenSegDisplay')
   compile project(':AdafruitI2C')
+  compile project(':WeatherStation')
   compile project(':ADC')
   compile project(':Arduino.RaspberryPI')
   compile project(':DAC')
   compile project(':GPIO.01')
-  compile project(':GPS.sun.servo')
   compile project(':PhoneKeyBoard3x4')
   compile project(':RangeSensor')
   compile project(':Relay')
-  compile project(':WeatherStation')
+  compile project(':RasPISamples')
 }
 
 repositories {
