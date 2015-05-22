@@ -68,7 +68,7 @@ public class SDLWeather80422
   // Other I2C Boards (BMP180, HTU21D-F, MOD-1016, etc)
   private AdafruitBMP180 bmp180   = null;
   private AdafruitHTU21DF htu21df = null;
-  // TODO MOD-1016
+  // TODO MOD-1016 (lightning detector)
     
   public SDLWeather80422()
   {
