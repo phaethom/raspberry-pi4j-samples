@@ -3,7 +3,11 @@
 It uses the [PI4J library](http://pi4j.com).
 
 ---
+This project contains Java code, mostly translated from Python, dedicated to usually *one* board (like BMP180, LSM303, etc).
+More consistant samples can be found in the RasPISamples project, where several components have been assembled together. 
+Do take a look, it also comes with a readme file.
 
+---
 To build it, clone this project, make sure the scripts named <code>makeall</code> and <code>gradlew</code> are executable, and execute <code>makeall</code>.
 <pre>
  Prompt> chmod +x makeall gradlew
