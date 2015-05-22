@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+CP=./classes
+CP=$CP:../AdafruitI2C/classes
+CP=$CP:../WeatherStation/classes
+CP=$CP:./lib/java_websocket.jar
+CP=$CP:./lib/json.jar
+#
+java -cp $CP weatherstation.ws.HomeWeatherStation

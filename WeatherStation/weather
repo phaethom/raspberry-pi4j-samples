@@ -4,4 +4,3 @@ CP=./classes
 CP=$CP:../AdafruitI2C/classes
 CP=$CP:$PI4J_HOME/lib/pi4j-core.jar
 sudo java -cp $CP -Dverbose=true weatherstation.SDLWeather80422
-
