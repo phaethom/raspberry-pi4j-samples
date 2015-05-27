@@ -41,3 +41,6 @@ and it supports query strings parameters <code>border</code> and <code>theme</co
 
 _For example_:<code>http://localhost:9876/data/weather.station/analog.html?border=N&theme=white</code>.
 
+---
+
+See [here](http://www.lediouris.net/RaspberryPI/WeatherStation/readme.html).
