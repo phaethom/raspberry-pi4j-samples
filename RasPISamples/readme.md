@@ -26,7 +26,7 @@ From another console, then start the process that will read the <code>SDLWeather
 Prompt> ./weather.station.reader
 </pre>
 
-You can also start a simulator, in case you  are not on the Raspberry PI, ands want to make some tests:
+You can also start a simulator, in case you  are not on the Raspberry PI, and want to make some tests:
 <pre>
 Prompt> ./weather.simulator
 </pre>
