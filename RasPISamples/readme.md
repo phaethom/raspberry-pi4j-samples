@@ -35,7 +35,7 @@ Then you can visualize the data in a browser, using a URL like
 <code>http://raspberrypi:9876/data/weather.station/index.html</code>
 
 The analog console can be reached from <code>http://localhost:9876/data/weather.station/analog.html</code>, 
-and it supports query strings parameters <code>border</code> and <code>theme</code>.
+and it supports query string parameters <code>border</code> and <code>theme</code>.
 
 <code>border</code> can be <code>Y</code> or <code>N</code>, and <code>theme</code> can be <code>black</code> or <code>white</code>.
 
