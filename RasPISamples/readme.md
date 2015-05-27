@@ -23,6 +23,7 @@ Prompt> node weather.server.js
 From another console, then start the process that will read the <code>SDLWeather80422</code>, and feed the WebSocket server:
 
 <pre>
+Prompt> ./weather.station.reader
 </pre>
 
 You can also start a simulator, in case you  are not on the Raspberry PI, ands want to make some tests:
