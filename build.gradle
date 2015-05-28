@@ -19,7 +19,7 @@ dependencies {
   compile project(':Arduino.RaspberryPI')
   compile project(':DAC')
   compile project(':GPIO.01')
-  compile project(':PhoneKeyBoard3x4')
+  compile project(':PhoneKeyboard3x4')
   compile project(':RangeSensor')
   compile project(':PIR')
   compile project(':Relay')

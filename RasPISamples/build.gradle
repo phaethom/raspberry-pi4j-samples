@@ -2,6 +2,9 @@ apply plugin: 'java'
 apply plugin: 'maven'
 
 def userprofile = System.getenv()['USERPROFILE'] // On Windows...
+if (userprofile == null) { // Linux ?
+  userprofile = System.getenv()['HOME']
+}
 
 group = 'oliv.pi4j.samples'
 version = '1.0'
