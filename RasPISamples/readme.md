@@ -23,9 +23,10 @@ Prompt> node weather.server.js
 From another console, then start the process that will read the <code>SDLWeather80422</code>, and feed the WebSocket server:
 
 <pre>
+Prompt> ./weather.station.reader
 </pre>
 
-You can also start a simulator, in case you  are not on the Raspberry PI, ands want to make some tests:
+You can also start a simulator, in case you  are not on the Raspberry PI, and want to make some tests:
 <pre>
 Prompt> ./weather.simulator
 </pre>
@@ -34,9 +35,12 @@ Then you can visualize the data in a browser, using a URL like
 <code>http://raspberrypi:9876/data/weather.station/index.html</code>
 
 The analog console can be reached from <code>http://localhost:9876/data/weather.station/analog.html</code>, 
-and it supports query strings parameters <code>border</code> and <code>theme</code>.
+and it supports query string parameters <code>border</code> and <code>theme</code>.
 
 <code>border</code> can be <code>Y</code> or <code>N</code>, and <code>theme</code> can be <code>black</code> or <code>white</code>.
 
 _For example_:<code>http://localhost:9876/data/weather.station/analog.html?border=N&theme=white</code>.
 
+---
+
+See [here](http://www.lediouris.net/RaspberryPI/WeatherStation/readme.html).
