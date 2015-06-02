@@ -33,7 +33,9 @@ repositories {
 
 dependencies {
   compile 'com.pi4j:pi4j-core:0.0.5'
-  compile 'com.sun.media:jai_codec:1.1.3'
+//compile 'com.sun.media:jai_codec:1.1.3'
+  compile 'javax:jai_codec:1.1.3'
+  compile 'javax:jai_core:1.1.3'
 }
 
 task copyResources(type: Copy) {
@@ -52,3 +54,9 @@ task tellMeProxy (description: "Spits out the proxy settings.") << {
 
 // compileJava.dependsOn(tellMeProxy)
 
+task runSample(type: JavaExec, dependsOn: build, description: "Test run.") {
+  main = 'image.util.ImageUtil'
+//jvmArgs "-verbose"
+  classpath project.configurations.default
+  classpath sourceSets.main.output.classesDir
+}

@@ -733,6 +733,7 @@ public class ImageUtil
       Color muc = mostUsedColor(image);
       System.out.println("Most used color is :" + muc.toString() + " (among " + nbc + ")");
     }
+    System.out.println("Finding white spot...");
     long before = System.currentTimeMillis();
 //  Point spot = findSpot(image, new Color(254, 0, 0));
     Point spot = findSpot(image, Color.white);
@@ -742,7 +743,8 @@ public class ImageUtil
     else
       System.out.println("Spot found at " + spot.x + "/" + spot.y);
     System.out.println("... in " + Long.toString(after - before) + " ms");
-    
+
+    System.out.println("Finding bright spot...");
     before = System.currentTimeMillis();
     spot = findMaxLum(image);
     after = System.currentTimeMillis();
@@ -755,7 +757,8 @@ public class ImageUtil
     System.out.println("Image dim:" + image.getWidth(null) + "x" + image.getHeight(null));
     
     // For the test: Write new image, plotting the spot
-    BufferedImage offImage = new BufferedImage(image.getWidth(null), 
+    System.out.println("Plotting bright spot on plotted.png...");
+    BufferedImage offImage = new BufferedImage(image.getWidth(null),
                                                image.getHeight(null),
                                                BufferedImage.TYPE_INT_ARGB);
 
