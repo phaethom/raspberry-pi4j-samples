@@ -8,4 +8,7 @@ CP=$CP:../WeatherStation/classes
 CP=$CP:./lib/java_websocket.jar
 CP=$CP:./lib/json.jar
 #
-sudo java -cp $CP weatherstation.ws.HomeWeatherStation
+JAVA_OPTIONS=
+JAVA_OPTIONS="$JAVA_OPTIONS -Dws.verbose=true"
+#
+sudo java $JAVA_OPTIONS -cp $CP weatherstation.ws.HomeWeatherStation

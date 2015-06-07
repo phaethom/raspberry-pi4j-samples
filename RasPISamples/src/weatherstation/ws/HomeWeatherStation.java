@@ -2,6 +2,8 @@ package weatherstation.ws;
 
 import com.pi4j.system.SystemInfo;
 
+import java.nio.channels.NotYetConnectedException;
+
 import org.json.JSONObject;
 
 import weatherstation.SDLWeather80422;
@@ -38,6 +40,8 @@ import weatherstation.SDLWeather80422;
  *    - Logging
  *    - Sending Data to some DB (REST interface)
  *    - Add orientable camera
+ *  
+ *  Use -Dws.verbose=true for more output.
  */
 public class HomeWeatherStation
 {
@@ -117,7 +121,21 @@ public class HomeWeatherStation
        *   "hum": 58.5,
        *   "cputemp": 34.56 }
        */
-      wsf.pushMessage(windObj.toString());
+      try
+      {
+        String message = windObj.toString();
+        if ("true".equals(System.getProperty("ws.verbose", "false")))
+          System.out.println("-> Sending " + message);
+        wsf.pushMessage(message);
+      }
+      catch (NotYetConnectedException nyce)
+      {
+        System.err.println(" ... Not yet connected, check your WebSocket server");
+      }
+      catch (Exception ex)
+      {
+        ex.printStackTrace();
+      }
       
       try 
       { 

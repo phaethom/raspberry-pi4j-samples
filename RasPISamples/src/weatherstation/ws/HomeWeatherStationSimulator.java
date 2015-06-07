@@ -37,7 +37,7 @@ public class HomeWeatherStationSimulator
     while (go)
     {
       double ws = generateRandomValue(windSpeed, 3, 0, 65);
-      double wg = generateRandomValue(windGust, 5, 0, 65);
+      double wg = generateRandomValue(windGust,  5, 0, 65);
       float wd  = (float)generateRandomValue(windDir, 10, 0, 360);
       double volts = generateRandomValue(voltage, 3, 0, 65);
       float temp = (float)generateRandomValue(temperature, 2, -10, 50);
