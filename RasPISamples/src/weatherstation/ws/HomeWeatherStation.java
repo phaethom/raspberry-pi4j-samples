@@ -1,9 +1,44 @@
 package weatherstation.ws;
 
+import com.pi4j.system.SystemInfo;
+
 import org.json.JSONObject;
 
 import weatherstation.SDLWeather80422;
 
+/**
+ * The real project
+ * 
+ * Loops every 1000 ms, reads data from the SDL 80422:
+ * - Wind:
+ *   - Speed (in km/h)
+ *   - Direction
+ *   - Gust (in km/h)
+ *   - Volts
+ *   - Rain (in mm)
+ * - BMP180: (if available)
+ *   - Temperature (in Celcius)
+ *   - Pressure (in Pa)
+ * - HTU21DF: (if available)
+ *   - Relative Humidity (%)
+ * - CPU Temperature (in Celcius)
+ * 
+ * Feeds a WebSocket server with a json object like 
+ *  { "dir": 350.0,
+ *    "volts": 3.4567,
+ *    "speed": 12.345,
+ *    "gust": 13.456,
+ *    "rain": 0.1,
+ *    "press": 101300.00,
+ *    "temp": 18.34,
+ *    "hum": 58.5,
+ *    "cputemp": 34.56 }
+ *    
+ *  TODO
+ *    - Logging
+ *    - Sending Data to some DB (REST interface)
+ *    - Add orientable camera
+ */
 public class HomeWeatherStation
 {
   private static boolean go = true;
@@ -34,11 +69,13 @@ public class HomeWeatherStation
       double wg = weatherStation.getWindGust();
       float wd  = weatherStation.getCurrentWindDirection();
       double volts = weatherStation.getCurrentWindDirectionVoltage();
+      float rain = weatherStation.getCurrentRainTotal();
       JSONObject windObj = new JSONObject();
       windObj.put("dir", wd);
       windObj.put("volts", volts);
       windObj.put("speed", ws);
       windObj.put("gust", wg);
+      windObj.put("rain", rain);
       // Add temperature, pressure, humidity
       if (weatherStation.isBMP180Available())
       {
@@ -66,15 +103,19 @@ public class HomeWeatherStation
           ex.printStackTrace();
         }
       }      
+      float cpuTemp = SystemInfo.getCpuTemperature();
+      windObj.put("cputemp", cpuTemp);
       /*
        * Sample message:
        * { "dir": 350.0,
        *   "volts": 3.4567,
        *   "speed": 12.345,
        *   "gust": 13.456,
+       *   "rain": 0.1,
        *   "press": 101300.00,
        *   "temp": 18.34,
-       *   "hum": 58.5 }
+       *   "hum": 58.5,
+       *   "cputemp": 34.56 }
        */
       wsf.pushMessage(windObj.toString());
       
