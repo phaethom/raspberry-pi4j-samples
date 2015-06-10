@@ -8,9 +8,11 @@ import org.json.JSONObject;
 
 import weatherstation.SDLWeather80422;
 
+import weatherstation.logger.LoggerInterface;
+
 /**
  * The real project
- * 
+ *
  * Loops every 1000 ms, reads data from the SDL 80422:
  * - Wind:
  *   - Speed (in km/h)
@@ -24,8 +26,8 @@ import weatherstation.SDLWeather80422;
  * - HTU21DF: (if available)
  *   - Relative Humidity (%)
  * - CPU Temperature (in Celcius)
- * 
- * Feeds a WebSocket server with a json object like 
+ *
+ * Feeds a WebSocket server with a json object like
  *  { "dir": 350.0,
  *    "volts": 3.4567,
  *    "speed": 12.345,
@@ -35,21 +37,38 @@ import weatherstation.SDLWeather80422;
  *    "temp": 18.34,
  *    "hum": 58.5,
  *    "cputemp": 34.56 }
- *    
+ *
  *  TODO
  *    - Logging
  *    - Sending Data to some DB (REST interface)
  *    - Add orientable camera
- *  
+ *
  *  Use -Dws.verbose=true for more output.
+ *  Use -Ddata.logger=<LoggerClassName> for logging
  */
 public class HomeWeatherStation
 {
   private static boolean go = true;
+  private static LoggerInterface logger = null;
+  
   public static void main(String[] args) throws Exception
   {
     final Thread coreThread = Thread.currentThread();
     final WebSocketFeeder wsf = new WebSocketFeeder();
+    
+    String loggerClassName = System.getProperty("data.logger", null);
+    if (loggerClassName != null)
+    {
+      try
+      { 
+        Class<? extends LoggerInterface> logClass = Class.forName(loggerClassName).asSubclass(LoggerInterface.class);
+        logger = logClass.newInstance();
+      }
+      catch (Exception ex)
+      {
+        ex.printStackTrace();
+      }
+    }
 
     Runtime.getRuntime().addShutdownHook(new Thread()
      {
@@ -127,6 +146,17 @@ public class HomeWeatherStation
         if ("true".equals(System.getProperty("ws.verbose", "false")))
           System.out.println("-> Sending " + message);
         wsf.pushMessage(message);
+        if (logger != null)
+        {
+          try
+          {
+            logger.pushMessage(windObj);
+          }
+          catch (Exception ex) 
+          {
+            ex.printStackTrace();
+          }
+        }
       }
       catch (NotYetConnectedException nyce)
       {

@@ -2,16 +2,33 @@ package weatherstation.ws;
 
 import org.json.JSONObject;
 
+import weatherstation.logger.LoggerInterface;
+
 /**
  * Use this when the Weather Staiton is not available (ie you're not on the RPi)
  */
 public class HomeWeatherStationSimulator
 {
   private static boolean go = true;
+  private static LoggerInterface logger = null;
+  
   public static void main(String[] args) throws Exception
   {
     final Thread coreThread = Thread.currentThread();
     final WebSocketFeeder wsf = new WebSocketFeeder();
+    String loggerClassName = System.getProperty("data.logger", null);
+    if (loggerClassName != null)
+    {
+      try
+      { 
+        Class<? extends LoggerInterface> logClass = Class.forName(loggerClassName).asSubclass(LoggerInterface.class);
+        logger = logClass.newInstance();
+      }
+      catch (Exception ex)
+      {
+        ex.printStackTrace();
+      }
+    }
 
     Runtime.getRuntime().addShutdownHook(new Thread()
      {
@@ -62,7 +79,18 @@ public class HomeWeatherStationSimulator
        *   "hum": 58.5 }
        */
       System.out.println("Pushing " + windObj.toString());
-      wsf.pushMessage(windObj.toString());
+      try { wsf.pushMessage(windObj.toString()); } catch (Exception ex) {}
+      if (logger != null)
+      {
+        try
+        {
+          logger.pushMessage(windObj);
+        }
+        catch (Exception ex) 
+        {
+          ex.printStackTrace();
+        }
+      }
       windSpeed = ws;
       windGust = wg;
       windDir = wd;
