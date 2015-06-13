@@ -15,6 +15,7 @@ public class ReflexGame
   private static long before = 0L;
   private static long after  = 0L;
   private static Thread waiter = null;
+  private final static long MAX_WAIT_TIME = 10000L; // 10 sec max.
   
   public static void main(String[] args)
   {
@@ -34,7 +35,7 @@ public class ReflexGame
       });
     
     System.out.println("Get ready...");
-    long rnd = (10000L * Math.round(1 - Math.random()));
+    long rnd = (MAX_WAIT_TIME * Math.round(1 - Math.random()));
     delay(rnd);
 
     // turn on the led
@@ -46,7 +47,7 @@ public class ReflexGame
     synchronized (waiter)
     {
       try { waiter.wait(); }
-      catch (InterruptedException ex) {}
+      catch (InterruptedException ex) { ex.printStackTrace(); }
     }
     System.out.println("Good Job!");
     led.low();
@@ -57,15 +58,22 @@ public class ReflexGame
   private static void buttonHit()
   {
     after = System.currentTimeMillis();
-    System.out.println("It took you " + Long.toString(after - before) + " ms.");
-    synchronized (waiter)
+    if (before > 0)
     {
-      waiter.notify();
+      System.out.println("It took you " + Long.toString(after - before) + " ms.");
+      synchronized (waiter)
+      {
+        waiter.notify();
+      }
+    }
+    else
+    {
+      System.out.println("Not yet, you idiot!");
     }
   }
   
   private static void delay(long ms)
   {
-    try { Thread.sleep(ms); } catch (InterruptedException ie) {}
+    try { Thread.sleep(ms); } catch (InterruptedException ie) { ie.printStackTrace(); }
   }
 }
