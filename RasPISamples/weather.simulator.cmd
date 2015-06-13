@@ -17,7 +17,8 @@ set CP=%CP%;D:\OlivSoft.git\raspberry-pi4j-samples\Camera\classes
 set CP=%CP%;D:\OlivSoft.git\raspberry-pi4j-samples\RasPISamples\lib\jansi-1.9.jar
 set CP=%CP%;D:\OlivSoft.git\raspberry-pi4j-samples\WeatherStation\classes
 ::
-set JAVA_OPTS=-Ddata.logger=weatherstation.logger.DummyLogger
+:: set JAVA_OPTS=-Ddata.logger=weatherstation.logger.DummyLogger
+set JAVA_OPTS=-Ddata.logger=weatherstation.logger.MySQLLogger
 ::
 java -cp %CP% %JAVA_OPTS% weatherstation.ws.HomeWeatherStationSimulator
 @endlocal

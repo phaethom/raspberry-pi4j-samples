@@ -39,7 +39,7 @@ import weatherstation.logger.LoggerInterface;
  *    "cputemp": 34.56 }
  *
  *  TODO
- *    - Logging
+ *    - Logging...
  *    - Sending Data to some DB (REST interface)
  *    - Add orientable camera
  *

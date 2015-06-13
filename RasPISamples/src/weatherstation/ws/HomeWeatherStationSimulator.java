@@ -43,23 +43,23 @@ public class HomeWeatherStationSimulator
        }
      });
       
-    double windSpeed = 0d;
-    double windGust = 0d;
-    float windDir = 0f;
-    double voltage = 0;
-    double pressure = 101300;
-    double humidity = 50;
+    double windSpeed   = 0d;
+    double windGust    = 0d;
+    float windDir      = 0f;
+    double voltage     = 0;
+    double pressure    = 101300;
+    double humidity    = 50;
     double temperature = 15;
     
     while (go)
     {
-      double ws = generateRandomValue(windSpeed, 3, 0, 65);
-      double wg = generateRandomValue(windGust,  5, 0, 65);
-      float wd  = (float)generateRandomValue(windDir, 10, 0, 360);
+      double ws    = generateRandomValue(windSpeed, 3, 0, 65);
+      double wg    = generateRandomValue(windGust,  5, 0, 65);
+      float wd     = (float)generateRandomValue(windDir, 10, 0, 360);
       double volts = generateRandomValue(voltage, 3, 0, 65);
-      float temp = (float)generateRandomValue(temperature, 2, -10, 50);
-      float press = (float)generateRandomValue(pressure, 1, 98000, 105000);
-      float hum = (float)generateRandomValue(humidity, 0.1, 0, 100);
+      float temp   = (float)generateRandomValue(temperature, 2, -10, 50);
+      float press  = (float)generateRandomValue(pressure, 1, 98000, 105000);
+      float hum    = (float)generateRandomValue(humidity, 0.1, 0, 100);
       JSONObject windObj = new JSONObject();
       windObj.put("dir", wd);
       windObj.put("volts", volts);
