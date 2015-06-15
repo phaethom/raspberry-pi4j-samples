@@ -4,7 +4,7 @@ import adafruiti2c.sensor.AdafruitBMP180;
 
 import adc.ADCObserver;
 
-import java.io.ByteArrayInputStream;
+// import java.io.ByteArrayInputStream;
 
 import java.net.URI;
 
@@ -21,7 +21,7 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import org.json.JSONObject;
 import raspisamples.adc.levelreader.ADCChannels_1_to_8;
-import sun.misc.BASE64Decoder;
+// import sun.misc.BASE64Decoder;
 
 /**
  * Reads water level and temperature
@@ -82,6 +82,7 @@ public class LevelAndTemperature implements LevelListenerInterface
           {
             String h = headers.next();
             System.out.println(h + " : " + serverHandshake.getFieldValue(h));
+            /*
             if (h.equalsIgnoreCase("Sec-WebSocket-Accept"))
             {
               try
@@ -98,6 +99,7 @@ public class LevelAndTemperature implements LevelListenerInterface
                 ex.printStackTrace();
               }
             }
+            */
           }
         }
 
