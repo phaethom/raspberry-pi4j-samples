@@ -20,7 +20,7 @@ import org.json.JSONObject;
  *    "hum": 58.5,
  *    "cputemp": 34.56 }
  */
-public class MySQLLogger implements LoggerInterface
+public class MySQLLoggerImpl implements LoggerInterface
 {
   private long lastLogged = 0L; // Time of the last logging
   private static final long MINIMUM_BETWEEN_LOGS = 5000L;
