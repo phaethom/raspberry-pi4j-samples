@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Level Detector</title>
+    <link rel="stylesheet" href="../stylesheet.css" type="text/css"/>   
+  </head>
+  <body>
+    <h2>Level Detector</h2>
+    <hr>
+    <p>
+      The goal here is to detect the water level in a given place (a cup, a bucket, a basement, etc).
+      <br>
+      We have two distinct parts:
+      <ul>
+        <li type="disc">The probe</li>
+        <li type="disc">The components on the Raspberry PI's side</li>
+      </ul>
+      The probe is the device that will detect the water level.
+      <br>
+      We will use the fact that the water <i>conducts</i> electricity.
+      <br>
+      The probe will essentially be made of a serie of several contacts, switched on when the water level is rising.
+      <br>
+      Those contacts will then feed an MCP3008 (Analog to Digital Converter - ADC) on the Raspberry PI side, 
+      and the software will read those data.
+      <br>
+      The MCP3008 is a 10-bit ADC (can take 2<sup><small>10</small></sup> values, which is 1024), that can read up to 8 channels. We will associate each switch on the probe with one of those channels on the MCP3008.
+      <hr>
+    </p>
+    <p>
+      <h3>The probe</h3>
+      <p style="text-align: center;">
+        <a href="IMAG0788.jpg" target="img"><img src="IMAG0788.jpg" alt="The probe" title="The probe" height="460" width="816"></a>
+      </p>
+      Notice on the hot wire side, there is a screw facing each contact. This is to avoid connectivity problems.
+      <br>
+      When the water raises, a contact is established between a pair of screws, and this contact is reflected at the MPC3008 level.
+    </p>
+    <p>
+      <h3>Wiring</h3>
+      <p style="text-align: center;">
+        <a href="full.jpg" target="img"><img src="full.jpg" alt="The wiring" title="The wiring" height="735" width="816"></a>
+      </p>
+      For clarity, we represent here only one of the probe's switches. On the previous picture, we have seven of them.
+      <br>
+      Notice the push button, it is here for tests. When the user pushes the button, the led goes on (there is a 10k&Omega; resistor to protect it), and the value read on the MCP3008 goes up to 1023.
+      <br>
+      On the diagram above, if you follow the blue wire connected on the probe, see it goes all the way to the 'CH0' pin of the MCP3008.
+      <br><br>
+      Here is the full prototype:
+      <p style="text-align: center;">
+        <a href="IMAG0786.jpg" target="img"><img src="IMAG0786.jpg" alt="The prototype" title="The prototype" height="460" width="816"></a>
+      </p>
+    </p>
+    <hr>
+    <address>Oliv did it</address>
+  </body>
+</html>
