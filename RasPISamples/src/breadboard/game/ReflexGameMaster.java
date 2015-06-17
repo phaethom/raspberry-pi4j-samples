@@ -5,7 +5,7 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 /**
- * Implements the nuts and boltrs of the reflex game.
+ * Implements the nuts and bolts of the reflex game.
  * No need to worry about that in the main class.
  * From the main:
  *   Invoke the initCtx method
