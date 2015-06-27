@@ -142,8 +142,8 @@ function Direction(cName, dSize, majorTicks, minorTicks, withRose)
       window.clearInterval(this.intervalID);
     if (this.incr !== 0 && !this.busy)  
     {
-      if (canvasName === 'twdCanvas')    
-        console.log('Starting animation between ' + this.previousValue + ' and ' + value + ', step ' + this.incr);
+//    if (false && canvasName === 'twdCanvas')    
+//      console.log('Starting animation between ' + this.previousValue + ' and ' + value + ', step ' + this.incr);
       this.busy = true;
       this.intervalID = window.setTimeout(function () { instance.displayAndIncrement(value); }, 50);
     }
@@ -165,12 +165,12 @@ function Direction(cName, dSize, majorTicks, minorTicks, withRose)
     //console.log('Tic ' + inc + ', ' + finalValue);
     this.drawDisplay(canvasName, displaySize, this.valueToDisplay);
     this.valueToDisplay += this.incr;
-    if (canvasName === 'twdCanvas')
-      console.log('       displayAndIncrement curr:' + this.valueToDisplay.toFixed(2) + ', final:' + finalValue + ', step ' + this.incr);
+//  if (canvasName === 'twdCanvas')
+//    console.log('       displayAndIncrement curr:' + this.valueToDisplay.toFixed(2) + ', final:' + finalValue + ', step ' + this.incr);
     if ((this.incr > 0 && this.valueToDisplay.toFixed(2) >= finalValue) || (this.incr < 0 && this.valueToDisplay.toFixed(2) <= finalValue))
     {
-      if (canvasName === 'twdCanvas')
-        console.log('Stop, ' + finalValue + ' reached, steps were ' + this.incr);
+//    if (canvasName === 'twdCanvas')
+//      console.log('Stop, ' + finalValue + ' reached, steps were ' + this.incr);
       //  console.log('Stop!')
       window.clearInterval(this.intervalID);
       this.intervalID = 0;

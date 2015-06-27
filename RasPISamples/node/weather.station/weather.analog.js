@@ -32,26 +32,29 @@ var init = function()
   var rootUri = "ws://" + (document.location.hostname === "" ? "localhost" : document.location.hostname) + ":" +
                           (document.location.port === "" ? "9876" : document.location.port);
   console.log(rootUri);
-  connection = new WebSocket(rootUri); // 'ws://localhost:9876');
+  try {
+    connection = new WebSocket(rootUri); // 'ws://localhost:9876');
 
-  connection.onopen = function () 
-  {
-    console.log('Connected.')
-  };
+    connection.onopen = function () 
+    {
+      console.log('Connected.')
+    };
 
-  connection.onerror = function (error) 
-  {
-    // just in there were some problems with connection...
-    alert('Sorry, but there is some problem with your connection or the server is down.');
-  };
+    connection.onerror = function (error) 
+    {
+      // just in there were some problems with connection...
+      alert('Sorry, but there is some problem with your connection or the server is down.');
+    };
 
-  connection.onmessage = function (message) 
-  {
-//  console.log('onmessage:' + JSON.stringify(message.data));
-    var data = JSON.parse(message.data);
-    setValues(data);
-  };
-
+    connection.onmessage = function (message) 
+    {
+  //  console.log('onmessage:' + JSON.stringify(message.data));
+      var data = JSON.parse(message.data);
+      setValues(data);
+    };
+  } catch (err) {
+    console.log(">>> Coonection:" + err);
+  }
 };
 
 var changeBorder = function(b) 
@@ -75,6 +78,40 @@ var resizeDisplays = function(width)
   displayHum.setDisplaySize(100 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
 };
   
+var twdArray = [];
+
+var toRadians = function(deg)
+{
+  return deg * (Math.PI / 180);
+};
+
+var toDegrees = function(rad)
+{
+  return rad * (180 / Math.PI);
+};
+
+var averageDir = function(va) {
+  var sumCos = 0, sumSin = 0;
+  var len = va.length;
+//var sum = 0;
+  for (var i=0; i<len; i++) {
+//  sum += va[i];
+    sumCos += Math.cos(toRadians(va[i]));
+    sumSin += Math.sin(toRadians(va[i]));
+  }
+  var avgCos = sumCos / len;
+  var avgSin = sumSin / len;
+  
+  var aCos = toDegrees(Math.acos(avgCos));
+//var aSin = toDegrees(Math.asin(avgSin));
+  var avg = aCos;  
+  if (avgSin < 0) {
+    avg = 360 - avg;
+  }
+  return avg;
+//return sum / len;
+};
+
 var setValues = function(doc)
 {
   try
@@ -87,7 +124,13 @@ var setValues = function(doc)
     try
     {
       var twd = parseFloat(json.dir.toFixed(0)) % 360;
-      displayTWD.animate(twd);
+      // Damping
+      twdArray.push(twd);
+      while (twdArray.length > 100) { // TODO Prm
+        twdArray.slice(1); // Drop first element (0).
+      }
+      // Average
+      displayTWD.animate(averageDir(twdArray));
 //    displayTWD.setValue(twd);
     }
     catch (err)
