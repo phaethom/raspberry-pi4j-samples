@@ -11,4 +11,3 @@ CP=$CP:../AdafruitI2C/classes
 CP=$CP:./out/production/Scala.101
 # 
 sudo java -classpath "$CP" Scala_101
-

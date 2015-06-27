@@ -6,8 +6,7 @@ package breadboard.game;
  */
 public class ReflexGameInstance implements PushButtonObserver
 {
-  private static long after  = 0L;
-
+  private static long now  = 0L;
   private static ReflexGameMaster rgm = null;
 
   public static void main(String[] args)
@@ -23,11 +22,11 @@ public class ReflexGameInstance implements PushButtonObserver
   @Override
   public void onButtonPressed()
   {
-    after = System.currentTimeMillis();
+    now = System.currentTimeMillis();
     long before = rgm.getStartTime();
     if (before > 0)
     {
-      System.out.println("It took you " + Long.toString(after - before) + " ms.");
+      System.out.println("It took you " + Long.toString(now - before) + " ms.");
       rgm.release(); // Tell it we're done.
     }
     else
