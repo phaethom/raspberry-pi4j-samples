@@ -33,6 +33,8 @@ if (typeof String.prototype.endsWith != 'function') {
   };
 }
 
+var lastWSMessage = { value: 'empty' };
+
 function handler (req, res) {
   var respContent = "";
   if (verbose) {
@@ -76,7 +78,6 @@ function handler (req, res) {
                   } else if (resource.endsWith(".png")) {
                     contentType = "image/png";
                   }
-
                   res.writeHead(200, {'Content-Type': contentType});
               //  console.log('Data is ' + typeof(data));
                   if (resource.endsWith(".jpg") || 
@@ -90,10 +91,21 @@ function handler (req, res) {
                 });
   } else if (req.url.startsWith("/verbose=")) {
     if (req.method === "GET") {
-      verbose = (req.url.substring("/verbose=".length) === 'on');
-      res.end(JSON.stringify({verbose: verbose?'on':'off'}));
+      var isVerboseOn = (req.url.substring("/verbose=".length) === 'on');
+      res.end(JSON.stringify({verbose: isVerboseOn?'on':'off'}));
+
     }
-  } else if (req.url == "/") {
+  } else if (req.url === "/getJsonData") { // Ajax Data Request
+//  console.log("Ajax Request, " + req.method + ", " + (new Date()));
+    if (req.method === "GET") {
+      res.writeHead(200, {'Content-Type': 'application/json'});
+      var json = lastWSMessage;
+      res.end(JSON.stringify(json));
+      if (verbose) {
+        console.log("Returned:", json);
+      }
+    }
+  } else if (req.url === "/") {
     if (req.method === "POST") {
       var data = "";
       if (verbose) {
@@ -171,11 +183,16 @@ wsServer.on('request', function(request) {
   connection.on('message', function(message) {
 //  console.log(">>> DEBUG >>> Received " + JSON.stringify(message));
     if (message.type === 'utf8') { // accept only text
-//    console.log((new Date()) + ' Received Message: ' + message.utf8Data);
+   // console.log((new Date()) + ' Received WS Message: ' + message.utf8Data);
+   // console.log("Nb Clients:" + clients.length);
       try
       {
+        try { lastWSMessage = JSON.parse(message.utf8Data); }
+        catch (err) { lastWSMessage = err; }
         for (var i=0; i<clients.length; i++) {
-          clients[i].sendUTF(message.utf8Data);
+          if (connection !== clients[i]) {
+            clients[i].sendUTF(message.utf8Data);
+          }
         }
       } catch (err) {
         console.log(">>> ERR >>> " + err + ' in ' + message.utf8Data);

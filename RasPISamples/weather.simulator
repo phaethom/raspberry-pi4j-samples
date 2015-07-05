@@ -4,5 +4,7 @@ CP=./classes
 CP=$CP:./lib/java_websocket.jar
 CP=$CP:./lib/json.jar
 #
-JAVA_OPTS=-Ddata.logger=weatherstation.logger.DummyLogger
+JAVA_OPTS=
+# JAVA_OPTS="$JAVA_OPTS -Ddata.logger=weatherstation.logger.DummyLogger"
+JAVA_OPTS="$JAVA_OPTS -Ddata.logger=weatherstation.logger.MySQLLoggerImpl"
 java -cp $CP $JAVA_OPTS weatherstation.ws.HomeWeatherStationSimulator

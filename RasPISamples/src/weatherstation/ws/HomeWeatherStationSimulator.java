@@ -56,12 +56,14 @@ public class HomeWeatherStationSimulator
       double ws    = generateRandomValue(windSpeed, 3, 0, 65);
       double wg    = generateRandomValue(windGust,  5, 0, 65);
       float wd     = (float)generateRandomValue(windDir, 10, 0, 360);
+      float mwd    = HomeWeatherStation.getAverageWD(wd);
       double volts = generateRandomValue(voltage, 3, 0, 65);
       float temp   = (float)generateRandomValue(temperature, 2, -10, 50);
       float press  = (float)generateRandomValue(pressure, 1, 98000, 105000);
       float hum    = (float)generateRandomValue(humidity, 0.1, 0, 100);
       JSONObject windObj = new JSONObject();
       windObj.put("dir", wd);
+      windObj.put("avgdir", mwd);
       windObj.put("volts", volts);
       windObj.put("speed", ws);
       windObj.put("gust", wg);
@@ -71,6 +73,7 @@ public class HomeWeatherStationSimulator
       /*
        * Sample message:
        * { "dir": 350.0,
+       *   "avgdir": 345.67,
        *   "volts": 3.4567,
        *   "speed": 12.345,
        *   "gust": 13.456,
@@ -79,7 +82,12 @@ public class HomeWeatherStationSimulator
        *   "hum": 58.5 }
        */
       System.out.println("Pushing " + windObj.toString());
-      try { wsf.pushMessage(windObj.toString()); } catch (Exception ex) {}
+      try { wsf.pushMessage(windObj.toString()); } 
+      catch (Exception ex) 
+      {
+        System.err.println("Push error:");
+        ex.printStackTrace();
+      }
       if (logger != null)
       {
         try

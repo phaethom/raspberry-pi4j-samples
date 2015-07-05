@@ -48,7 +48,16 @@ var init = function()
         var ws = json.speed;
         var gst = json.gust;
 
+        twdArray.push(dir);
+        while (twdArray.length > TWD_ARRAY_MAX_LEN) { 
+          twdArray = twdArray.slice(1); // Drop first element (0).
+    //    console.log(">>> TWD Len:" + twdArray.length);
+        }
+        // Average
+        var avg = averageDir(twdArray);
+
         document.getElementById('wind-dir').innerHTML = (dir.toFixed(0) + "&deg;");
+        document.getElementById('wind-dir-avg').innerHTML = (avg.toFixed(0) + "&deg;");
         document.getElementById('wind-speed').innerHTML = (ws.toFixed(2) + " kts");
         document.getElementById('wind-gust').innerHTML = (gst.toFixed(2) + " kts");
       } 
@@ -71,6 +80,39 @@ var init = function()
 var send = function(mess)
 {
   ws.send(mess);
+};
+
+var twdArray = [];
+var TWD_ARRAY_MAX_LEN = 100;  // TODO Make it a prm
+
+var toRadians = function(deg) {
+  return deg * (Math.PI / 180);
+};
+
+var toDegrees = function(rad) {
+  return rad * (180 / Math.PI);
+};
+
+var averageDir = function(va) {
+  var sumCos = 0, sumSin = 0;
+  var len = va.length;
+//var sum = 0;
+  for (var i=0; i<len; i++) {
+//  sum += va[i];
+    sumCos += Math.cos(toRadians(va[i]));
+    sumSin += Math.sin(toRadians(va[i]));
+  }
+  var avgCos = sumCos / len;
+  var avgSin = sumSin / len;
+  
+  var aCos = toDegrees(Math.acos(avgCos));
+//var aSin = toDegrees(Math.asin(avgSin));
+  var avg = aCos;  
+  if (avgSin < 0) {
+    avg = 360 - avg;
+  }
+  return avg;
+//return sum / len;
 };
 
 var getClass = function(obj) 

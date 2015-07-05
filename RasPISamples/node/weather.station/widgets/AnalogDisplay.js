@@ -43,7 +43,7 @@ var analogDisplayColorConfigBlack =
   bgColor:           'black',
   digitColor:        'cyan',
   withGradient:      true,
-  displayBackgroundGradient: { from: 'black', to: 'LightGrey' },
+  displayBackgroundGradient: { from: 'DarkGrey', to: 'black' },
   shadowColor:       'black',
   outlineColor:      'DarkGrey',
   majorTickColor:    'red',
@@ -54,8 +54,8 @@ var analogDisplayColorConfigBlack =
   handColor:         'rgba(255, 0, 0, 0.4)', // 'rgba(0, 0, 100, 0.25)',
   handOutlineColor:  'red', // 'blue',
   withHandShadow:    true,
-  knobColor:         '#8ED6FF', // Kind of blue
-  knobOutlineColor:  'blue',
+  knobColor:         'DarkGrey', // '#8ED6FF', // Kind of blue
+  knobOutlineColor:  'black',
   font:              'Arial'
 };
 var analogDisplayColorConfig = analogDisplayColorConfigWhite; // analogDisplayColorConfigBlack; // White is the default

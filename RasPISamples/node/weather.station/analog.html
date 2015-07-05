@@ -15,21 +15,23 @@
       }
 
       .selectedButton {
-      	padding:5px; 
-      	border-radius:5px; 
-      	border:1px solid gray; 
-      	margin-top:10px; 
-      	border-bottom: none;
-        font-size: 18px;
+        padding:5px;
+        border-top-right-radius: 10px;
+        border:2px solid #CCC;
+        margin-top:10px;
+        border-bottom: none;
+        font-size: 12px;
+        font-weight: bold;
       }
 
       .unselectedButton {
-      	padding:5px; 
-      	border-radius:5px; 
-      	border:1px solid gray; 
-      	margin-top:10px; 
-      	border-bottom: 1px solid gray;
+        padding:5px;
+        border-top-right-radius: 10px;
+        border:1px solid #CCC;
+        margin-top:10px;
+        border-bottom: none;
         font-size: 12px;
+        font-weight: normal;
       }
     </style>
     <link rel="stylesheet" href="css/black.css" type="text/css" id="theme"/>
@@ -40,8 +42,7 @@
     <script type="text/javascript" src="weather.analog.js"></script>
     <script type="text/javascript">
 
-  var getQSPrm = function(prm)
-  {
+  var getQSPrm = function(prm) {
     var value;
     var loc = document.location.toString();
     if (loc.indexOf("?") > -1) {
@@ -59,8 +60,7 @@
     return value;
   };      
 
-  var setup = function(b1, b2)
-  {
+  var setup = function(b1, b2) {
     // divs
     document.getElementById('displays').style.display = (b1 === true ? 'inline' : 'none');
     document.getElementById('overview').style.display = (b2 === true ? 'inline' : 'none');
@@ -69,18 +69,25 @@
     document.getElementById('showOverview').className = (b2 === true ? 'selectedButton' : 'unselectedButton');
   };  
 
-  var showDisplays = function()
-  {
+  var showDisplays = function() {
   	setup(true, false);
   };  
-  var showOverview = function()
-  {
+  var showOverview = function() {
   	setup(false, true);
   };    
   
-  window.onload = function()
-  {
+  window.onload = function() {
     init();
+
+    var type = getQSPrm('type');
+    if (type === 'Ajax') {
+      initAjax();
+  //  flavor = 'Ajax';
+    } else {
+      initWS();  // Default
+  //  flavor = 'WebSocket';
+    }
+
 //  console.log("Evaluating window size");
     resizeComponents();
     var theme = getQSPrm('theme');
@@ -97,6 +104,7 @@
       var cb = document.getElementById('with-border');
       cb.checked = (border === 'Y');
     }
+    // events subscription
 
     if (false) {
       // Sample (off line)
@@ -111,14 +119,12 @@
     }
   };
   
-  window.onresize = function()
-  {
+  window.onresize = function() {
 //  console.log("Re-evaluating window size");
     resizeComponents();
   };
   
-  var resizeComponents = function()
-  {
+  var resizeComponents = function() {
     var ww = window.innerWidth;
     var wh = window.innerHeight;
     
@@ -148,8 +154,7 @@
     resizeDisplays(ww); 
   };
   
-  var changeTheme = function(value)
-  {
+  var changeTheme = function(value) {
     var cssLink = document.getElementById("theme");
     var selected;
     if (value === undefined) {
@@ -166,33 +171,27 @@
 //  thermometer.repaint();
   };
   
-  var resetTWBuffer = function()
-  {
+  var resetTWBuffer = function() {
     if (twdEvolution !== undefined)
       twdEvolution.resetTWD();
     if (twsEvolution !== undefined)
       twsEvolution.resetTWS();
   };
   
-  var resetTW2Buffer = function()
-  {
+  var resetTW2Buffer = function() {
     if (twdEvolution !== undefined)
       twdEvolution.reset2TWD();
     if (twsEvolution !== undefined)
       twsEvolution.reset2TWS();
   };
   
-  var handleRadioValue = function(radio)
-  {
+  var handleRadioValue = function(radio) {
     var val = radio.value;
 //  console.log("Radio:" + val);
-    if (val === "wind")
-    {
+    if (val === "wind") {
       displayOverview.setVMGonWind();
       jumboVMG.setTitle("VMG");
-    }
-    else
-    {
+    } else {
       displayOverview.setVMGto(val);
       jumboVMG.setTitle(val);
     }
@@ -200,15 +199,15 @@
     </script>
   </head>
   <body bgcolor="black">
-    <small>
+    <div style="margin-bottom: -4px;">
       <span id="showDisplays" onclick="showDisplays();" class="selectedButton">Displays</span>
       <span id="showOverview" onclick="showOverview();" class="unselectedButton">Overview</span>
-    </small>
-    &nbsp;&nbsp;Color Scheme:&nbsp;
-    <input type="radio" name="theme" value="black" checked onclick="changeTheme(this.value);">Night&nbsp;
-    <input type="radio" name="theme" value="white" onclick="changeTheme(this.value);">Day&nbsp;
-    &nbsp;&nbsp;
-    <input type="checkbox" id="with-border" checked onclick="changeBorder(this.checked);">With Border
+      &nbsp;&nbsp;Color Scheme:&nbsp;
+      <input type="radio" name="theme" value="black" checked onclick="changeTheme(this.value);">Night&nbsp;
+      <input type="radio" name="theme" value="white" onclick="changeTheme(this.value);">Day&nbsp;
+      &nbsp;&nbsp;
+      <input type="checkbox" id="with-border" checked onclick="changeBorder(this.checked);">With Border
+    </div>
     <hr>
     <div id="displays" style="display: inline;">
       <!-- Analog Displays -->
@@ -234,6 +233,11 @@
           </td>
         </tr>
         <tr>
+          <td colspan="4">
+            <hr/>
+          </td>
+        </tr>
+        <tr>
           <td align="center" colspan="4">
             <table>
               <tr>
@@ -255,7 +259,7 @@
     </div>
     <div id="overview" style="display: none;">
       <p align="center">
-        More soon
+        More soon. Like CPU Temp, Graphs, etc.
       </p>
     </div>
     <div id="err-mess"></div>

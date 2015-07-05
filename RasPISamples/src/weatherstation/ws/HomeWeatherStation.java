@@ -4,6 +4,9 @@ import com.pi4j.system.SystemInfo;
 
 import java.nio.channels.NotYetConnectedException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONObject;
 
 import weatherstation.SDLWeather80422;
@@ -29,6 +32,7 @@ import weatherstation.logger.LoggerInterface;
  *
  * Feeds a WebSocket server with a json object like
  *  { "dir": 350.0,
+ *    "avgdir": 345.67,
  *    "volts": 3.4567,
  *    "speed": 12.345,
  *    "gust": 13.456,
@@ -38,9 +42,9 @@ import weatherstation.logger.LoggerInterface;
  *    "hum": 58.5,
  *    "cputemp": 34.56 }
  *
- *  TODO
  *    - Logging...
  *    - Sending Data to some DB (REST interface)
+ *  TODO
  *    - Add orientable camera
  *
  *  Use -Dws.verbose=true for more output.
@@ -50,6 +54,9 @@ public class HomeWeatherStation
 {
   private static boolean go = true;
   private static LoggerInterface logger = null;
+
+  private final static int AVG_BUFFER_SIZE = 100;
+  private static List<Float> avgWD = new ArrayList<Float>(AVG_BUFFER_SIZE);    
   
   public static void main(String[] args) throws Exception
   {
@@ -88,13 +95,15 @@ public class HomeWeatherStation
         
     while (go)
     {
-      double ws = weatherStation.currentWindSpeed();
+      double ws = weatherStation.currentWindSpeed();      
       double wg = weatherStation.getWindGust();
       float wd  = weatherStation.getCurrentWindDirection();
+      float mwd = getAverageWD(wd);
       double volts = weatherStation.getCurrentWindDirectionVoltage();
       float rain = weatherStation.getCurrentRainTotal();
       JSONObject windObj = new JSONObject();
       windObj.put("dir", wd);
+      windObj.put("avgdir", mwd);
       windObj.put("volts", volts);
       windObj.put("speed", ws);
       windObj.put("gust", wg);
@@ -131,6 +140,7 @@ public class HomeWeatherStation
       /*
        * Sample message:
        * { "dir": 350.0,
+       *   "avgdir": 345.67,
        *   "volts": 3.4567,
        *   "speed": 12.345,
        *   "gust": 13.456,
@@ -180,4 +190,36 @@ public class HomeWeatherStation
     wsf.shutdown();
     System.out.println("Done.");
   }
+  
+  public static float getAverageWD(float wd)
+  {
+    avgWD.add(wd);
+    while (avgWD.size() > AVG_BUFFER_SIZE)
+      avgWD.remove(0);
+    return averageDir();
+  }
+  
+  private static float averageDir() 
+  {
+    double sumCos = 0, sumSin = 0;
+    int len = avgWD.size();
+  //var sum = 0;
+    for (int i=0; i<len; i++) 
+    {
+  //  sum += va[i];
+      sumCos += Math.cos(Math.toRadians(avgWD.get(i)));
+      sumSin += Math.sin(Math.toRadians(avgWD.get(i)));
+    }
+    double avgCos = sumCos / len;
+    double avgSin = sumSin / len;
+    
+    double aCos = Math.toDegrees(Math.acos(avgCos));
+  //var aSin = toDegrees(Math.asin(avgSin));
+    double avg = aCos;  
+    if (avgSin < 0) {
+      avg = 360 - avg;
+    }
+    return (float)avg;
+  }
+
 }
