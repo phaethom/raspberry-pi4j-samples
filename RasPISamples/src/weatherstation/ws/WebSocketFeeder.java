@@ -11,11 +11,15 @@ public class WebSocketFeeder
   
   public WebSocketFeeder() throws Exception
   {
-    String wsUri = System.getProperty("ws.uri", "ws://localhost:9876/"); 
-    initWebSocketConnection(wsUri);
+    initWebSocketConnection();
   }
   
-  private void initWebSocketConnection(String serverURI)
+  public void initWebSocketConnection()
+  {
+    initWebSocketConnection(System.getProperty("ws.uri", "ws://localhost:9876/"));
+  }
+  
+  public void initWebSocketConnection(String serverURI)
   {
     try
     {

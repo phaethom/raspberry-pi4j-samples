@@ -30,6 +30,7 @@ import weatherstation.logger.LoggerInterface;
  *   - Relative Humidity (%)
  * - CPU Temperature (in Celcius)
  *
+ * if -Dws.log=true
  * Feeds a WebSocket server with a json object like
  *  { "dir": 350.0,
  *    "avgdir": 345.67,
@@ -61,7 +62,11 @@ public class HomeWeatherStation
   public static void main(String[] args) throws Exception
   {
     final Thread coreThread = Thread.currentThread();
-    final WebSocketFeeder wsf = new WebSocketFeeder();
+    final WebSocketFeeder wsf;
+    if ("true".equals(System.getProperty("ws.log", "false")))
+      wsf = new WebSocketFeeder();
+    else
+      wsf = null;
     
     String loggerClassName = System.getProperty("data.logger", null);
     if (loggerClassName != null)
@@ -152,25 +157,36 @@ public class HomeWeatherStation
        */
       try
       {
-        String message = windObj.toString();
-        if ("true".equals(System.getProperty("ws.verbose", "false")))
-          System.out.println("-> Sending " + message);
-        wsf.pushMessage(message);
-        if (logger != null)
+        if (wsf != null)
         {
-          try
+          String message = windObj.toString();
+          if ("true".equals(System.getProperty("ws.verbose", "false")))
+            System.out.println("-> Sending " + message);
+          wsf.pushMessage(message);
+          if (logger != null)
           {
-            logger.pushMessage(windObj);
-          }
-          catch (Exception ex) 
-          {
-            ex.printStackTrace();
+            try
+            {
+              logger.pushMessage(windObj);
+            }
+            catch (Exception ex) 
+            {
+              ex.printStackTrace();
+            }
           }
         }
       }
       catch (NotYetConnectedException nyce)
       {
         System.err.println(" ... Not yet connected, check your WebSocket server");
+        try
+        {
+          wsf.initWebSocketConnection();
+        }
+        catch (Exception ex)
+        {
+          ex.printStackTrace();
+        }
       }
       catch (Exception ex)
       {

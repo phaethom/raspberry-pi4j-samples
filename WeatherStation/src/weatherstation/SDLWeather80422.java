@@ -177,6 +177,7 @@ public class SDLWeather80422
   public float getCurrentWindDirection()
   {
     double direction = Utilities.voltageToDegrees(getCurrentWindDirectionVoltage(), this.currentWindDirection);
+    this.currentWindDirection = direction;
     return (float)direction;
   }
 

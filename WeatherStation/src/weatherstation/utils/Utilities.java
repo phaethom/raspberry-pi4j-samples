@@ -3,13 +3,17 @@ package weatherstation.utils;
 public class Utilities
 {
   private final static double VARY_VALUE = 0.05d;
+  private final static boolean verbose = "true".equals(System.getProperty("fuzzy.verbose", "false"));
   
   public static boolean fuzzyCompare(double thisValue, double thatValue)
   {
     boolean b = false;
     if (thatValue > (thisValue * (1.0 - VARY_VALUE)) && 
         thatValue < (thisValue * (1.0 + VARY_VALUE)))
+    {
+      if (verbose) System.out.println(thatValue + " is in ]" + (thisValue * (1.0 - VARY_VALUE)) + ", " + (thisValue * (1.0 + VARY_VALUE)) + "[");
       b = true;
+    }
     return b;
   }
     
@@ -72,6 +76,8 @@ public class Utilities
     if (fuzzyCompare(3.43 * getAdjustment(v), value))
       return 337.5;
     
+    if ("true".equals(System.getProperty("verbose", "false")))
+      System.out.println("Default windDir.");
     return defaultWindDir;
   }
   
