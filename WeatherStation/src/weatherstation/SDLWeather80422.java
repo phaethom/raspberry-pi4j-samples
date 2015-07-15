@@ -36,6 +36,7 @@ public class SDLWeather80422
   }
 
   private final static double WIND_FACTOR = 2.400;
+  private static double wsCoeff = 1.0; // -Dws.wspeed.coeff=1.0
 
   private int currentWindCount = 0;
   private float currentRainCount = 0;
@@ -84,7 +85,16 @@ public class SDLWeather80422
   {    
 //  Gpio.add_event_detect(pinAnem, GPIO.RISING, callback=self.serviceInterruptAnem, bouncetime=300)  
 //  GPIO.add_event_detect(pinRain, GPIO.RISING, callback=self.serviceInterruptRain, bouncetime=300)  
-       
+
+    try
+    {
+      wsCoeff = Double.parseDouble(System.getProperty("ws.wspeed.coeff", Double.toString(wsCoeff)));
+    }
+    catch (NumberFormatException nfe)
+    {
+      nfe.printStackTrace();
+    }
+
     if (anemo != null)
     {
       this.pinAnem = gpio.provisionDigitalInputPin(anemo, "Anemometer");
@@ -221,7 +231,7 @@ public class SDLWeather80422
     {                
       // sample time exceeded, calculate currentWindSpeed
       long timeSpan = (Utilities.currentTimeMicros() - this.startSampleTime);
-      this.currentWindSpeed = (float)((this.currentWindCount)/(float)timeSpan) * WIND_FACTOR * 1000000.0;
+      this.currentWindSpeed = (float)((this.currentWindCount)/(float)timeSpan) * WIND_FACTOR * wsCoeff * 1000000.0;
       /*
       System.out.printf("SDL_CWS = %f, shortestWindTime = %d, CWCount=%d TPS=%f\n", 
                         this.currentWindSpeed,
@@ -244,7 +254,7 @@ public class SDLWeather80422
       // km/h * 1000 msec
       this.currentWindCount = 0;
       try { Thread.sleep(Math.round(this.sampleTime * 1000L)); } catch (Exception ex) { ex.printStackTrace(); }
-      this.currentWindSpeed = ((float)(this.currentWindCount)/(float)(this.sampleTime)) * WIND_FACTOR;
+      this.currentWindSpeed = ((float)(this.currentWindCount)/(float)(this.sampleTime)) * WIND_FACTOR * wsCoeff;
     }
     return this.currentWindSpeed;
   }
@@ -263,7 +273,7 @@ public class SDLWeather80422
     if (time == 0d)
       return 0;
     else
-      return (1.0 / time) * WIND_FACTOR;
+      return (1.0 / time) * WIND_FACTOR * wsCoeff;
   }
 
   public boolean isBMP180Available()
