@@ -1,6 +1,6 @@
 package dac.sample;
 
-import dac.mcp4725.AdafruitMCP4725;
+import dac.mcp4725.MCP4725;
 
 import java.io.IOException;
 
@@ -76,7 +76,7 @@ public class DACSample
   public static void main(String[] args)// throws IOException
   {
     System.out.println("The output happens on the VOUT terminal of the MCP4725.");
-    AdafruitMCP4725 dac = new AdafruitMCP4725();
+    MCP4725 dac = new MCP4725();
 
     for (int i=0; i<5; i++)
     {

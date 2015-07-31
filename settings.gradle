@@ -1,1 +1,1 @@
-include 'SevenSegDisplay', 'AdafruitI2C', 'ADC', 'Arduino.RaspberryPI', 'DAC', 'GPIO.01', 'PhoneKeyboard3x4', 'RangeSensor', 'PIR', 'Relay', 'WeatherStation', 'RasPISamples'
+include 'SevenSegDisplay', 'I2C', 'ADC', 'Arduino.RaspberryPI', 'DAC', 'GPIO.01', 'PhoneKeyboard3x4', 'RangeSensor', 'PIR', 'Relay', 'WeatherStation', 'RasPISamples'

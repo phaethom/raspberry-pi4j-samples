@@ -1,11 +1,11 @@
-import adafruiti2c.sensor.{AdafruitHTU21DF, AdafruitBMP180}
+import i2c.sensor.{HTU21DF, BMP180}
 import com.pi4j.system.SystemInfo
 
 object Scala_101 {
   def main(args: Array[String]) {
     println("Hello, Scala world!")
-    val bmp180  = new AdafruitBMP180
-    val htu21df = new AdafruitHTU21DF
+    val bmp180  = new BMP180
+    val htu21df = new HTU21DF
     try
     {
       val temp  = bmp180.readTemperature

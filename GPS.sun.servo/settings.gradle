@@ -1,1 +1,1 @@
-include '../AdafruitI2C'
+include '../I2C'

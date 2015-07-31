@@ -1,6 +1,6 @@
 package raspisamples;
 
-import adafruiti2c.sensor.AdafruitBMP180;
+import i2c.sensor.BMP180;
 
 import com.pi4j.system.SystemInfo;
 
@@ -24,7 +24,7 @@ public class SevenSegBMP180
   public static void main(String[] args)
   {
     final NumberFormat NF = new DecimalFormat("##00.00");
-    AdafruitBMP180 sensor = new AdafruitBMP180();
+    BMP180 sensor = new BMP180();
     final SevenSegment segment = new SevenSegment(0x70, true);
 
     Runtime.getRuntime().addShutdownHook(new Thread("Hook")

@@ -1,6 +1,6 @@
 package sunservo;
 
-import adafruiti2c.servo.AdafruitPCA9685;
+import i2c.servo.PCA9685;
 
 import calculation.AstroComputer;
 import calculation.SightReductionUtil;
@@ -39,7 +39,7 @@ public class SunServoNMEAReader extends NMEAClient
   private static boolean parked = false;
   
   private static boolean calibrated = false;
-  private static AdafruitPCA9685 servoBoard = null;
+  private static PCA9685 servoBoard = null;
   private static int servoMin = 130;   // was 150. Min pulse length out of 4096
   private static int servoMax = 615;   // was 600. Max pulse length out of 4096
   
@@ -264,7 +264,7 @@ public class SunServoNMEAReader extends NMEAClient
     
     customClient = new SunServoNMEAReader();
     
-    servoBoard = new AdafruitPCA9685();
+    servoBoard = new PCA9685();
     servoBoard.setPWMFreq(60); // Set frequency to 60 Hz
     if (!calibrated) 
     {

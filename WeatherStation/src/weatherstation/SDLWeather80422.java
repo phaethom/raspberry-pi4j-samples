@@ -1,10 +1,10 @@
 package weatherstation;
 
-import adafruiti2c.adc.AdafruitADS1x15;
+import i2c.adc.ADS1x15;
 
-import adafruiti2c.sensor.AdafruitBMP180;
+import i2c.sensor.BMP180;
 
-import adafruiti2c.sensor.AdafruitHTU21DF;
+import i2c.sensor.HTU21DF;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -61,14 +61,14 @@ public class SDLWeather80422
   private long currentRainMin = 0;
   private long lastRainTime   = 0;
 
-  private AdafruitADS1x15 ads1015 = null;
-  private final static AdafruitADS1x15.ICType ADC_TYPE = AdafruitADS1x15.ICType.IC_ADS1015;
+  private ADS1x15 ads1015 = null;
+  private final static ADS1x15.ICType ADC_TYPE = ADS1x15.ICType.IC_ADS1015;
   private int gain = 6144;
   private int sps  =  250;
   
   // Other I2C Boards (BMP180, HTU21D-F, MOD-1016, etc)
-  private AdafruitBMP180 bmp180   = null;
-  private AdafruitHTU21DF htu21df = null;
+  private BMP180 bmp180   = null;
+  private HTU21DF htu21df = null;
   // TODO MOD-1016 (lightning detector)
     
   public SDLWeather80422()
@@ -146,7 +146,7 @@ public class SDLWeather80422
     
     try
     {
-      bmp180 = new AdafruitBMP180();
+      bmp180 = new BMP180();
     }
     catch (Exception ex)
     {
@@ -155,7 +155,7 @@ public class SDLWeather80422
     
     try
     {
-      htu21df = new AdafruitHTU21DF();
+      htu21df = new HTU21DF();
       if (!htu21df.begin())
       {
         htu21df = null;
@@ -167,7 +167,7 @@ public class SDLWeather80422
       System.err.println("HTU21DF not available...");
     }
     
-    this.ads1015 = new AdafruitADS1x15(ADC_TYPE);
+    this.ads1015 = new ADS1x15(ADC_TYPE);
     this.ADMode = ADMode;
   }
   
@@ -196,7 +196,7 @@ public class SDLWeather80422
     double voltage = 0f;
     if (this.ADMode == AdcMode.SDL_MODE_I2C_ADS1015)
     {
-      float value = ads1015.readADCSingleEnded(AdafruitADS1x15.Channels.CHANNEL_1, 
+      float value = ads1015.readADCSingleEnded(ADS1x15.Channels.CHANNEL_1,
                                                this.gain, 
                                                this.sps); // AIN1 wired to wind vane on WeatherPiArduino
 //    System.out.println("Voltage Value:" + value);

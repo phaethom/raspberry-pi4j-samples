@@ -7,7 +7,7 @@ PI4J_HOME=/opt/pi4j
 CP=$SCALA_HOME/lib/scala-library.jar
 # 
 CP=$CP:$PI4J_HOME/lib/pi4j-core.jar
-CP=$CP:../AdafruitI2C/classes
+CP=$CP:../I2C/classes
 CP=$CP:./out/production/Scala.101
 # 
 sudo java -classpath "$CP" Scala_101

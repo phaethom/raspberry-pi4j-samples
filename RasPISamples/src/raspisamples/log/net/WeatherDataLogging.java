@@ -1,8 +1,8 @@
 package raspisamples.log.net;
 
-import adafruiti2c.sensor.AdafruitBMP180;
+import i2c.sensor.BMP180;
 
-import adafruiti2c.sensor.AdafruitHTU21DF;
+import i2c.sensor.HTU21DF;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -102,14 +102,14 @@ public class WeatherDataLogging
     float temp  = 0;
     double alt  = 0;
     float hum  = 0;
-    AdafruitHTU21DF humSensor = null;
-    AdafruitBMP180 bmpSensor = null;
+    HTU21DF humSensor = null;
+    BMP180 bmpSensor = null;
 
     if (withBMP180)
     {
       try
       {
-        bmpSensor = new AdafruitBMP180();
+        bmpSensor = new BMP180();
       }
       catch (Exception ex)
       {
@@ -120,7 +120,7 @@ public class WeatherDataLogging
     {
       try
       {
-        humSensor = new AdafruitHTU21DF();
+        humSensor = new HTU21DF();
       }
       catch (Exception ex)
       {

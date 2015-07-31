@@ -28,7 +28,7 @@ sourceSets {
 repositories {
   mavenCentral()
   maven { url "http://lediouris.net/maven2" }
-  maven { url "file:///" + userprofile + "/.m2/repository" }
+  mavenLocal()
 }
 
 dependencies {

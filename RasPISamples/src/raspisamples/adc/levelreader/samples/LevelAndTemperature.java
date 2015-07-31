@@ -1,6 +1,6 @@
 package raspisamples.adc.levelreader.samples;
 
-import adafruiti2c.sensor.AdafruitBMP180;
+import i2c.sensor.BMP180;
 
 import adc.ADCObserver;
 
@@ -168,7 +168,7 @@ public class LevelAndTemperature implements LevelListenerInterface
     };
     
     final ADCChannels_1_to_8 sac = new ADCChannels_1_to_8(listening2, lat);
-    final AdafruitBMP180 bmp180  = new AdafruitBMP180();
+    final BMP180 bmp180  = new BMP180();
     
     final Thread tempReader = new Thread()
       {

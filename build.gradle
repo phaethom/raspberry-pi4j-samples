@@ -13,7 +13,7 @@ if (userprofile == null) { // Linux ?
 
 dependencies {
   compile project(':SevenSegDisplay')
-  compile project(':AdafruitI2C')
+  compile project(':I2C')
   compile project(':WeatherStation')
   compile project(':ADC')
   compile project(':Arduino.RaspberryPI')
@@ -30,7 +30,7 @@ repositories {
   mavenCentral()
   maven { url "http://lediouris.net/maven2" }
   mavenLocal()
-//maven { url "file:///" + userprofile + "/.m2/repository" }
+//mavenLocal()
 }
 
 task checkout << {

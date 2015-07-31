@@ -27,13 +27,13 @@ sourceSets {
 repositories {
   mavenCentral()
   maven { url "http://lediouris.net/maven2" }
-  maven { url "file:///" + userprofile + "/.m2/repository" }
+  mavenLocal()
 }
 
 dependencies {
   compile 'com.pi4j:pi4j-core:0.0.5'
   compile 'org.fusesource.jansi:jansi:1.11'
-  compile 'oliv.pi4j.samples:AdafruitI2C:1.0'
+  compile 'oliv.pi4j.samples:I2C:1.0'
 }
 
 task copyResources(type: Copy) {

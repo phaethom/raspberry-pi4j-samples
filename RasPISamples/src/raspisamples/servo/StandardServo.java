@@ -1,6 +1,6 @@
 package raspisamples.servo;
 
-import adafruiti2c.servo.AdafruitPCA9685;
+import i2c.servo.PCA9685;
 
 /*
  * Standard, using I2C and the PCA9685 servo board
@@ -21,7 +21,7 @@ public class StandardServo
   private int servoMax = DEFAULT_SERVO_MAX; 
   private int diff = servoMax - servoMin;
 
-  private AdafruitPCA9685 servoBoard = new AdafruitPCA9685();
+  private PCA9685 servoBoard = new PCA9685();
 
   public StandardServo(int channel)
   {

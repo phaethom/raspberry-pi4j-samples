@@ -34,7 +34,7 @@ set CP=%CP%;%SCALA_HOME%\lib\scala-swing_2.11-1.0.1.jar
 set CP=%CP%;%SCALA_HOME%\lib\scala-xml_2.11-1.0.3.jar
 ::
 set CP=%CP%;%PI4J_HOME%\pi4j-core\0.0.5\pi4j-core-0.0.5.jar
-set CP=%CP%;..\AdafruitI2C\classes
+set CP=%CP%;..\I2C\classes
 set CP=%CP%;.\out\production\Scala.101
 ::
 java -verbose -classpath "%CP%" Scala_101

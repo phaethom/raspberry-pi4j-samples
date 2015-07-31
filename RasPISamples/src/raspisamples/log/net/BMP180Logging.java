@@ -1,6 +1,6 @@
 package raspisamples.log.net;
 
-import adafruiti2c.sensor.AdafruitBMP180;
+import i2c.sensor.BMP180;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -80,7 +80,7 @@ public class BMP180Logging
     System.out.println("Logging data for [" + boardID + "], every " + Long.toString(waitTime / 1000) + " s.");
     
     final NumberFormat NF = new DecimalFormat("##00.00");
-    AdafruitBMP180 sensor = new AdafruitBMP180();
+    BMP180 sensor = new BMP180();
     float press = 0;
     float temp  = 0;
     double alt  = 0;

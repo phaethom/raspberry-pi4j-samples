@@ -1,10 +1,10 @@
 package raspisamples;
 
-import adafruiti2c.sensor.AdafruitHMC5883L;
-import adafruiti2c.sensor.AdafruitMPL115A2;
+import i2c.sensor.HMC5883L;
+import i2c.sensor.MPL115A2;
 
-import adafruitspi.oled.AdafruitSSD1306;
-import adafruitspi.oled.ScreenBuffer;
+import spi.oled.SSD1306;
+import spi.oled.ScreenBuffer;
 
 import arduino.raspberrypi.SerialReader;
 
@@ -45,11 +45,11 @@ import phonekeyboard3x4.KeyboardController;
 public class OLEDKeypadAndMultiSensor
 {
   private KeyboardController kbc;
-  private AdafruitSSD1306 oled;
+  private SSD1306 oled;
   private ScreenBuffer sb;
   
-  private AdafruitMPL115A2 ptSensor;
-  private AdafruitHMC5883L magnetometer;
+  private MPL115A2 ptSensor;
+  private HMC5883L magnetometer;
   
   private OneRelayManager rm;
   
@@ -87,7 +87,7 @@ public class OLEDKeypadAndMultiSensor
     // Keypad and OLED Screen
     kbc = new KeyboardController();
     //                                          Override the default pins
-    oled = new AdafruitSSD1306(RaspiPin.GPIO_12, // Clock
+    oled = new SSD1306(RaspiPin.GPIO_12, // Clock
                                RaspiPin.GPIO_13, // MOSI (data) 
                                RaspiPin.GPIO_14, // CS
                                RaspiPin.GPIO_15, // RST
@@ -99,7 +99,7 @@ public class OLEDKeypadAndMultiSensor
     clear();
     
     // Sensors
-    ptSensor = new AdafruitMPL115A2();
+    ptSensor = new MPL115A2();
     try
     {
       ptSensor.begin();
@@ -109,7 +109,7 @@ public class OLEDKeypadAndMultiSensor
       ex.printStackTrace();
       System.exit(1);
     }
-    magnetometer = new AdafruitHMC5883L();
+    magnetometer = new HMC5883L();
     
     // First sensor readings
     try
@@ -117,8 +117,8 @@ public class OLEDKeypadAndMultiSensor
       double hdg = magnetometer.readHeading();
       displayHdg(hdg);
       float[] data = ptSensor.measure();
-      displayPT(data[AdafruitMPL115A2.PRESSURE_IDX], 
-                data[AdafruitMPL115A2.TEMPERATURE_IDX]);
+      displayPT(data[MPL115A2.PRESSURE_IDX],
+                data[MPL115A2.TEMPERATURE_IDX]);
     }
     catch (IOException ioe)
     {
@@ -137,7 +137,7 @@ public class OLEDKeypadAndMultiSensor
             try
             {
               float[] data = ptSensor.measure();
-              displayPT(data[AdafruitMPL115A2.PRESSURE_IDX], data[AdafruitMPL115A2.TEMPERATURE_IDX]);
+              displayPT(data[MPL115A2.PRESSURE_IDX], data[MPL115A2.TEMPERATURE_IDX]);
               try { Thread.sleep(500L); } catch (Exception ex) {}
             }
             catch (IOException ioe)

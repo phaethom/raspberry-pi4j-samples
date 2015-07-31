@@ -1,8 +1,8 @@
 package raspisamples.log.net;
 
-import adafruiti2c.sensor.AdafruitBMP180;
+import i2c.sensor.BMP180;
 
-import adafruiti2c.sensor.AdafruitHTU21DF;
+import i2c.sensor.HTU21DF;
 
 import java.io.BufferedWriter;
 
@@ -84,18 +84,18 @@ public class WeatherDataFileLogging
     System.out.println("Logging data in [" + logFileName + "], every " + Long.toString(waitTime / 1000) + " s.");
     final BufferedWriter log = new BufferedWriter(new FileWriter(logFileName));
     final NumberFormat NF = new DecimalFormat("##00.00");
-    AdafruitBMP180 bmpSensor = null; 
+    BMP180 bmpSensor = null;
     if (withBMP180)
     {
-      try { bmpSensor = new AdafruitBMP180(); }
+      try { bmpSensor = new BMP180(); }
       catch (Exception ex ) { ex.printStackTrace(); }
     }
     float press = 0;
     float temp  = 0;
-    AdafruitHTU21DF humSensor = null;
+    HTU21DF humSensor = null;
     if (withHTU21DF)
     {
-      try { humSensor = new AdafruitHTU21DF(); }
+      try { humSensor = new HTU21DF(); }
       catch (Exception ex ) { ex.printStackTrace(); }
     }
     float hum  = 0;

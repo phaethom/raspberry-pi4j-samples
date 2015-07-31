@@ -1,7 +1,7 @@
 package raspisamples;
 
-import adafruitspi.oled.AdafruitSSD1306;
-import adafruitspi.oled.ScreenBuffer;
+import spi.oled.SSD1306;
+import spi.oled.ScreenBuffer;
 import com.pi4j.io.gpio.RaspiPin;
 import phonekeyboard3x4.KeyboardController;
 
@@ -11,7 +11,7 @@ import phonekeyboard3x4.KeyboardController;
 public class OLEDScreenAndKeypad
 {
   private KeyboardController kbc;
-  private AdafruitSSD1306 oled;
+  private SSD1306 oled;
   private ScreenBuffer sb;
   
   // This one overrides the default pins for the OLED
@@ -19,7 +19,7 @@ public class OLEDScreenAndKeypad
   {
     kbc = new KeyboardController();
     // Override the default pins        Clock             MOSI (data)       CS                RST               DC
-    oled = new AdafruitSSD1306(RaspiPin.GPIO_12, RaspiPin.GPIO_13, RaspiPin.GPIO_14, RaspiPin.GPIO_15, RaspiPin.GPIO_16);
+    oled = new SSD1306(RaspiPin.GPIO_12, RaspiPin.GPIO_13, RaspiPin.GPIO_14, RaspiPin.GPIO_15, RaspiPin.GPIO_16);
     oled.begin();
     oled.clear();
 
