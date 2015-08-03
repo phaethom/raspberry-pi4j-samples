@@ -8,6 +8,9 @@ import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
+/*
+ * PIR: PyroElectric Infra Red
+ */
 public class MotionDetector
 {
   final GpioController gpio = GpioFactory.getInstance();
