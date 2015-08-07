@@ -1,6 +1,10 @@
 import i2c.sensor.{HTU21DF, BMP180}
 import com.pi4j.system.SystemInfo
-
+/*
+ * Requires a BMP180, on I2C address 0x77
+ *          a HTU21DF, on I2C address 0x40
+ * If you see errors about that, check your sensors...
+ */
 object Scala_101 {
   def main(args: Array[String]) {
     println("Hello, Scala world!")

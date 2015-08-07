@@ -2,7 +2,9 @@ package listener
 
 import i2c.sensor.{BMP180}
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-
+/*
+ * Requires a BMP180, on I2C address 0x77
+ */
 class StartProducing {}
 
 class StopProducing(message:String) {
