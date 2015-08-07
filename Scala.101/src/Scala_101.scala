@@ -10,8 +10,8 @@ object Scala_101 {
     {
       val temp  = bmp180.readTemperature
       val press = bmp180.readPressure / 100
-      println("CPU Temperature   :  " + SystemInfo.getCpuTemperature + "\272C")
-      println("Temp:" + temp + "\272C, Press:" + press + " hPa")
+      println("CPU Temperature   :  " + SystemInfo.getCpuTemperature + "\u00baC")
+      println("Temp:" + temp + "\u00baC, Press:" + press + " hPa")
     }
     catch
     {
