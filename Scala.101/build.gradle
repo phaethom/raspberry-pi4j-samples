@@ -11,5 +11,16 @@ repositories {
 }
 
 dependencies {
+    compile 'org.scala-lang:scala-library:2.11.6'
+    compile 'com.typesafe.akka:akka-actor_2.10:2.3.4'
     compile 'oliv.pi4j.samples:I2C:1.0'
+//  compile project ':../I2C'
+}
+
+sourceSets {
+    main {
+        scala {
+            srcDir 'src'
+        }
+    }
 }

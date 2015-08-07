@@ -31,7 +31,6 @@ repositories {
   mavenCentral()
   maven { url "http://lediouris.net/maven2" }
   mavenLocal()
-//mavenLocal()
 }
 
 task checkout << {

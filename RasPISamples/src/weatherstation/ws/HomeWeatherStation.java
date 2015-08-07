@@ -96,7 +96,7 @@ public class HomeWeatherStation
      });
       
     SDLWeather80422 weatherStation = new SDLWeather80422(); // With default parameters.
-    weatherStation.setWindMode(SDLWeather80422.SdlMode.SAMPLE, 5);
+      weatherStation.setWindMode(SDLWeather80422.SdlMode.SAMPLE, 5);
         
     while (go)
     {

@@ -1,0 +1,1 @@
+scalac -verbose -sourcepath src -cp ../I2C/build/libs/I2C-1.0.jar -d build/classes src/listener/TemperaturePressure.scala
