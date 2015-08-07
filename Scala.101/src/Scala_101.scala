@@ -10,28 +10,22 @@ object Scala_101 {
     println("Hello, Scala world!")
     val bmp180  = new BMP180
     val htu21df = new HTU21DF
-    try
-    {
+    try {
       val temp  = bmp180.readTemperature
       val press = bmp180.readPressure / 100
       println("CPU Temperature   :  " + SystemInfo.getCpuTemperature + "\u00baC")
       println("Temp:" + temp + "\u00baC, Press:" + press + " hPa")
-    }
-    catch
-    {
+    } catch {
       case ex: Exception => {
         println(ex.toString)
       }
     }
-    try
-    {
+    try {
       htu21df.begin
       val hum = htu21df.readHumidity
       htu21df.close
       println("Humidity:" + hum + " %")
-    }
-    catch
-    {
+    } catch {
       case ex: Exception => {
         println(ex.toString)
       }
