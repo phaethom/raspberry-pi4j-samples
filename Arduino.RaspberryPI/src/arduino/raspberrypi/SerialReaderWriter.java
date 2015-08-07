@@ -9,6 +9,10 @@ import com.pi4j.io.serial.SerialPortException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+/**
+ * Write data, from the Raspberry to the Arduino, through the serial port.
+ * Receives a response from the Arduino.
+ */ 
 public class SerialReaderWriter
 {
   // NMEA Style
