@@ -77,11 +77,14 @@ function handler (req, res) {
                     contentType = "image/gif";
                   } else if (resource.endsWith(".png")) {
                     contentType = "image/png";
+                  } else if (resource.endsWith(".ttf")) {
+                    contentType = "application/x-font-TrueType";
                   }
                   res.writeHead(200, {'Content-Type': contentType});
               //  console.log('Data is ' + typeof(data));
                   if (resource.endsWith(".jpg") || 
                       resource.endsWith(".gif") ||
+                      resource.endsWith(".ttf") ||
                       resource.endsWith(".png")) {
                 //  res.writeHead(200, {'Content-Type': 'image/gif' });
                     res.end(data, 'binary');

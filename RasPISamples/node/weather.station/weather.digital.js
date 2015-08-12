@@ -56,10 +56,10 @@ var init = function()
         // Average
         var avg = averageDir(twdArray);
 
-        document.getElementById('wind-dir').innerHTML = (dir.toFixed(0) + "&deg;");
-        document.getElementById('wind-dir-avg').innerHTML = (avg.toFixed(0) + "&deg;");
-        document.getElementById('wind-speed').innerHTML = (ws.toFixed(2) + " kts");
-        document.getElementById('wind-gust').innerHTML = (gst.toFixed(2) + " kts");
+        document.getElementById('wind-dir').innerHTML = (dir.toFixed(0)); // + "&deg;");
+        document.getElementById('wind-dir-avg').innerHTML = (avg.toFixed(0)); // + "&deg;");
+        document.getElementById('wind-speed').innerHTML = (ws.toFixed(2)); // + " kt");
+        document.getElementById('wind-gust').innerHTML = (gst.toFixed(2)); // + " kt");
       } 
       catch (e) 
       {
