@@ -28,6 +28,7 @@ public class SevenADCChannels
    */
   
   private final static NumberFormat DF3 = new DecimalFormat("##0");
+  private final static NumberFormat DF33 = new DecimalFormat("##0.000");
   private final static NumberFormat DF4 = new DecimalFormat("###0");
   
   private static ADCObserver.MCP3008_input_channels channel[] = null;
@@ -37,12 +38,13 @@ public class SevenADCChannels
   /* Used to smooth the values */
   private final float[] smoothedChannelVolumes = new float[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f };
   private final List<Integer>[] smoothedChannel = new List[7];
-  private final static int WINDOW_WIDTH = 100;
+  private final static int WINDOW_WIDTH = Integer.parseInt(System.getProperty("smooth.width", "100"));
   
   private int currentLevel = 0;
 
   final ADCObserver obs;
-  
+
+  /* Uses 7 channels among the 8 available */
   public SevenADCChannels() throws Exception
   {
     for (int i=0; i<smoothedChannel.length; i++)
@@ -56,7 +58,7 @@ public class SevenADCChannels
       ADCObserver.MCP3008_input_channels.CH3,  
       ADCObserver.MCP3008_input_channels.CH4, 
       ADCObserver.MCP3008_input_channels.CH5, 
-      ADCObserver.MCP3008_input_channels.CH6 
+      ADCObserver.MCP3008_input_channels.CH6
     };
     obs = new ADCObserver(channel);
     
@@ -93,7 +95,7 @@ public class SevenADCChannels
                  System.out.println(output);
                }
                // Clear the screen, cursor on top left.
-               AnsiConsole.out.println(EscapeSeq.ANSI_CLS); 
+//             AnsiConsole.out.println(EscapeSeq.ANSI_CLS); 
                AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 1));
                boolean ansiBox = false;
                // See http://en.wikipedia.org/wiki/Box-drawing_character
@@ -109,7 +111,7 @@ public class SevenADCChannels
                str = (ansiBox ? "\u2554\u2550\u2550\u2550\u2564\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2564\u2550\u2550\u2550\u2550\u2550\u2550\u2557" :
                                                       "+---+-------+------+");
                AnsiConsole.out.println(str);
-               for (int chan=0; chan<channel.length; chan++)
+               for (int chan=channel.length-1; chan>=0; chan--)
                {
                  str = (ansiBox ? "\u2551 " : "| ") + 
                        Integer.toString(chan) + (ansiBox ? " \u2503 " : " | ") +
@@ -117,11 +119,11 @@ public class SevenADCChannels
                        lpad(DF4.format(channelValues[chan]), " ", 4) + (ansiBox ? " \u2551" : " |");
 
                  if (smoothedChannelVolumes[chan] > WATER_THRESHOLD)
-                   str += " Water (" + smoothedChannelVolumes[chan] + ")";
+                   str += " Water (~ " + DF33.format(smoothedChannelVolumes[chan]) + ")                 ";
                  else if (smoothedChannelVolumes[chan] > OIL_THRESHOLD)
-                   str += " Oil   (" + smoothedChannelVolumes[chan] + ")";
+                   str += " Oil   (~ " + DF33.format(smoothedChannelVolumes[chan]) + ")                 ";
                  else 
-                   str += " Air   (" + smoothedChannelVolumes[chan] + ")";
+                   str += " Air   (~ " + DF33.format(smoothedChannelVolumes[chan]) + ")                 ";
                  AnsiConsole.out.println(str);
                }
                str = (ansiBox ? "\u255a\u2550\u2550\u2550\u2567\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2567\u2550\u2550\u2550\u2550\u2550\u2550\u255d" :
@@ -138,14 +140,21 @@ public class SevenADCChannels
              if (maxLevel != currentLevel)
              {
                System.out.print("Level : " + maxLevel + " ");
-               for (int i=0; i<maxLevel; i++)
-                 System.out.print(">>");
+               for (int i=0; i<channel.length; i++)
+               {
+                 if (i<maxLevel)
+                   System.out.print(">>");
+                 else
+                   System.out.print("  ");  
+               }
                System.out.println();
                currentLevel = maxLevel;
              }
            }
          }
        });
+    AnsiConsole.out.println(EscapeSeq.ANSI_CLS); 
+
     System.out.println("Start observing.");
     Thread observer = new Thread()
       {

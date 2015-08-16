@@ -30,6 +30,19 @@ function Line(x1, y1, x2, y2) {
   this.y2 = y2;
 };
 
+Line.prototype.draw = function(ctx) {
+  // arbitrary styling
+  ctx.strokeStyle = "blue";
+  ctx.fillStyle   = "blue";
+  ctx.lineWidth   = 1;
+
+  // draw the line
+  ctx.beginPath();
+  ctx.moveTo(this.x1, this.y1);
+  ctx.lineTo(this.x2, this.y2);
+  ctx.stroke();
+};
+
 Line.prototype.drawWithArrowhead = function(ctx) {
   this.drawWithArrowheads(ctx, false);
 };
@@ -62,6 +75,7 @@ Line.prototype.drawWithArrowheads = function(ctx, both) {
 
 var HEAD_LENGTH = 10;
 var HEAD_WIDTH  = 3;
+
 Line.prototype.drawArrowhead = function(ctx, x, y, radians) {
   ctx.save();
   ctx.beginPath();
@@ -73,6 +87,59 @@ Line.prototype.drawArrowhead = function(ctx, x, y, radians) {
   ctx.closePath();
   ctx.restore();
   ctx.fill();
+};
+
+var _50_10_FEATHER_LEN = 6;
+var _50_WIDTH = 3;
+
+Line.prototype.drawWithWindFeathers = function(ctx, ws) {
+  // arbitrary styling
+  ctx.strokeStyle = "blue";
+  ctx.fillStyle   = "blue";
+  ctx.lineWidth   = 1;
+
+  // draw the line
+  ctx.beginPath();
+  ctx.moveTo(this.x1, this.y1);
+  ctx.lineTo(this.x2, this.y2);
+  ctx.stroke();
+
+  var radians = Math.atan((this.y2 - this.y1) / (this.x2 - this.x1));
+  radians += ((this.x2>this.x1)?90:-90) * Math.PI/180;
+  var _ws = Math.round(ws);
+  var featherRootX = this.x2;
+  var featherRootY = this.y2;
+  ctx.save();
+  ctx.translate(featherRootX, featherRootY);
+  ctx.rotate(radians);
+  while (_ws >= 50) {
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo( _50_WIDTH, _50_10_FEATHER_LEN);
+    ctx.lineTo(0, _50_10_FEATHER_LEN);
+    ctx.closePath();
+    ctx.restore();
+    ctx.fill();
+    _ws -= 50;
+    featherRootY -= _50_WIDTH;
+  }
+  while (_ws >= 10) {
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, _50_10_FEATHER_LEN);
+    ctx.closePath();
+    featherRootY -= 2;
+    _ws -= 10;
+  }
+  while (_ws >= 5) {
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, _50_10_FEATHER_LEN / 2);
+    ctx.closePath();
+    featherRootY -= 2;
+    _ws -= 5;
+  }
+  ctx.restore();
 };
     </script>
     <script src="http://maps.googleapis.com/maps/api/js?v=3&amp;sensor=false&amp;key=AIzaSyDu5cW4UXjXZTswehBdIO8jCZdzUbk2v5o"
@@ -122,10 +189,10 @@ Line.prototype.drawArrowhead = function(ctx, x, y, radians) {
  var ANIMATE = false;
 
  var updateOnClick = function(idx, tws, twd, prmsl, temp, rain) {
-   var txtDate = SpotParser.nmeaData[idx].getNMEADate();
+   var txtDate = JSONParser.nmeaData[idx].getNMEADate();
 // console.log("Date is : " + reformatDate(txtDate));
    var utc = document.getElementById("tz");   
-   document.getElementById("recno").innerHTML = "Record #<b style='color:red;'>" + (idx + 1) + "</b> of " + SpotParser.nmeaData.length + ", " +  reformatDate(txtDate) + " " + utc.options[utc.selectedIndex].text;
+   document.getElementById("recno").innerHTML = "Record #<b style='color:red;'>" + (idx + 1) + "</b> of " + JSONParser.nmeaData.length + ", " +  reformatDate(txtDate) + " " + utc.options[utc.selectedIndex].text;
 
    var wd = twd;
    if (ANIMATE) {
@@ -279,8 +346,8 @@ Line.prototype.drawArrowhead = function(ctx, x, y, radians) {
  };
 
  var mouseMoveOnGraphCallback = function(idx) {
-    if (SpotParser.nmeaData.length > idx) {
-      data = SpotParser.nmeaData[idx];
+    if (JSONParser.nmeaData.length > idx) {
+      data = JSONParser.nmeaData[idx];
       updateOnClick(idx, 
                     data.getNMEATws(), 
                     data.getNMEATwd(), 
@@ -299,13 +366,13 @@ Line.prototype.drawArrowhead = function(ctx, x, y, radians) {
    if (text.length > 0) {
      var weatherData = JSON.parse(text);
 
-     SpotParser.parse(weatherData.data);
+     JSONParser.parse(weatherData.data);
      displayData();
    }
  };
 
  var displayData = function() {
-     var nmeaData = SpotParser.nmeaData;
+     var nmeaData = JSONParser.nmeaData;
      if (nmeaData !== null && nmeaData !== undefined && nmeaData.length > 0) {
        graphdata = []; // TWS
     // rainData = []; // rain
@@ -349,8 +416,8 @@ Line.prototype.drawArrowhead = function(ctx, x, y, radians) {
                                                        " to "  + reformatDate(toDate, "d-M-Y H:i") + 
                                                        ", value range (raw): " + min + " " + unit + " to " + max + " " + unit;
        // Last value recorded
-       var idx = SpotParser.nmeaData.length - 1;
-       var data = SpotParser.nmeaData[idx];
+       var idx = JSONParser.nmeaData.length - 1;
+       var data = JSONParser.nmeaData[idx];
        updateOnClick(idx, 
                      data.getNMEATws(), 
                      data.getNMEATwd(), 
@@ -364,10 +431,10 @@ Line.prototype.drawArrowhead = function(ctx, x, y, radians) {
  var setPosOnMap = function() {
    try {
       var marker = new google.maps.Marker({
-        position: new google.maps.LatLng(SpotParser.position.lat, SpotParser.position.lng),
+        position: new google.maps.LatLng(JSONParser.position.lat, JSONParser.position.lng),
         map: map
       });
-      map.setCenter(new google.maps.LatLng(SpotParser.position.lat, SpotParser.position.lng));
+      map.setCenter(new google.maps.LatLng(JSONParser.position.lat, JSONParser.position.lng));
   //  map.setZoom(11);
       markers.push(marker);
    } catch (err) {

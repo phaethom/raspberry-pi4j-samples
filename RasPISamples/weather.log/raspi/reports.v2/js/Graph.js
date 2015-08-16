@@ -23,7 +23,7 @@ function Graph(cName,       // Canvas Name
 //    console.log("Mouse: x=" + x + ", y=" + y);
       
       var idx = Math.round(x / xScale);
-      if (idx < SpotParser.nmeaData.length) {
+      if (idx < JSONParser.nmeaData.length) {
         if (callback !== undefined) {
           callback(idx);
         }
@@ -41,17 +41,17 @@ function Graph(cName,       // Canvas Name
 //    console.log("Mouse: x=" + x + ", y=" + y);
       
       var idx = Math.round(x / xScale);
-      if (idx < SpotParser.nmeaData.length) {
+      if (idx < JSONParser.nmeaData.length) {
         var str1; // = 'X : ' + x + ', ' + 'Y :' + y;
         var str2;
         var str3;
         try { 
-          str1 = SpotParser.nmeaData[idx].getNMEATws() + "kt @ " + SpotParser.nmeaData[idx].getNMEATwd() + "\272";
-          str2 = "P:" + SpotParser.nmeaData[idx].getNMEAPrmsl() + " hPa";
+          str1 = JSONParser.nmeaData[idx].getNMEATws() + "kt @ " + JSONParser.nmeaData[idx].getNMEATwd() + "\272";
+          str2 = "P:" + JSONParser.nmeaData[idx].getNMEAPrmsl() + " hPa";
           if (document.getElementById("utc-display").checked)
-            str3 =  new Date(SpotParser.nmeaData[idx].getNMEADate()).format("d-M-Y H:i") + " UT";
+            str3 =  new Date(JSONParser.nmeaData[idx].getNMEADate()).format("d-M-Y H:i") + " UT";
           else
-            str3 = reformatDate(SpotParser.nmeaData[idx].getNMEADate(), "d-M-Y H:i");
+            str3 = reformatDate(JSONParser.nmeaData[idx].getNMEADate(), "d-M-Y H:i");
   //      console.log("Bubble:" + str);
         } catch (err) { console.log(JSON.stringify(err)); }
         
@@ -59,7 +59,7 @@ function Graph(cName,       // Canvas Name
   //    context.fillRect(0, 0, w, h);
         instance.drawGraph(cName, graphData);
         if (withWindDir) {
-          instance.drawWind(SpotParser.nmeaData);
+          instance.drawWind(JSONParser.nmeaData);
         }
         context.fillStyle = "rgba(250, 250, 210, .7)"; 
 //      context.fillStyle = 'yellow';
@@ -135,7 +135,7 @@ function Graph(cName,       // Canvas Name
     var mini = Math.floor(this.minY(data));
     var maxi = Math.ceil(this.maxY(data));
     var gridXStep = Math.round((maxi - mini) / 3);
-    var gridYStep = Math.round(SpotParser.nmeaData.length / 10);
+    var gridYStep = Math.round(JSONParser.nmeaData.length / 10);
     
     // Sort the tuples (on X)
     data.sort(sortTupleX);
@@ -200,9 +200,9 @@ function Graph(cName,       // Canvas Name
       context.font = "bold 10px Arial"; 
       context.fillStyle = 'black';
       if (document.getElementById("utc-display").checked)
-        str = new Date(SpotParser.nmeaData[i].getNMEADate()).format("d-M H:i") + " UT";
+        str = new Date(JSONParser.nmeaData[i].getNMEADate()).format("d-M H:i") + " UT";
       else
-        str = reformatDate(SpotParser.nmeaData[i].getNMEADate(), "d-M H:i");
+        str = reformatDate(JSONParser.nmeaData[i].getNMEADate(), "d-M H:i");
       len = context.measureText(str).width;
       context.fillText(str, 2, -1); //i * xScale, cHeight - (len));
       context.restore();            
@@ -256,8 +256,8 @@ function Graph(cName,       // Canvas Name
   
   this.drawWind = function(nmea) {    
     if (nmea !== undefined) {
-      for (var i=0; i<nmea.length; i++)  {
-        var wd = parseFloat(nmea[i].getNMEATwd()); // Direction the wind is blowing FROM
+      for (var i=0; i<nmea.length; i+=2)  {
+        var wd = parseFloat(nmea[i].getNMEATwd() + 180);
         while (wd > 360)
           wd -= 360;
         var twd = toRadians(wd); 
@@ -269,7 +269,9 @@ function Graph(cName,       // Canvas Name
         // create a new line object
         var line = new Line(x, y, x + dX, y + dY);
         // draw the line
-        line.drawWithArrowhead(context);
+        line.draw(context);
+//      line.drawWithArrowhead(context);
+//      line.drawWithWindFeathers(context, parseFloat(nmea[i].getNMEATws()));
         context.closePath();
       }
     }

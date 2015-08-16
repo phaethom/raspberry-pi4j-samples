@@ -12,4 +12,4 @@ JAVA_OPTIONS="$JAVA_OPTIONS -Dwater.threshold=50"
 JAVA_OPTIONS="$JAVA_OPTIONS -Doil.threshold=20"
 # JAVA_OPTIONS="$JAVA_OPTIONS -client -agentlib:jdwp=transport=dt_socket,server=y,address=4000" 
 echo Running...
-sudo java $JAVA_OPTIONS -cp $CP raspisamples.adc.levelreader.SevenADCChannels
+sudo java $JAVA_OPTIONS -cp $CP raspisamples.adc.levelreader.LelandPrototype

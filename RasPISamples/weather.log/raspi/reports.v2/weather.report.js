@@ -1,5 +1,5 @@
 /*
- * Spot GRIB Request result parser
+ * Weather station data parser
  * By OlivSoft
  * olivier@lediouris.net
 
@@ -28,7 +28,7 @@
       ]
  */
  
-var SpotParser =
+var JSONParser =
 {
   nmeaData : [],
   position : {},
@@ -48,16 +48,16 @@ var SpotParser =
     }, {..} ]
   */
   
-  parse : function(spotContent, cb, cb2)
+  parse : function(wsJSONContent, cb, cb2)
   {
-    SpotParser.nmeaData  = [];
+    JSONParser.nmeaData  = [];
     var linkList = "";
-    //                           2015-07-05 23:58:41
+    // For timestamps like 2015-07-05 23:58:41
     var regExp     = new RegExp("(\\d{4})-(\\d{2})-(\\d{2})\\s(\\d{2}):(\\d{2}):(\\d{2})");  
     
-    for (var i=0; i<spotContent.length; i++)
+    for (var i=0; i<wsJSONContent.length; i++)
     {
-      var date  = spotContent[i].time;
+      var date  = wsJSONContent[i].time;
       var d = null;
       var matches = regExp.exec(date);
       if (matches !== null) {
@@ -69,16 +69,16 @@ var SpotParser =
         var s  = matches[6];
         d = new Date(y, mo - 1, d, h, mi, s, 0);
       }
-      var prmsl = spotContent[i].press;
-      var tws   = spotContent[i].ws;
-      var twd   = spotContent[i].wdir;
-      var rain  = spotContent[i].rain;
-      var temp  = spotContent[i].atemp;
-      var hum   = spotContent[i].hum;
-      var cpu   = spotContent[i].cpu;
+      var prmsl = wsJSONContent[i].press;
+      var tws   = wsJSONContent[i].ws;
+      var twd   = wsJSONContent[i].wdir;
+      var rain  = wsJSONContent[i].rain;
+      var temp  = wsJSONContent[i].atemp;
+      var hum   = wsJSONContent[i].hum;
+      var cpu   = wsJSONContent[i].cpu;
       
 //      console.info("Line:" + date + ":" + tws);
-      SpotParser.nmeaData.push(new NMEAData(d, prmsl, tws, twd, rain, temp, hum, cpu));
+      JSONParser.nmeaData.push(new NMEAData(d, prmsl, tws, twd, rain, temp, hum, cpu));
     }    
   }
 };

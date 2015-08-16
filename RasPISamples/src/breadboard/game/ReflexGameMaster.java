@@ -62,7 +62,7 @@ public class ReflexGameMaster
 
   public long getStartTime()
   {
-    return this.startedAt;
+    return startedAt;
   }
 
   public void go()
