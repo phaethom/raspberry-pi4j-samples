@@ -21,7 +21,7 @@ import raspisamples.adc.levelreader.manager.SevenADCChannelsManager;
 public class LelandPrototype implements AirWaterOilInterface
 {
   private static LevelMaterial<Float, SevenADCChannelsManager.Material>[] data = null;
-//private final static NumberFormat DF33 = new DecimalFormat("##0.000");
+  private final static NumberFormat DF31 = new DecimalFormat("000.0");
   private final static NumberFormat DF4  = new DecimalFormat("###0");
   
   public LelandPrototype()
@@ -68,8 +68,8 @@ public class LelandPrototype implements AirWaterOilInterface
     for (int chan=data.length - 1; chan >= 0; chan--)
     {
       str = "| " + Integer.toString(chan) + " | " +
-            lpad(DF4.format(data[chan].getPercent()), " ", 4) + " % | " +
-            lpad(materialToString(data[chan].getMaterial()), " ", 7) + " |";
+                   lpad(DF4.format(data[chan].getPercent()), " ", 4) + " % | " +
+                   lpad(materialToString(data[chan].getMaterial()), " ", 7) + " |";
 
       AnsiConsole.out.println(str);
     }
@@ -85,7 +85,7 @@ public class LelandPrototype implements AirWaterOilInterface
     // Debug
     AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 14 + channel));
     Date now = new Date();
-    AnsiConsole.out.println(now.toString() + ": Channel " + channel + " >> " + materialToString(material) + " (" + val + ")      ");
+    AnsiConsole.out.println(now.toString() + ": Channel " + channel + " >> (" + DF31.format(val) + ") " + materialToString(material) + "       ");
   }
 
   public static void main(String[] args) throws Exception

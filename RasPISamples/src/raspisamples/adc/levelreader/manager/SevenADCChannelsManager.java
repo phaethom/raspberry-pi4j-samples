@@ -122,7 +122,7 @@ public class SevenADCChannelsManager
       {
         public void run()
         {
-          obs.start(0L);
+          obs.start(-1, 0L); // Tolerance -1: all values
         }
       };
     observer.start();         

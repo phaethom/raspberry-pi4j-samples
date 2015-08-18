@@ -123,7 +123,7 @@ public class ADCObserver
         int adc = readAdc(adcChannel[i]);
   //    System.out.println(">>> DEBUG >>> ADC:" + adc);
         int postAdjust = Math.abs(adc - lastRead[i]);
-        if (postAdjust > tolerance)
+        if (postAdjust > tolerance  || tolerance < 0)
         {
           ADCContext.getInstance().fireValueChanged(adcChannel[i], adc);
           lastRead[i] = adc;
