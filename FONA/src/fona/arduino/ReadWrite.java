@@ -9,6 +9,7 @@ import com.pi4j.io.serial.SerialPortException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 
 /**
  * Write data, from the Raspberry to the Arduino, through the serial port.
@@ -27,7 +28,9 @@ import java.io.InputStreamReader;
   d|x Delete SMS # x
   s|<dest number>|<mess payload> Send SMS  to <dest number>
   
-  Message received: +CMTI: "SM",3
+  Message received: +CMTI: "SM",3 <- where 3 is the number of the message just received.
+
+   TODO The list of the responses from the Arduino, with their meaning.
  */ 
 public class ReadWrite
 {
@@ -36,7 +39,31 @@ public class ReadWrite
   {
     return verbose;
   }
-  
+
+  private static ReadWrite instance = this;
+
+  public enum ArduinoMessagePrefix
+  {
+    FONA_OK       (">> FONA READY", "Good to go", null),
+    INCOMING_MESS ("+CMTI:",        "Incoming message", null),
+    BAT_OK        (">> BAT OK",     "Read Battery", null),
+    BAT_FAILED    (">> BAT FAILED", "Read Battery failed", instance.getClass().getMethod("genericFailureParser", String.class));
+
+    private final String prefix;
+    private final String meaning;
+    private Method parser;
+    ArduinoMessagePrefix(String prefix, String meaning, Method parser)
+    {
+      this.prefix = prefix;
+      this.meaning = meaning;
+      this.parser = parser;
+    }
+
+    public String prefix()  { return this.prefix; }
+    public String meaning() { return this.meaning; }
+    public Method parser()  { return this.parser; }
+  }
+
   public static void main(String args[])
     throws InterruptedException, NumberFormatException
   {
@@ -73,7 +100,19 @@ public class ReadWrite
         {
           System.out.print("Arduino said:" + payload);
         }
-        // TODO Manage data here
+        // Manage data here. Check in the enum ArduinoMessagePrefix
+        ArduinoMessagePrefix amp = findCommand(payload);
+        if (amp != null)
+        {
+          String meaning = amp.meaning();
+          Method parser = amp.parser();
+          if (parser != null)
+          {
+            parser.invoke(instance, payload);
+          }
+        }
+        else
+          System.out.println("Command [" + payload + "] unknown.");
       }
     });
 
@@ -171,4 +210,22 @@ public class ReadWrite
     return retString;
   }
 
+  private static ArduinoMessagePrefix findCommand(String message)
+  {
+    ArduinoMessagePrefix ret = null;
+    for (ArduinoMessagePrefix amp : ArduinoMessagePrefix.values())
+    {
+      if (message.startsWith(amp.prefix()))
+      {
+        ret = amp;
+        break;
+      }
+    }
+    return ret;
+  }
+
+  private static void genericFailureParser(String message)
+  {
+
+  }
 }
