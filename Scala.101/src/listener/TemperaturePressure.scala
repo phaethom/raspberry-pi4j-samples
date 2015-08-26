@@ -56,6 +56,7 @@ class PubSubActor(actorName: String) extends Actor {
           act ! new DataMessage(mess)
         })
         Thread.sleep(100 + Math.round(Math.random * 2000)) // Random wait, 100 ms minimum, 2099 ms maximum.
+        // QUESTION Isn't there a better way in Scala?
         i += 1
       }
       println("Production stopped")

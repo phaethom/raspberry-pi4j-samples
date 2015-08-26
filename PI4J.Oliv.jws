@@ -22,14 +22,15 @@
       <string v="oracle.jdeveloper.model.PathsConfiguration/ResourceBundlesContentSet"/>
    </list>
    <list n="listOfChildren">
-      <hash><url n="URL" path="I2C/I2C.jpr"/></hash>
       <hash><url n="URL" path="ADC/ADC.jpr"/></hash>
       <hash><url n="URL" path="Arduino.RaspberryPI/Arduino.RaspberryPI.jpr"/></hash>
       <hash><url n="URL" path="Camera/Camera.jpr"/></hash>
       <hash><url n="URL" path="DAC/DAC.jpr"/></hash>
+      <hash><url n="URL" path="FONA/FONA.jpr"/></hash>
       <hash><url n="URL" path="GPIO.01/GPIO.01.jpr"/></hash>
       <hash><url n="URL" path="GPS.sun.servo/GPS.sun.servo.jpr"/></hash>
       <hash><url n="URL" path="GPSandSun/GPSandSun.jpr"/></hash>
+      <hash><url n="URL" path="I2C/I2C.jpr"/></hash>
       <hash><url n="URL" path="LelandOilDetector/LelandOilDetector.jpr"/></hash>
       <hash><url n="URL" path="PhoneKeyboard3x4/PhoneKeyboard3x4.jpr"/></hash>
       <hash><url n="URL" path="PI4J.email/PI4J.email.jpr"/></hash>

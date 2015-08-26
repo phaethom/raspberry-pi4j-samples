@@ -41,6 +41,11 @@ Line.prototype.draw = function(ctx) {
   ctx.moveTo(this.x1, this.y1);
   ctx.lineTo(this.x2, this.y2);
   ctx.stroke();
+
+  ctx.arc(this.x1, this.y1, 2, 0, 2 * Math.PI, false);
+  ctx.fill();
+
+  ctx.closePath();
 };
 
 Line.prototype.drawWithArrowhead = function(ctx) {
