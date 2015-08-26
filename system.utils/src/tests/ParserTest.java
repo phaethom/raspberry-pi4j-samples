@@ -37,7 +37,7 @@ public class ParserTest
 
   public static void main(String[] args) throws Exception
   {
-    takeAction(">> BAT FAILED");
+    takeAction(">> BAT FAILED, c'est tout pete!");
     takeAction(">> FONA READY");
     takeAction(">> BAT OK");
   }
