@@ -73,8 +73,21 @@ public class SampleClient
                                       sms.getContent());
   }
   
+  /**
+   * A Sample Command Line Interface (CLI) for FONA/Arduino
+   * 
+   * @param args
+   * @throws InterruptedException
+   */
   public static void main(String args[]) throws InterruptedException
   {      
+    if (args.length > 0)
+    {
+      System.out.print("Called with" );
+      for (String s : args)
+        System.out.println(" " + s);
+      System.out.println();
+    }
     SampleClient client = new SampleClient();
     final ReadWriteFONA fona = new ReadWriteFONA(client);
     fona.openSerialInput();
@@ -132,6 +145,8 @@ public class SampleClient
                   String payload = userInput("Message content > ");
                   fona.sendMess(to, payload);
                 }
+                else
+                  System.out.println("Duh?");
               }
             }
             synchronized (me)
@@ -159,10 +174,18 @@ public class SampleClient
   
   private static void displayMenu()
   {
+    System.out.println("Commands are case-sensitive.");
     System.out.println("[?] Display menu");
     System.out.println("[Q] to quit");
     System.out.println("[a] ADC");
     System.out.println("[b] Battery");
+    System.out.println("[C] Read SIM Card #");
+    System.out.println("[i] Read RSSI");
+    System.out.println("[n] Network status");
+    System.out.println("[N] Number of messages");
+    System.out.println("[r] Read message");
+    System.out.println("[d] Delete message");
+    System.out.println("[s] Send message");
   }
   
   private static final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));

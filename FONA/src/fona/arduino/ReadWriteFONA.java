@@ -4,10 +4,7 @@ import com.pi4j.io.serial.Serial;
 import com.pi4j.io.serial.SerialDataEvent;
 import com.pi4j.io.serial.SerialDataListener;
 import com.pi4j.io.serial.SerialFactory;
-import com.pi4j.io.serial.SerialPortException;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 
 /**
@@ -80,7 +77,7 @@ public class ReadWriteFONA
 
     private final String prefix;
     private final String meaning;
-    private final Method parser;
+    private final transient Method parser;
     ArduinoMessagePrefix(String prefix, String meaning, Method parser)
     {
       this.prefix = prefix;
