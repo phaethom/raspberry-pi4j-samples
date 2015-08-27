@@ -14,6 +14,8 @@ import java.io.InputStreamReader;
  * Important: Makes sure you've run
  * Prompt> rpi-serial-console disable
  * and re-booted.
+ *
+ * WARNING: Work In Progress
  */ 
 public class SendSMS
 {

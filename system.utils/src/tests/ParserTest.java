@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 public class ParserTest
 {
+  private ParserTest instance = this;
 
   private static Method GENERIC_FAILURE_PARSER;
   private static Method GENERIC_SUCCESS_PARSER;
@@ -39,13 +40,21 @@ public class ParserTest
 
   public static void main(String[] args) throws Exception
   {
-    takeAction(">> BAT FAILED, c'est tout pete!");
-    takeAction(">> FONA READY");
-    takeAction(">> BAT OK");
-    takeAction("+CMTI: \"SM\",54");
+    ParserTest pt = new ParserTest();
+    
+    pt.takeAction(">> BAT FAILED, c'est tout pete!");
+    pt.takeAction(">> FONA READY");
+    pt.takeAction(">> BAT OK");
+    pt.takeAction("+CMTI: \"SM\",54");
+    
+    String message = ">> BAT:1234,98";
+    String[] sa = message.substring(">> BAT:".length()).split(",");
+    for (String s : sa)
+      System.out.println(s);
+    System.out.println("Battery: " + sa[0] + " mV, " + sa[1] + "%");
   }
 
-  private static void takeAction(String mess) throws Exception
+  private void takeAction(String mess) throws Exception
   {
     ArduinoMessagePrefix amp = findCommand(mess);
     if (amp != null)
@@ -54,7 +63,7 @@ public class ParserTest
       Method parser = amp.parser();
       if (parser != null)
       {
-        parser.invoke(ParserTest.class, mess);
+        parser.invoke(instance, mess);
       }
     }
     else
@@ -75,15 +84,15 @@ public class ParserTest
     return ret;
   }
 
-  public static void genericSuccessParser(String message)
+  public void genericSuccessParser(String message)
   {
     System.out.println("Generic success:" + message);
   }
-  public static void genericFailureParser(String message)
+  public void genericFailureParser(String message)
   {
     System.out.println("Generic failure:" + message);
   }
-  public static void incomingMessageManager(String message)
+  public void incomingMessageManager(String message)
   {
     // +CMTI: "SM",3
     String[] sa = message.split(",");

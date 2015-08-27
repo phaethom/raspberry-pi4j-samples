@@ -21,6 +21,7 @@ buildProject PhoneKeyboard3x4
 buildProject Arduino.RaspberryPI
 buildProject RangeSensor
 buildProject PIR
+buildProject FONA
 buildProject Relay
 buildProject WeatherStation
 buildProject RasPiSamples
