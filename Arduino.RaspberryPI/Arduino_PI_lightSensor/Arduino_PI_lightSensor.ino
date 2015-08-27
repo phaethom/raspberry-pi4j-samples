@@ -1,58 +1,32 @@
 /*
- * Uses the Serial port to communicate with the Raspberry PI
- * Read from the Serial port
- * Write to the Serial port
- *
- * Send '0' to turn the led off.
- * Anything else will turn it on.
- *
- * One led on pin 13. Grounded with a 10k resistor
- * One photo resistor on pin A0.
- *
- * The led goes on when the photo-resistor goes below 40 (THRESHOLD).
- * It can be overridden by an input from the serial port 0 (off), or 1 (on).
+ * Reads a light-resistor (pin A0).
+ * See circuit in the book, p63.
+ * "Getting started with Arduino"
+ * Generates NMEA-like messages, emitted on the Serial port
+ * A Raspberry PI is at the other end of the serial cable.
  */
-const int LED = 13;
-const int THRESHOLD = 40;
-
 void setup()
 {
-  pinMode(LED, OUTPUT);
-  digitalWrite(LED, LOW); // turn it off by default
   Serial.begin(9600);
 }
 
-int val = 0, 
+int val      = 0, 
     previous = 0;
+
 const String PREFIX =  "OS"; // Device Prefix
 const String ID     = "MSG"; // Sentence ID
 
 void loop()
 {
-  if (Serial.available())  
-  {
-    int fromRPI = Serial.read(); // Read one character
-    fromRPI -= '0'; // Possibly comes from the key-pad connected to the RPi
-    if (fromRPI == 0)
-      digitalWrite(LED, LOW);
-    else
-      digitalWrite(LED, HIGH);
-  }
-  
   val = analogRead(A0);
-  
-  if (abs(previous - val) > 3)
+  if (val != previous)
   {
     String payload = "LR," + String(val); // LR: Light Resistor
     String nmea = generateNMEAString(payload, PREFIX, ID);
     Serial.println(nmea);
-    
-    if (val < THRESHOLD)
-      digitalWrite(LED, HIGH);
-    else
-      digitalWrite(LED, LOW);
-    previous = val;
   }
+  previous = val;
+  delay(250);
 }
 
 int checksum(String s)
@@ -82,3 +56,4 @@ String generateNMEAString(String payload, String prefix, String id)
   nmea += ("*" + cks);  // *FF
   return "$" + nmea;    // Prefixed with $
 }
+

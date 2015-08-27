@@ -44,9 +44,9 @@ public class ReadWrite
   private static Method GENERIC_SUCCESS_PARSER;
   private static Method INCOMING_MESSAGE_MANAGER;
   static {
-    try { GENERIC_FAILURE_PARSER = ParserTest.class.getMethod("genericFailureParser", String.class); } catch (Exception ex) { ex.printStackTrace(); }
-    try { GENERIC_SUCCESS_PARSER = ParserTest.class.getMethod("genericSuccessParser", String.class); } catch (Exception ex) { ex.printStackTrace(); }
-    try { INCOMING_MESSAGE_MANAGER = ParserTest.class.getMethod("incomingMessageManager", String.class); } catch (Exception ex) { ex.printStackTrace(); }
+    try { GENERIC_FAILURE_PARSER = ReadWrite.class.getMethod("genericFailureParser", String.class); } catch (Exception ex) { ex.printStackTrace(); }
+    try { GENERIC_SUCCESS_PARSER = ReadWrite.class.getMethod("genericSuccessParser", String.class); } catch (Exception ex) { ex.printStackTrace(); }
+    try { INCOMING_MESSAGE_MANAGER = ReadWrite.class.getMethod("incomingMessageManager", String.class); } catch (Exception ex) { ex.printStackTrace(); }
   }
 
   public enum ArduinoMessagePrefix
@@ -108,7 +108,14 @@ public class ReadWrite
           System.out.print("Arduino said:" + payload);
         }
         // Manage data here. Check in the enum ArduinoMessagePrefix
-        takeAction(payload);
+        try
+        {
+          takeAction(payload);
+        }
+        catch (Exception e)
+        {
+          e.printStackTrace();
+        }
       }
     });
 
@@ -215,7 +222,7 @@ public class ReadWrite
       Method parser = amp.parser();
       if (parser != null)
       {
-        parser.invoke(ParserTest.class, mess);
+        parser.invoke(ReadWrite.class, mess);
       }
     }
     else
