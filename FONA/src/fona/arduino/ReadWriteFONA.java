@@ -103,20 +103,35 @@ public class ReadWriteFONA
     // create and register the serial data listener
     serial.addListener(new SerialDataListener()
     {
+      private StringBuffer fullMessage = new StringBuffer();
+      private final String ACK = "\n"; // "\r\n"; 
+
       @Override
       public void dataReceived(SerialDataEvent event)
       {
         // print out the data received to the console
         String payload = event.getData();
+        
+        fullMessage.append(payload);
+        if (fullMessage.toString().endsWith(ACK))
+        {
+        //        System.out.println("Flushing...");
+          String mess = fullMessage.toString(); // Send the full message. Parsed later.
         // Manage data here. Check in the enum ArduinoMessagePrefix
         try
         {
-          takeAction(payload);
+          mess = mess.trim();
+          while (mess.endsWith("\n") ||
+                 mess.endsWith("\r"))
+            mess = mess.substring(mess.length() - 1);
+          takeAction(mess);
         }
         catch (Exception e)
         {
           e.printStackTrace();
         }
+          fullMessage = new StringBuffer();
+        } 
       }
     });
   }
@@ -190,6 +205,11 @@ public class ReadWriteFONA
   
   public void sendMess(String to, String payload)
   {
+    if (payload.length() > 140)
+    {
+      System.out.println("Truncating payload to 140 characters");
+      payload = payload.substring(0, 140);
+    }
     String mess = "s|" + to + "|" + payload;
     this.sendSerial(mess);
   }
@@ -198,7 +218,8 @@ public class ReadWriteFONA
   {
     if (serial.isOpen())
     {
-      System.out.println("\tWriting [" + payload + "] to the serial port...");
+      if ("true".equals(System.getProperty("fona.verbose", "false")))
+        System.out.println("\tWriting [" + payload + "] to the serial port...");
       try
       {
         serial.write(payload + "\n");
@@ -218,7 +239,8 @@ public class ReadWriteFONA
     ArduinoMessagePrefix amp = findCommand(mess);
     if (amp != null)
     {
-      System.out.println(amp.meaning());
+      if ("true".equals(System.getProperty("fona.verbose", "false")))
+        System.out.println(amp.meaning());
       Method parser = amp.parser();
       if (parser != null)
       {
@@ -297,11 +319,23 @@ public class ReadWriteFONA
   }
   public void readMessageParser(String message)
   {
-    String[] sa = message.substring(">> MESSNUM:".length()).split("|");
-    caller.message(new SMS(Integer.parseInt(sa[0]),
-                           sa[1],
-                           Integer.parseInt(sa[2]),
-                           sa[3]));
+    String[] sa = message.substring(">> MESSNUM:".length()).split("\\|");
+    try
+    {
+      caller.message(new SMS(Integer.parseInt(sa[0]),
+                             sa[1].substring("FROM:".length()),
+                             Integer.parseInt(sa[2]),
+                             sa[3]));
+    }
+    catch (Exception ex)
+    {
+      System.err.println("Message [" + message + "]");
+      System.err.println("==================");
+      for (String s : sa)
+        System.err.println(s);
+      System.err.println("==================");
+      ex.printStackTrace();
+    }
   }
   
   public static class SMS

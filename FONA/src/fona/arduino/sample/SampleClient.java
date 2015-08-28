@@ -19,49 +19,49 @@ public class SampleClient
   @Override
   public void genericSuccess(String mess)
   {
-    System.out.println("Generic success:" + mess);
+    System.out.println("\n" + "Generic success:" + mess);
   }
 
   @Override
   public void genericFailure(String mess)
   {
-    System.out.println("Generic failure:" + mess);
+    System.out.println("\n" + "Generic failure:" + mess);
   }
 
   @Override
   public void batteryState(String mess)
   {
-    System.out.println(mess);
+    System.out.println("\n" + mess);
   }
 
   @Override
   public void adcState(String mess)
   {
-    System.out.println(mess);
+    System.out.println("\n" + mess);
   }
 
   @Override
   public void ccidState(String mess)
   {
-    System.out.println(mess);
+    System.out.println("\n" + mess);
   }
 
   @Override
   public void rssiState(String mess)
   {
-    System.out.println(mess);
+    System.out.println("\n" + mess);
   }
 
   @Override
   public void networkState(String mess)
   {
-    System.out.println(mess);
+    System.out.println("\n" + mess);
   }
 
   @Override
   public void numberOfMessages(int nb)
   {
-    System.out.println("# of messages:" + nb);
+    System.out.println("\n# of messages:" + nb);
   }
 
   @Override
@@ -96,8 +96,8 @@ public class SampleClient
     try
     {
       System.out.println("Hit 'Q' to quit.");
-      System.out.println("Hit [return] when ready to start.");
-      userInput("");
+//    System.out.println("Hit [return] when ready to start.");
+//    userInput("");
 
       final Thread me = Thread.currentThread();
       Thread userInputThread = new Thread()
@@ -174,7 +174,7 @@ public class SampleClient
   
   private static void displayMenu()
   {
-    System.out.println("Commands are case-sensitive.");
+    System.out.println("\nCommands are case-sensitive.");
     System.out.println("[?] Display menu");
     System.out.println("[Q] to quit");
     System.out.println("[a] ADC");
