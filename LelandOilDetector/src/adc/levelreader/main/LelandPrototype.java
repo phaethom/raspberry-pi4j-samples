@@ -80,14 +80,16 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
         public void onError(Exception exception)
         {
           System.out.println("WS On Error");
-          exception.printStackTrace();
+          displayAppErr(exception);
+  //      exception.printStackTrace();
         }
       }; 
       webSocketClient.connect();
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
+      displayAppErr(ex);
+  //  ex.printStackTrace();
     }    
   }
 
@@ -96,6 +98,14 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
     String s = str;
     while (s.length() < len)
       s = with + s;
+    return s;
+  }
+  
+  private static String rpad(String str, String with, int len)
+  {
+    String s = str;
+    while (s.length() < len)
+      s += with;
     return s;
   }
   
@@ -114,7 +124,10 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
   private static void sendSMS(String to,
                               String content)
   {
-    smsProvider.sendMess(to, content);
+    if (smsProvider != null)
+      smsProvider.sendMess(to, content);
+    else
+      System.out.println(">>> Simulating call to " + to + ", " + content);
   }
   // User Interface ... Sovietic!
   private static void manageData()
@@ -147,7 +160,11 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
     
     int volume = (int)(100 * ((maxWaterLevel==-1?0:maxWaterLevel) / 7d));
     try { webSocketClient.send(Integer.toString(volume)); } // [1..100]
-    catch (Exception ex) { ex.printStackTrace(); }
+    catch (Exception ex) 
+    { 
+      displayAppErr(ex);
+  //  ex.printStackTrace(); 
+    }
     
     System.out.println("Max Water:" + maxWaterLevel);
     if (maxOilLevel > -1)
@@ -158,7 +175,7 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
       {
         // Make a call
         String mess = "In the bilge of " + boatName + ", oil thickness is " + oilThickness;
-        System.out.println(" >>>>>>>>>> CALLING !!!!! " + phoneNumberOne + " : " + mess);
+        displayAppMess(" >>>>>>>>>> CALLING !!!!! " + phoneNumberOne + " : " + mess);
         sendSMS(phoneNumberOne, mess);
         // Switch the relay off?
         RelayManager.RelayState status = rm.getStatus("00");
@@ -254,6 +271,18 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
     System.out.println("FONA Ready!");
     fonaReady = true;
   }
+  
+  public final static void displayAppMess(String mess)
+  {
+    AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 40));
+    AnsiConsole.out.println(rpad(mess, " ", 80));    
+  }
+
+  public final static void displayAppErr(Exception ex)
+  {
+    AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 50));
+    AnsiConsole.out.println(rpad(ex.toString(), " ", 80));    
+  }
 
   private abstract static class Tuple<X, Y>
   {
@@ -323,25 +352,29 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
     }
     catch (IOException ioe)
     {
-      ioe.printStackTrace();
+      displayAppErr(ioe);
+  //  ioe.printStackTrace();
     }
     
     LelandPrototype lp = new LelandPrototype();
+    final ReadWriteFONA fona;
     
-    System.setProperty("baud.rate",   props.getProperty("baud.rate"));
-    System.setProperty("serial.port", props.getProperty("serial.port"));
-    
-    final ReadWriteFONA fona          = new ReadWriteFONA(lp);
-    fona.openSerialInput();
-    fona.startListening();
-    while (!fonaReady)
+    if ("true".equals(props.getProperty("with.fona", "false")))
     {
-      System.out.println("Waiting for the FONA device to come up...");
-      try { Thread.sleep(1000L); } catch (InterruptedException ie) {}
+      System.setProperty("baud.rate",   props.getProperty("baud.rate"));
+      System.setProperty("serial.port", props.getProperty("serial.port"));
+      
+      fona = new ReadWriteFONA(lp);
+      fona.openSerialInput();
+      fona.startListening();
+      while (!fonaReady)
+      {
+        System.out.println("Waiting for the FONA device to come up...");
+        try { Thread.sleep(1000L); } catch (InterruptedException ie) {}
+      }
+      displayAppMess(">>> FONA Ready, moving on");
+      smsProvider = fona;
     }
-    System.out.println(">>> FONA Ready, moving on");
-    smsProvider = fona;
-    
     final SevenADCChannelsManager sac = new SevenADCChannelsManager(lp);
 
     wsUri          = props.getProperty("ws.uri", "ws://localhost:9876/"); 
@@ -372,7 +405,8 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
            // Cleanup
            System.out.println();
            sac.quit();
-           fona.closeChannel();
+           if (smsProvider != null)
+             smsProvider.closeChannel();
            synchronized (me)
            {
              me.notify();
