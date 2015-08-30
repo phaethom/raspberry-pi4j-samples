@@ -23,7 +23,7 @@ public class ADCObserver
   private static Pin spiMosi = RaspiPin.GPIO_05; // Pin #24, data out. MOSI: Master Out Slave In
   private static Pin spiCs   = RaspiPin.GPIO_06; // Pin #25, Chip Select
   
-  private final static int DEFAULT_TOL    = 5;
+  private final static int DEFAULT_TOL    = 5;   // Tolerance
   private final static long DEFAULT_PAUSE = 100L;
  
   private Thread parentToNotify = null;

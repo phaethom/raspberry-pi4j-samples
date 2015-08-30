@@ -1,4 +1,4 @@
-package raspisamples.adc.levelreader.manager;
+package adc.levelreader.manager;
 
 import adc.ADCContext;
 import adc.ADCListener;
@@ -105,7 +105,7 @@ public class SevenADCChannelsManager
              
              // DEBUG
              {
-               AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 24 + ch));
+               AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 30 + ch));
                AnsiConsole.out.print("Channel " + ch + ": Value " + lpad(Integer.toString(newValue), " ", 4) + 
                                                        ", " + lpad(Integer.toString(volume), " ", 3) + " (inst)" + 
                                                        ", " + lpad(DF32.format(val), " ", 6) + " (avg)" + 

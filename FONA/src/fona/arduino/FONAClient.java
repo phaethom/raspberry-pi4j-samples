@@ -11,4 +11,5 @@ public interface FONAClient
   public void networkState(String mess);
   public void numberOfMessages(int nb);
   public void message(ReadWriteFONA.SMS sms);
+  public void ready();
 }

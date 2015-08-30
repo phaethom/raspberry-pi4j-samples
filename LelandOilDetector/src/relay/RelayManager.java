@@ -22,21 +22,25 @@ public class RelayManager
     pin18 = null; // gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "Relay2", PinState.HIGH);
   }
 
-  public void set(String device, String status)
+  public enum RelayState
+  {
+    ON,
+    OFF;
+  }
+  
+  public void set(String device, RelayState status)
   {
     GpioPinDigitalOutput pin = ("00".equals(device)?pin17:pin18);
-    if ("on".equals(status))
+    if (RelayState.ON.equals(status))
       pin.low();
     else
       pin.high();
   }
   
-  public String getStatus(String dev)
+  public RelayState getStatus(String dev)
   {
-    String status = "unknown";
     GpioPinDigitalOutput pin = ("00".equals(dev)?pin17:pin18);
-    status = pin.isHigh() ? "off" : "on";
-    return status;
+    return pin.isHigh() ? RelayState.OFF : RelayState.ON;
   }
   
   public void shutdown()

@@ -33,6 +33,7 @@ public class ReadWriteFONA
   private static Method GENERIC_FAILURE_PARSER;
   private static Method GENERIC_SUCCESS_PARSER;
   private static Method INCOMING_MESSAGE_MANAGER;
+  private static Method READY;
   private static Method BATTERY_PARSER;
   private static Method ADC_PARSER;
   private static Method CCID_PARSER;
@@ -46,6 +47,7 @@ public class ReadWriteFONA
     try { GENERIC_FAILURE_PARSER   = ReadWriteFONA.class.getMethod("genericFailureParser",   String.class); } catch (Exception ex) { ex.printStackTrace(); }
     try { GENERIC_SUCCESS_PARSER   = ReadWriteFONA.class.getMethod("genericSuccessParser",   String.class); } catch (Exception ex) { ex.printStackTrace(); }
     try { INCOMING_MESSAGE_MANAGER = ReadWriteFONA.class.getMethod("incomingMessageManager", String.class); } catch (Exception ex) { ex.printStackTrace(); }
+    try { READY                    = ReadWriteFONA.class.getMethod("ready",                  String.class); } catch (Exception ex) { ex.printStackTrace(); }
     try { BATTERY_PARSER           = ReadWriteFONA.class.getMethod("batteryParser",          String.class); } catch (Exception ex) { ex.printStackTrace(); }
     try { ADC_PARSER               = ReadWriteFONA.class.getMethod("adcParser",              String.class); } catch (Exception ex) { ex.printStackTrace(); }
     try { CCID_PARSER              = ReadWriteFONA.class.getMethod("ccidParser",             String.class); } catch (Exception ex) { ex.printStackTrace(); }
@@ -57,7 +59,7 @@ public class ReadWriteFONA
 
   public enum ArduinoMessagePrefix
   {
-    FONA_OK       (">> FONA READY",          "Good to go",                     GENERIC_SUCCESS_PARSER),
+    FONA_OK       (">> FONA READY",          "Good to go",                     READY),
     INCOMING_MESS ("+CMTI:",                 "Incoming message",               INCOMING_MESSAGE_MANAGER),
     ADC_OK        (">> ADC:",                "Read ADC",                       ADC_PARSER),
     ADC_FAILED    (">> ADC FAILED",          "Read ADC failed",                GENERIC_FAILURE_PARSER),
@@ -234,6 +236,7 @@ public class ReadWriteFONA
       System.out.println("Not open yet...");
     }
   }
+  
   private void takeAction(String mess) throws Exception
   {
     ArduinoMessagePrefix amp = findCommand(mess);
@@ -269,10 +272,12 @@ public class ReadWriteFONA
   {
     caller.genericSuccess(message);
   }
+  
   public void genericFailureParser(String message)
   {
     caller.genericFailure(message);
   }
+  
   public void incomingMessageManager(String message)
   {
     // +CMTI: "SM",3
@@ -282,41 +287,53 @@ public class ReadWriteFONA
       this.readMessNum(Integer.parseInt(sa[1].trim()));
     }
   }
+  
   public void adcParser(String message)
   {
     String s = message.substring(">> ADC:".length());
     String mess = ("ADC: " + s + " mV");
     caller.adcState(mess);
   }
+  
+  public void ready(String s)
+  {
+    caller.ready();
+  }
+  
   public void batteryParser(String message)
   {
     String[] sa = message.substring(">> BAT:".length()).split(",");
     String mess = ("Battery: " + sa[0] + " mV, " + sa[1] + "%");
     caller.batteryState(mess);
   }
+  
   public void ccidParser(String message)
   {
     String s = message.substring(">> CCID:".length());
     String mess = ("SIM Card#:" + s);
     caller.ccidState(mess);
   }
+  
   public void rssiParser(String message)
   {
     String[] sa = message.substring(">> RSSI:".length()).split(",");
     String mess = ("RSSI: level " + sa[0] + ", " + sa[1] + "dBm");
     caller.rssiState(mess);
   }
+  
   public void networkParser(String message)
   {
     String[] sa = message.substring(">> NETW:".length()).split(",");
     String mess = ("Network: level " + sa[0] + ": " + sa[1]);
     caller.networkState(mess);
   }
+  
   public void numberOfMessagesParser(String message)
   {
     int nb = Integer.parseInt(message.substring(">> MESS:".length()));
     caller.numberOfMessages(nb);
   }
+  
   public void readMessageParser(String message)
   {
     String[] sa = message.substring(">> MESSNUM:".length()).split("\\|");
@@ -347,9 +364,9 @@ public class ReadWriteFONA
     
     public SMS(int num, String from, int len, String content)
     {
-      this.num = num;
-      this.from = from;
-      this.len = len;
+      this.num     = num;
+      this.from    = from;
+      this.len     = len;
       this.content = content;
     }
     

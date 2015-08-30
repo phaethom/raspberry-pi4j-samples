@@ -16,6 +16,13 @@ public class SampleClient
     super();
   }
 
+
+  @Override
+  public void ready()
+  {
+    System.out.println("\nReady for duty.");
+  }
+
   @Override
   public void genericSuccess(String mess)
   {
@@ -176,7 +183,7 @@ public class SampleClient
   {
     System.out.println("\nCommands are case-sensitive.");
     System.out.println("[?] Display menu");
-    System.out.println("[Q] to quit");
+    System.out.println("[Q or q] to quit");
     System.out.println("[a] ADC");
     System.out.println("[b] Battery");
     System.out.println("[C] Read SIM Card #");
