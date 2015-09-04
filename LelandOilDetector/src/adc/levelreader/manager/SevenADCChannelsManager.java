@@ -40,8 +40,8 @@ public class SevenADCChannelsManager
    */
   
   private static ADCObserver.MCP3008_input_channels channel[] = null;
-  private final int[] channelValues  = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-  private final int[] channelVolumes = new int[] { 0, 0, 0, 0, 0, 0, 0 };
+  private final int[] channelValues  = new int[] { 0, 0, 0, 0, 0, 0, 0 }; // [0..1023]
+  private final int[] channelVolumes = new int[] { 0, 0, 0, 0, 0, 0, 0 }; // [0..100] %
   
   /* Used to smooth the values */
   private final float[] smoothedChannelVolumes = new float[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f };

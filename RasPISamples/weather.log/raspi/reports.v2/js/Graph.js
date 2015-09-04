@@ -11,6 +11,7 @@ function Graph(cName,       // Canvas Name
   var context;
   
   var unit = unit;
+  var lastClicked;
 
   var canvas = document.getElementById(cName);
   canvas.addEventListener('click', function(evt) {
@@ -27,6 +28,7 @@ function Graph(cName,       // Canvas Name
         if (callback !== undefined) {
           callback(idx);
         }
+        lastClicked = idx;
       }
   }, 0);
 
@@ -42,33 +44,45 @@ function Graph(cName,       // Canvas Name
       
       var idx = Math.round(x / xScale);
       if (idx < JSONParser.nmeaData.length) {
-        var str1; // = 'X : ' + x + ', ' + 'Y :' + y;
-        var str2;
-        var str3;
+        var str = [];
         try { 
-          str1 = JSONParser.nmeaData[idx].getNMEATws() + "kt @ " + JSONParser.nmeaData[idx].getNMEATwd() + "\272";
-          str2 = "P:" + JSONParser.nmeaData[idx].getNMEAPrmsl() + " hPa";
+          str.push(JSONParser.nmeaData[idx].getNMEATws() + "kt @ " + JSONParser.nmeaData[idx].getNMEATwd() + "\272");
+          str.push("P:" + JSONParser.nmeaData[idx].getNMEAPrmsl() + " hPa");
           if (document.getElementById("utc-display").checked)
-            str3 =  new Date(JSONParser.nmeaData[idx].getNMEADate()).format("d-M-Y H:i") + " UT";
+            str.push(new Date(JSONParser.nmeaData[idx].getNMEADate()).format("d-M-Y H:i") + " UT");
           else
-            str3 = reformatDate(JSONParser.nmeaData[idx].getNMEADate(), "d-M-Y H:i");
+            str.push(reformatDate(JSONParser.nmeaData[idx].getNMEADate(), "d-M-Y H:i"));
+          str.push("Temp: " + JSONParser.nmeaData[idx].getNMEATemp() + "\272C");
+          str.push("Hum: " + JSONParser.nmeaData[idx].getNMEAHum() + " %");
+          str.push("Rain: " + JSONParser.nmeaData[idx].getNMEARain() + " mm");
+          str.push("CPU: " + JSONParser.nmeaData[idx].getNMEACpu() + "\272C");
   //      console.log("Bubble:" + str);
         } catch (err) { console.log(JSON.stringify(err)); }
         
   //    context.fillStyle = '#000';
   //    context.fillRect(0, 0, w, h);
-        instance.drawGraph(cName, graphData);
+        instance.drawGraph(cName, graphData, lastClicked);
         if (withWindDir) {
           instance.drawWind(JSONParser.nmeaData);
         }
+        var tooltipW = 120, nblines = str.length;
         context.fillStyle = "rgba(250, 250, 210, .7)"; 
 //      context.fillStyle = 'yellow';
-        context.fillRect(x + 10, y + 10, 70, 45); // Background
+        var fontSize = 10;
+        var x_offset = 10, y_offset = 10;
+
+        if (x > (cWidth / 2)) {
+          x_offset = -(tooltipW + 10);
+        }
+        if (y > (cHeight / 2)) {
+          y_offset = -(10 + 6 + (nblines * fontSize));
+        }
+        context.fillRect(x + x_offset, y + y_offset, tooltipW, 6 + (nblines * fontSize)); // Background
         context.fillStyle = 'black';
-        context.font = 'bold 12px verdana';
-        context.fillText(str1, x + 15, y + 25, 60); 
-        context.fillText(str2, x + 15, y + 37, 60); 
-        context.fillText(str3, x + 15, y + 49, 60); 
+        context.font = /*'bold ' +*/ fontSize + 'px verdana';
+        for (var i=0; i<str.length; i++) {
+          context.fillText(str[i], x + x_offset + 5, y + y_offset + (3 + (fontSize * (i + 1)))); //, 60); 
+        }
       }
     }
   }, 0);
@@ -250,6 +264,10 @@ function Graph(cName,       // Canvas Name
       context.stroke();
       context.closePath();
     }
+
+    if (withWindDir) {
+      this.drawWind(JSONParser.nmeaData);
+    }
   };
   
   var ARROW_LEN = 20;
@@ -285,8 +303,8 @@ function Graph(cName,       // Canvas Name
      
 //   console.log("MinX:" + minx + ", MaxX:" + maxx + ", MinY:" + miny + ", MaxY:" + maxy);
      
-     xScale = cWidth / (maxx - minx);
-     yScale = cHeight / (maxy - miny);
+     xScale = cWidth / (maxx - minx);   // was Math.floor(canvas.getBoundingClientRect().width)
+     yScale = cHeight / (maxy - miny);  // was canvas.getBoundingClientRect().height
      
 //   console.log("xScale:" + xScale + ", yScale:" + yScale);
      

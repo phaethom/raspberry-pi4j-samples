@@ -508,7 +508,7 @@ var go = function() {
     $('body').css('cursor', 'progress'); 
   }, 1);
   $("#smooth-width").val("");
-  document.getElementById("graphCanvas").width = 800;
+//document.getElementById("graphCanvas").width = 800;
 
   var type = "ALL";
   var period = $("#period").val();
@@ -634,7 +634,7 @@ var go = function() {
           &nbsp;<input type="checkbox" id="tooltip"     onchange="javascript:onDataChange();" checked="true">Tooltip
           &nbsp;<input type="checkbox" id="utc-display" onchange="javascript:onDataChange();">UTC
           <br>
-          <canvas id="graphCanvas" width="650" height="200" class="displayCanvas"/>
+          <canvas id="graphCanvas" width="800" height="200" class="displayCanvas"/> <!-- style="width: 98%;"/ -->
         </td>
       </tr>
       <tr>
