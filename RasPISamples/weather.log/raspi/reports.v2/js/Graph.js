@@ -53,9 +53,9 @@ function Graph(cName,       // Canvas Name
           else
             str.push(reformatDate(JSONParser.nmeaData[idx].getNMEADate(), "d-M-Y H:i"));
           str.push("Temp: " + JSONParser.nmeaData[idx].getNMEATemp() + "\272C");
-          str.push("Hum: " + JSONParser.nmeaData[idx].getNMEAHum() + " %");
+          str.push("Hum: "  + JSONParser.nmeaData[idx].getNMEAHum() + " %");
           str.push("Rain: " + JSONParser.nmeaData[idx].getNMEARain() + " mm");
-          str.push("CPU: " + JSONParser.nmeaData[idx].getNMEACpu() + "\272C");
+          str.push("CPU: "  + JSONParser.nmeaData[idx].getNMEACpu() + "\272C");
   //      console.log("Bubble:" + str);
         } catch (err) { console.log(JSON.stringify(err)); }
         

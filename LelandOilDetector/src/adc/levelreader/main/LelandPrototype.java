@@ -28,8 +28,46 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import relay.RelayManager;
 
+/**
+ * Relies on props.properties
+ * 
+ * Synopsis:
+ * =========
+ * 1. There is water in the bilge, with oil on top.
+ * 2. The bild pump starts.
+ * 3. When the oil is about to reach the pump, the power of the pump is shut off, and a message (SMS) 
+ *    is sent on the phone of the captain, saying "You have X inches of oil in the bilge, you have 24 hours to clean it, 
+ *    reply 'CLEAN' to this message from your phone to reset the process and restart your bilge pump".
+ * 4. A 'CLEAN' message is received (from captain, owner, or authorities).
+ * 5. If the bilge is clean, the process is reset (bilge pump power turned back on).
+ * 6. If not, a new message is sent to the captain, the processis NOT reset. 
+ * 
+ * 7. If the bilge has not been cleaned within a given amount of time (24h by default), 
+ *    then another message is sent to the boat owner.
+ * 8. After the same amount of time, if the bilge is still no clean, then a message is sent 
+ *    to the authorities (Harbor Master, Coast Guards)
+ * 
+ * Interfaced with:
+ * - a bilge probe (ADC)
+ * - a FONA (SMS shield)
+ * - a WebSocket server (node.js)
+ *       also provides a web interface
+ */
 public class LelandPrototype implements AirWaterOilInterface, FONAClient
 {
+  private static long CLEANING_DELAY = 0L;
+  static
+  {
+    try 
+    { 
+      CLEANING_DELAY = Long.parseLong(System.getProperty("cleaning.delay", "86400")); // Default: one day
+    }
+    catch (NumberFormatException nfe)
+    {
+      nfe.printStackTrace();
+    }
+  }
+  
   private static LevelMaterial<Float, SevenADCChannelsManager.Material>[] data = null;
   private final static NumberFormat DF31 = new DecimalFormat("000.0");
   private final static NumberFormat DF4  = new DecimalFormat("###0");
@@ -38,10 +76,29 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
   private static RelayManager rm = null;
   
   private static String wsUri = "";
-  private static String phoneNumberOne = "";
+  private static String phoneNumber_1 = "", 
+                        phoneNumber_2 = "",
+                        phoneNumber_3 = "";
   private static String boatName = "";
   
   private static boolean fonaReady = false;
+  
+  public enum ProcessStatus
+  {
+    ALL_OK,
+    MESSAGE_SENT_TO_CAPTAIN,
+    MESSAGE_SENT_TO_OWNER,
+    MESSAGE_SENT_TO_AUTHORITIES
+  }
+  
+  private final static int SENT_TO_CAPTAIN     = 0;
+  private final static int SENT_TO_OWNER       = 1;
+  private final static int SENT_TO_AUTHORITIES = 2;
+  
+  private static ProcessStatus currentStatus = ProcessStatus.ALL_OK;
+  
+  private static int currentWaterLevel   = 0;
+  private static int currentOilThickness = 0;
   
   public LelandPrototype()
   {
@@ -125,11 +182,16 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
                               String content)
   {
     if (smsProvider != null)
-      smsProvider.sendMess(to, content);
+    {
+      String mess = content;
+      if (mess.length() > 140)
+        mess = mess.substring(0, 140);
+      smsProvider.sendMess(to, mess);
+    }
     else
       System.out.println(">>> Simulating call to " + to + ", " + content);
   }
-  // User Interface ... Sovietic!
+  // User Interface ... Sovietic! And business logic.
   private static void manageData()
   {
     int maxWaterLevel = -1;
@@ -165,21 +227,24 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
       displayAppErr(ex);
   //  ex.printStackTrace(); 
     }
+    businessLogic(maxWaterLevel, maxOilLevel);
+  }
+  
+  private static void businessLogic(int waterLevel, int oilLevel)
+  {
+    int oilThickness = oilLevel - waterLevel;
+    currentWaterLevel   = waterLevel;
+    currentOilThickness = oilThickness;
     
-    System.out.println("Max Water:" + maxWaterLevel);
-    if (maxOilLevel > -1)
+//  System.out.println("Max Water:" + waterLevel);
+    if (oilLevel > -1)
     {
-      int oilThickness = maxOilLevel - maxWaterLevel;
       System.out.println("Oil thick:" + oilThickness);
-      if (maxWaterLevel <= 0)
+      if (waterLevel <= 0 && oilThickness > 0)
       {
-        // Make a call
-        String mess = "In the bilge of " + boatName + ", oil thickness is " + oilThickness;
-        displayAppMess(" >>>>>>>>>> CALLING !!!!! " + phoneNumberOne + " : " + mess);
-        sendSMS(phoneNumberOne, mess);
         // Switch the relay off?
         RelayManager.RelayState status = rm.getStatus("00");
-//      System.out.println("Relay is:" + status);
+    //  System.out.println("Relay is:" + status);
         if (RelayManager.RelayState.ON.equals(status))
         {
           System.out.println("Turning relay off!");
@@ -189,13 +254,22 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
             System.err.println(ex.toString());
           }
         }        
+        // Make a call
+        String mess = "In the bilge of " + boatName + ", oil thickness is " + oilThickness + "\n" +
+                      "Please clean this, and reply 'CLEAN' to this message when done.";
+        
+        displayAppMess(" >>>>>>>>>> CALLING !!!!! \n" + phoneNumber_1 + " :\n" + mess);
+        sendSMS(phoneNumber_1, mess);
+        currentStatus = ProcessStatus.MESSAGE_SENT_TO_CAPTAIN;
+        WaitForCleanThread wfct = new WaitForCleanThread();
+        wfct.start();
       }
       else
       {
         System.out.println("                            ");
         System.out.println("                            ");
       }
-    }
+    }    
   }
   
   @Override
@@ -263,6 +337,49 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
     System.out.println("\nReceived messsage:");
     System.out.println("From:" + sms.getFrom());
     System.out.println(sms.getContent());
+    if (sms.getContent().equalsIgnoreCase("CLEAN") && sms.getFrom().equals(phoneNumber_1))
+    {
+      // Check, and Resume
+      if (currentOilThickness <= 0)
+      {
+        // Tell whoever has been warned so far
+        boolean[] messLevel = { false, false, false };
+        messLevel[SENT_TO_CAPTAIN] = (currentStatus == ProcessStatus.MESSAGE_SENT_TO_CAPTAIN ||
+                                      currentStatus == ProcessStatus.MESSAGE_SENT_TO_OWNER ||
+                                      currentStatus == ProcessStatus.MESSAGE_SENT_TO_AUTHORITIES);
+        messLevel[SENT_TO_OWNER] = (currentStatus == ProcessStatus.MESSAGE_SENT_TO_OWNER ||
+                                    currentStatus == ProcessStatus.MESSAGE_SENT_TO_AUTHORITIES);
+        messLevel[SENT_TO_AUTHORITIES] = (currentStatus == ProcessStatus.MESSAGE_SENT_TO_AUTHORITIES);
+        String mess = "Oil in the bilge of '" + boatName + "' has been cleaned.\n" +
+                      "Bilge pump power has been restored.";
+        if (messLevel[SENT_TO_AUTHORITIES])
+          sendSMS(phoneNumber_3, mess);
+        if (messLevel[SENT_TO_OWNER])
+          sendSMS(phoneNumber_2, mess);
+        if (messLevel[SENT_TO_CAPTAIN])
+          sendSMS(phoneNumber_1, mess);
+
+        currentStatus = ProcessStatus.ALL_OK;
+        RelayManager.RelayState status = rm.getStatus("00");
+        //  System.out.println("Relay is:" + status);
+        if (RelayManager.RelayState.OFF.equals(status))
+        {
+          System.out.println("Turning relay back on.");
+          try { rm.set("00", RelayManager.RelayState.ON); }
+          catch (Exception ex)
+          {
+            System.err.println(ex.toString());
+          }
+        }
+      } 
+      else
+      {
+        // Reply, not clean enough.
+        String content = "Sorry, the bilge is not clean enough.\nPower NOT restored.\n" +
+                         "Try again to send a 'CLEAN' message when this has been taken care of.";
+        sendSMS(phoneNumber_1, content);
+      }
+    }
   }
 
   @Override
@@ -377,9 +494,11 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
     }
     final SevenADCChannelsManager sac = new SevenADCChannelsManager(lp);
 
-    wsUri          = props.getProperty("ws.uri", "ws://localhost:9876/"); 
-    phoneNumberOne = props.getProperty("phone.number.one", "14153505547");
-    boatName       = props.getProperty("boat.name", "Never Again XXIII");
+    wsUri         = props.getProperty("ws.uri", "ws://localhost:9876/"); 
+    phoneNumber_1 = props.getProperty("phone.number.1", "14153505547");
+    phoneNumber_2 = props.getProperty("phone.number.2", "14153505547");
+    phoneNumber_3 = props.getProperty("phone.number.3", "14153505547");
+    boatName      = props.getProperty("boat.name", "Never Again XXIII");
     
     try 
     { 
@@ -420,5 +539,53 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
       me.wait();
     }
     System.out.println("Done.");
+  }
+  
+  public static class WaitForCleanThread extends Thread
+  {
+    private boolean keepWaiting = true;
+    private long started = 0L;
+      
+    public void stopWaiting()
+    {
+      this.keepWaiting = false;
+    }
+    
+    public void run()
+    {
+      started = System.currentTimeMillis();
+      while (keepWaiting && currentStatus != ProcessStatus.ALL_OK)
+      {
+        try { Thread.sleep(60 * 1000L); } catch (InterruptedException ie) {} // Wait 1 minute.
+        if (System.currentTimeMillis() - started > CLEANING_DELAY) // Expired
+        {
+          // Next status level.
+          System.out.println("Your cleaning delay has expired. Going to the next level");
+          displayAppMess(" >>>>>>>>>> GOING TO THE NEXT LEVEL >>>>>> \n");
+          if (currentStatus == ProcessStatus.MESSAGE_SENT_TO_CAPTAIN)
+          {
+            started = System.currentTimeMillis(); // Re-initialize the loop
+            currentStatus = ProcessStatus.MESSAGE_SENT_TO_OWNER;
+            String mess = "Your boat, '" + boatName + "', has oil in its bilge.\n" +
+                          "The power supply of the bilge pump has been shut off.\n" +
+                          "This oil should be cleaned before the power is restored.\n" +
+                          "You can reply to this message by sending 'CLEAN' to restore the power when done.";
+            sendSMS(phoneNumber_2, mess);
+          }
+          else if (currentStatus == ProcessStatus.MESSAGE_SENT_TO_OWNER)
+          {
+            started = System.currentTimeMillis(); // Re-initialize the loop
+            currentStatus = ProcessStatus.MESSAGE_SENT_TO_AUTHORITIES;
+            String mess = "The vessel '" + boatName + "' has oil in its bilge.\n" +
+                          "The power supply of the bilge pump has been shut off.\n" +
+                          "This oil should be cleaned before the power is restored.\n" +
+                          "You can reply to this message by sending 'CLEAN' to allow the power to be restored.";
+            sendSMS(phoneNumber_3, mess);
+          }
+          else
+            keepWaiting = false; // Full reset needed.
+        }
+      }
+    }
   }
 }

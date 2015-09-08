@@ -15,7 +15,8 @@ CP=$CP:../FONA/classes
 #
 # See props.propeties
 #
-COMMAND="java $JAVA_OPTS -cp $CP -Dws.uri=ws://localhost:9876/ adc.levelreader.main.LelandPrototype $*"
+CLEANING_DELAY=60
+COMMAND="java $JAVA_OPTS -cp $CP -Dws.uri=ws://localhost:9876/ -Dcleaning.delay=$CLEANING_DELAY adc.levelreader.main.LelandPrototype $*"
 echo Runnig $COMMAND
 #
 sudo $COMMAND

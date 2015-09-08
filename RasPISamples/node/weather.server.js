@@ -83,6 +83,7 @@ function handler (req, res) {
                   res.writeHead(200, {'Content-Type': contentType});
               //  console.log('Data is ' + typeof(data));
                   if (resource.endsWith(".jpg") || 
+                      resource.endsWith(".ico") ||
                       resource.endsWith(".gif") ||
                       resource.endsWith(".ttf") ||
                       resource.endsWith(".png")) {

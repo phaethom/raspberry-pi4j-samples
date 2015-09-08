@@ -7,6 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
     <title>Weather Station</title>
     <link rel="stylesheet" href="./css/stylesheet.css" type="text/css"/>
+    <link rel="icon" type="image/ico" href="favicon.ico">
     <style type="text/css">
 
       .displayCanvas {
@@ -40,6 +41,7 @@
     <script type="text/javascript" src="widgets/Direction.js"></script>
 
     <script type="text/javascript" src="weather.analog.js"></script>
+
     <script type="text/javascript">
 
   var getQSPrm = function(prm) {
@@ -130,25 +132,26 @@
     
     var totalWidth = TOTAL_WIDTH; // in console.js
     
+
     // TWD
-    document.getElementById('twdCanvas').width = 240 * (Math.min(ww, totalWidth) / totalWidth);
-    document.getElementById('twdCanvas').height = 220 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('twdCanvas').width = 192 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('twdCanvas').height = 176 * (Math.min(ww, totalWidth) / totalWidth);
     // TWS
-    document.getElementById('twsCanvas').width = 240 * (Math.min(ww, totalWidth) / totalWidth);
-    document.getElementById('twsCanvas').height = 220 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('twsCanvas').width = 192 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('twsCanvas').height = 176 * (Math.min(ww, totalWidth) / totalWidth);
     // GUST
-    document.getElementById('gustCanvas').width = 240 * (Math.min(ww, totalWidth) / totalWidth);
-    document.getElementById('gustCanvas').height = 220 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('gustCanvas').width = 192 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('gustCanvas').height = 176 * (Math.min(ww, totalWidth) / totalWidth);
     // TEMP
-    document.getElementById('tmpCanvas').width = 100 * (Math.min(ww, totalWidth) / totalWidth);
-    document.getElementById('tmpCanvas').height = 240 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('tmpCanvas').width = 80 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('tmpCanvas').height = 192 * (Math.min(ww, totalWidth) / totalWidth);
 
     // Baro
-    document.getElementById('baroCanvas').width = 240 * (Math.min(ww, totalWidth) / totalWidth);
-    document.getElementById('baroCanvas').height = 220 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('baroCanvas').width = 192 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('baroCanvas').height = 176 * (Math.min(ww, totalWidth) / totalWidth);
     // Humidity
-    document.getElementById('humCanvas').width = 240 * (Math.min(ww, totalWidth) / totalWidth);
-    document.getElementById('humCanvas').height = 220 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('humCanvas').width = 192 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('humCanvas').height = 176 * (Math.min(ww, totalWidth) / totalWidth);
 
     // Displays inside the canvases        
     resizeDisplays(ww); 
@@ -201,7 +204,7 @@
   <body bgcolor="black">
     <div style="margin-bottom: -4px;">
       <span id="showDisplays" onclick="showDisplays();" class="selectedButton">Displays</span>
-      <span id="showOverview" onclick="showOverview();" class="unselectedButton">Overview</span>
+      <span id="showOverview" onclick="showOverview();" class="unselectedButton">QR Code</span>
       &nbsp;&nbsp;Color Scheme:&nbsp;
       <input type="radio" name="theme" value="black" checked onclick="changeTheme(this.value);">Night&nbsp;
       <input type="radio" name="theme" value="white" onclick="changeTheme(this.value);">Day&nbsp;
@@ -220,16 +223,16 @@
         </tr>
         <tr>
           <td align="center" valign="top" rowspan="1">
-            <canvas id="twdCanvas" width="240" height="220" title="Wind Direction in degrees"></canvas>
+            <canvas id="twdCanvas" width="192" height="176" title="Wind Direction in degrees"></canvas>
           </td>
           <td align="center" valign="top" rowspan="1">
-            <canvas id="twsCanvas" width="240" height="220" title="Wind Speed in knots"></canvas>
+            <canvas id="twsCanvas" width="192" height="176" title="Wind Speed in knots"></canvas>
           </td>
           <td align="center" valign="top" rowspan="1">
-            <canvas id="gustCanvas" width="240" height="220" title="Gust Speed in knots"></canvas>
+            <canvas id="gustCanvas" width="192" height="176" title="Gust Speed in knots"></canvas>
           </td>
           <td align="center" valign="top" rowspan="1">
-            <canvas id="tmpCanvas" width="100" height="240" title="Temperature in Celcius"></canvas>
+            <canvas id="tmpCanvas" width="80" height="192" title="Temperature in Celcius"></canvas>
           </td>
         </tr>
         <tr>
@@ -246,10 +249,10 @@
               </tr>
               <tr>
                 <td align="center" valign="top" rowspan="1">
-                  <canvas id="baroCanvas" width="240" height="220" title="Atmospheric Pressure in hPa"></canvas>
+                  <canvas id="baroCanvas" width="192" height="176" title="Atmospheric Pressure in hPa"></canvas>
                 </td>
                 <td align="center" valign="top" rowspan="1">
-                  <canvas id="humCanvas" width="240" height="220" title="Relative Humidity in %"></canvas>
+                  <canvas id="humCanvas" width="192" height="176" title="Relative Humidity in %"></canvas>
                 </td>
               </tr>
             </table>
@@ -259,7 +262,9 @@
     </div>
     <div id="overview" style="display: none;">
       <p align="center">
-        More soon. Like CPU Temp, Graphs, etc.
+        Scan this QR code from your smart phone or tablet
+        <br>
+        <img src="weather-pi.att.net.jpg">
       </p>
     </div>
     <div id="err-mess"></div>

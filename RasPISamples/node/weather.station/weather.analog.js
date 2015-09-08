@@ -85,12 +85,12 @@ var changeBorder = function(b) {
 var TOTAL_WIDTH = 1200;
 
 var resizeDisplays = function(width) {
-  displayTWS.setDisplaySize(100 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
-  displayGUST.setDisplaySize(100 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
-  displayTWD.setDisplaySize(100 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
-  thermometer.setDisplaySize(200 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
-  displayBaro.setDisplaySize(100 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
-  displayHum.setDisplaySize(100 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+  displayTWS.setDisplaySize(80 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+  displayGUST.setDisplaySize(80 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+  displayTWD.setDisplaySize(80 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+  thermometer.setDisplaySize(160 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+  displayBaro.setDisplaySize(80 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+  displayHum.setDisplaySize(80 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
 };
   
 var twdArray = [];
