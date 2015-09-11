@@ -175,6 +175,7 @@ wsServer.on('request', function(request) {
       };
       // broadcast message to all connected clients. That's what this app is doing.
       var json = JSON.stringify({ type: 'message', data: obj });
+      console.log(">>> NODE server >>> Broadcasting received message to " + clients.length + " client(s) : " + json);
       for (var i=0; i<clients.length; i++) {
         clients[i].sendUTF(json);
       }

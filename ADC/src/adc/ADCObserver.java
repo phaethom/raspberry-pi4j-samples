@@ -58,6 +58,11 @@ public class ADCObserver
   
   private boolean go = true;
   
+  public ADCObserver()
+  {
+    super();  
+  }
+  
   public ADCObserver(MCP3008_input_channels channel)
   {
     this(new MCP3008_input_channels[] { channel })  ;

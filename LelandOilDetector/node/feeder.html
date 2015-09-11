@@ -2,21 +2,16 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Oil Detection / WebSockets</title>
-    <script type="text/javascript" src="widgets/AnalogDisplay.js"></script>
+    <title>Oil Detection / WebSockets, feeder</title>
     <style>
   * { font-family:tahoma; font-size:12px; padding:0px; margin:0px; }
   p { line-height:18px; }
     </style>
     <script type="text/javascript">
   var response = {};
-  var waterDisplayValue;
-  var oilDisplayValue;
   var statusFld;
   
   window.onload = function() {
-    waterDisplayValue = new AnalogDisplay('waterValueCanvas', 100, 100,  10,  1, true, 40);
-    oilDisplayValue   = new AnalogDisplay('oilValueCanvas',   100, 100,  10,  1, true, 40);
     statusFld = document.getElementById("status");
   };
     </script>
@@ -24,7 +19,7 @@
   <body>
     <table width="100%">
       <tr>
-        <td valign="top"><h2>Oil Detection on WebSocket</h2></td>
+        <td valign="top"><h2>Oil Detection on WebSocket - Feeder</h2></td>
       </tr>
       <tr>
         <td align="left">
@@ -37,29 +32,27 @@
         <td valign="top" align="right"><a href="" onclick="javascript:resetStatus(); return false;" title="Clear status board"><small>Reset Status</small></a></td>
       </tr>
       <tr>
-        <td align="center">
+        <td align="center" valign="top">
           <table>
             <tr>
-              <td align="center" valign="top">
-                Water level
-              </td>
-              <td align="center" valign="top">
-                Oil thickness
-              </td>
+              <td>Water level (-1..6)</td>
+              <td><input type="text" id="wl" value="-1" style="text-align: right;" size="10"></td>
             </tr>
             <tr>
-              <td align="center" valign="top">
-                <canvas id="waterValueCanvas" width="240" height="220" title="Water Level"></canvas>
-              </td>
-              <td align="center" valign="top">
-                <canvas id="oilValueCanvas" width="240" height="220" title="Oil Level"></canvas>
-              </td>
+              <td>Oil Thickness (0..6)</td>
+              <td><input type="text" id="ot" value="0" style="text-align: right;" size="10"></td>
+            </tr>
+            <tr>
+              <td colspan="2" align="center"><input type="button" value="Set" onclick="sendValue();"></td>
             </tr>
           </table>
         </td>
-      </tr>        
+      </tr>
+      <tr>
+        <td><input type="button" value="Send CLEAN message" onclick="sendClean();"></td>
+      </tr>
     </table>  
     <hr>
-    <script src="./client.js"></script>
+    <script src="./feeder.js"></script>
   </body>
 </html>

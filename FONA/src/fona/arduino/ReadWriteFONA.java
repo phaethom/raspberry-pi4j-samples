@@ -41,6 +41,7 @@ public class ReadWriteFONA
   private static Method NETWORK_PARSER;
   private static Method NUM_MESS_PARSER;
   private static Method MESS_PARSER;
+  private static Method ON_SENT_OK;
   // All methods have the same signature, void function(String).
   static 
   {
@@ -55,6 +56,7 @@ public class ReadWriteFONA
     try { NETWORK_PARSER           = ReadWriteFONA.class.getMethod("networkParser",          String.class); } catch (Exception ex) { ex.printStackTrace(); }
     try { NUM_MESS_PARSER          = ReadWriteFONA.class.getMethod("numberOfMessagesParser", String.class); } catch (Exception ex) { ex.printStackTrace(); }
     try { MESS_PARSER              = ReadWriteFONA.class.getMethod("readMessageParser",      String.class); } catch (Exception ex) { ex.printStackTrace(); }
+    try { ON_SENT_OK               = ReadWriteFONA.class.getMethod("onSendOK",               String.class); } catch (Exception ex) { ex.printStackTrace(); }
   }
 
   public enum ArduinoMessagePrefix
@@ -74,7 +76,7 @@ public class ReadWriteFONA
     READ_OK       (">> MESSNUM:",            "Read Message OK",                MESS_PARSER),
     DEL_OK        (">> DEL OK",              "Delete message OK",              GENERIC_SUCCESS_PARSER),
     DEL_FAILED    (">> DEL FAILED",          "Delete Message failed",          GENERIC_FAILURE_PARSER),
-    SEND_OK       (">> SEND OK",             "Send Message OK",                GENERIC_SUCCESS_PARSER),
+    SEND_OK       (">> SEND OK",             "Send Message OK",                ON_SENT_OK),
     SEND_FAILED   (">> SEND FAILED",         "Send Message Failed",            GENERIC_FAILURE_PARSER);
 
     private final String prefix;
@@ -268,6 +270,11 @@ public class ReadWriteFONA
     return ret;
   }
 
+  public void onSendOK(String message)
+  {
+    caller.sendSuccess(message);
+  }
+  
   public void genericSuccessParser(String message)
   {
     caller.genericSuccess(message);

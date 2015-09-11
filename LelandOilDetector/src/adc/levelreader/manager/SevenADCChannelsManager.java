@@ -4,22 +4,25 @@ import adc.ADCContext;
 import adc.ADCListener;
 import adc.ADCObserver;
 
+import adc.levelreader.ADCObserverSimulator;
+
+import adc.levelreader.main.LelandPrototype;
+
 import adc.utils.EscapeSeq;
 
 import java.text.DecimalFormat;
 import java.text.Format;
-import java.text.NumberFormat;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.fusesource.jansi.AnsiConsole;
 
 public class SevenADCChannelsManager
 {
-  private final static int WATER_THRESHOLD = Integer.parseInt(System.getProperty("water.threshold", "50"));
-  private final static int OIL_THRESHOLD   = Integer.parseInt(System.getProperty("oil.threshold", "30"));
+  // Thresholds are in %
+  private final static int WATER_THRESHOLD = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("water.threshold", "50"));
+  private final static int OIL_THRESHOLD   = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("oil.threshold",   "30"));
   
   private final static Format DF4  = new DecimalFormat("#000");
   private final static Format DF32 = new DecimalFormat("#0.00");
@@ -46,7 +49,7 @@ public class SevenADCChannelsManager
   /* Used to smooth the values */
   private final float[] smoothedChannelVolumes = new float[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f };
   private final List<Integer>[] smoothedChannel = new List[7];
-  private final static int WINDOW_WIDTH = Integer.parseInt(System.getProperty("smooth.width", "100")); // For smoothing
+  private final static int WINDOW_WIDTH = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("smooth.width", "10")); // For smoothing
   
 //private int currentLevel = 0;
 
@@ -68,7 +71,12 @@ public class SevenADCChannelsManager
       ADCObserver.MCP3008_input_channels.CH5, 
       ADCObserver.MCP3008_input_channels.CH6
     };
-    obs = new ADCObserver(channel);
+    
+    if ("true".equals(LelandPrototype.getAppProperties().getProperty("simulate.adc", "false")))
+      obs = new ADCObserverSimulator(channel); // Simulator
+    else
+      obs = new ADCObserver(channel);
+    
     
     ADCContext.getInstance().addListener(new ADCListener()
        {
@@ -94,6 +102,7 @@ public class SevenADCChannelsManager
                material = Material.OIL;
              else 
                material = Material.AIR;
+       //    System.out.println("Channel " + ch + ", Material:" + material + ", volume:" + volume + " (smmoth:" + val + ")");
              client.setTypeOfChannel(ch, material, volume); // val);
              
 //           int maxLevel = 0;
@@ -104,6 +113,7 @@ public class SevenADCChannelsManager
 //           }
              
              // DEBUG
+             if (false)
              {
                AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 30 + ch));
                AnsiConsole.out.print("Channel " + ch + ": Value " + lpad(Integer.toString(newValue), " ", 4) + 

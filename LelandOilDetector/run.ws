@@ -10,13 +10,16 @@ CP=./classes
 CP=$CP:$PI4J_HOME/lib/pi4j-core.jar
 CP=$CP:./lib/java_websocket.jar
 CP=$CP:./lib/jansi-1.9.jar
+CP=$CP:./lib/json.jar
 CP=$CP:../ADC/classes
 CP=$CP:../FONA/classes
 #
 # See props.propeties
 #
-CLEANING_DELAY=60
-COMMAND="java $JAVA_OPTS -cp $CP -Dws.uri=ws://localhost:9876/ -Dcleaning.delay=$CLEANING_DELAY adc.levelreader.main.LelandPrototype $*"
-echo Runnig $COMMAND
+JAVA_OPTS=
+JAVA_OPTS="$JAVA_OPTS -client -agentlib:jdwp=transport=dt_socket,server=y,address=1044"
+##
+COMMAND="java $JAVA_OPTS -cp $CP adc.levelreader.main.LelandPrototype $*"
+echo Running $COMMAND
 #
 sudo $COMMAND

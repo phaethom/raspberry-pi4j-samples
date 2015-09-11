@@ -16,6 +16,23 @@ public class SampleClient
     super();
   }
 
+  @Override
+  public void sendSuccess(String dummy)
+  {
+    System.out.println("Message sent successfully.");
+    if (wait4ack != null)
+    {
+      synchronized (wait4ack)
+      {
+        wait4ack.notify();
+        System.out.println("  Waiter notified.");
+      }
+    }
+    else
+    {
+      System.out.println("... wierd. No waiter for Ack.");
+    }
+  }
 
   @Override
   public void ready()
@@ -78,6 +95,27 @@ public class SampleClient
                                       sms.getFrom() + ", " +         
                                       sms.getLen() +  " char(s), " + 
                                       sms.getContent());
+  }
+  
+  private static Thread wait4ack = null;
+  
+  private static void sendAndWait4Ack(ReadWriteFONA fona, String to, String content)
+  {
+    fona.sendMess(to, content);
+    wait4ack = Thread.currentThread();
+    synchronized (wait4ack)
+    {
+      try
+      {
+        wait4ack.wait(5000L);
+      }
+      catch (InterruptedException ie)
+      {
+        ie.printStackTrace();
+      }
+      System.out.println("... Released!");
+    }
+    wait4ack = null;
   }
   
   /**
@@ -150,7 +188,7 @@ public class SampleClient
                 {
                   String to      = userInput("Send to > ");
                   String payload = userInput("Message content > ");
-                  fona.sendMess(to, payload);
+                  sendAndWait4Ack(fona, to, payload);
                 }
                 else
                   System.out.println("Duh?");
@@ -220,4 +258,5 @@ public class SampleClient
     }
     return retString;
   }
+
 }

@@ -11,7 +11,7 @@ var connection;
 
   // open connection
   var rootUri = "ws://" + (document.location.hostname === "" ? "localhost" : document.location.hostname) + ":" +
-                          (document.location.port === "" ? "8080" : document.location.port);
+                          (document.location.port === "" ? "9876" : document.location.port);
   console.log(rootUri);
   connection = new WebSocket(rootUri); // 'ws://localhost:9876');
 
@@ -31,7 +31,7 @@ var connection;
     try {
       var json = JSON.parse(message.data);
     } catch (e) {
-      displayMessage('This doesn\'t look like a valid JSON: ' + message.data);
+      console.log('This doesn\'t look like a valid JSON: ' + message.data);
       return;
     }
 
@@ -40,16 +40,9 @@ var connection;
     if (json.type === 'message') { 
       // it's a single message
       var value = json.data.text;
-      while (value.indexOf("&quot;") > -1) {
-        value = value.replace("&quot;", "\"");
-      }
-      var payload = JSON.parse(value);
-
-   // console.log('Setting value to ' + value);
-      waterDisplayValue.setValue(payload.water);
-      oilDisplayValue.setValue(payload.oil);
+      console.log('Received ' + value);
     } else {
-      displayMessage('Hmm..., I\'ve never seen JSON like this: ' + json);
+      console.log('Hmm..., I\'ve never seen JSON like this: ' + json);
     }
   };
 
@@ -60,11 +53,25 @@ var connection;
    */
   setInterval(function() {
                 if (connection.readyState !== 1) {
-                  displayMessage('Unable to communicate with the WebSocket server. Try again.');
+                  console.log('Unable to communicate with the WebSocket server. Try again.');
                 }
               }, 3000); // Ping
 
 })();
+
+var sendValue = function() {
+  var wl = document.getElementById("wl").value;
+  var ot = document.getElementById("ot").value;
+
+  console.log("Water:" + wl + ", Oil:" + ot);
+  var dataMess = { waterlevel: parseInt(wl), oillevel: (parseInt(wl) + parseInt(ot)) };
+  console.log(dataMess);
+  sendMessage(JSON.stringify({ feed: dataMess }));
+};
+
+var sendClean = function() {
+  sendMessage("CLEAN");
+};
 
 var sendMessage = function(msg) {
   if (!msg) {
