@@ -47,7 +47,7 @@ var connection;
 
    // console.log('Setting value to ' + value);
       waterDisplayValue.setValue(payload.water);
-      oilDisplayValue.setValue(payload.oil);
+      oilDisplayValue.setValue(Math.max(0, payload.oil - payload.water));
     } else {
       displayMessage('Hmm..., I\'ve never seen JSON like this: ' + json);
     }

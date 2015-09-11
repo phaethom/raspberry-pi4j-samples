@@ -33,17 +33,29 @@
       </tr>
       <tr>
         <td align="center" valign="top">
-          <table>
+          <table cellspacing="10">
             <tr>
-              <td>Water level (-1..6)</td>
-              <td><input type="text" id="wl" value="-1" style="text-align: right;" size="10"></td>
+              <td>Water level</td>
+              <td style="vertical-align: center;">
+                <!--input type="text" id="wl" value="-1" style="text-align: right;" size="10"-->
+                <input type="range" id="wl" value="-1" style="text-align: right;" size="20" min="0" max="7" onchange="{ document.getElementById('wlvalue').innerText = this.value; sendValue(); }">
+              </td>
+              <td style="vertical-align: center;">
+                <span id="wlvalue">0</span>
+              </td>
             </tr>
             <tr>
-              <td>Oil Thickness (0..6)</td>
-              <td><input type="text" id="ot" value="0" style="text-align: right;" size="10"></td>
+              <td>Oil Thickness</td>
+              <td style="vertical-align: center;">
+                <!--input type="text" id="ot" value="0" style="text-align: right;" size="10"-->
+                <input type="range" id="ot" value="0" style="text-align: right;" size="20" min="0" max="7" onchange="{ document.getElementById('otvalue').innerText = this.value; sendValue(); }">
+              </td>
+              <td style="vertical-align: center;">
+                <span id="otvalue">0</span>
+              </td>
             </tr>
             <tr>
-              <td colspan="2" align="center"><input type="button" value="Set" onclick="sendValue();"></td>
+              <td colspan="3" align="center"><input type="button" value="Set" onclick="sendValue();"></td>
             </tr>
           </table>
         </td>

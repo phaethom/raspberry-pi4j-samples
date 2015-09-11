@@ -297,14 +297,17 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
       str =        "+---+--------+---------+";
       AnsiConsole.out.println(str);    
     }
-    int waterVolume = (int)(100 * ((maxWaterLevel + 1) / 8d));
-    int oilThickness = (maxOilLevel == -1 ? 0 : (maxOilLevel - maxWaterLevel));
-    int oilVolume   = (int)(100 * ((oilThickness) / 8d));
+    int oilThickness = Math.max(0, maxOilLevel - maxWaterLevel); // (maxOilLevel == -1 ? 0 : (maxOilLevel - (maxWaterLevel == -1 ? 0 : maxWaterLevel)));
+    if (ansiConsole)
+    {
+      str =        "WL:" + maxWaterLevel + ", OL:" + maxOilLevel + ", OT:" + oilThickness + "      ";
+      AnsiConsole.out.println(str);    
+    }
     if (webSocketClient != null)
     {
       JSONObject json = new JSONObject();
-      json.put("water", waterVolume);
-      json.put("oil", oilVolume);
+      json.put("water", maxWaterLevel + 1);
+      json.put("oil", maxOilLevel + 1);
       try { webSocketClient.send(json.toString()); } // [1..100]
       catch (Exception ex) 
       { 
@@ -312,12 +315,14 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
     //  ex.printStackTrace(); 
       }
     }
+//  log(">>> To BusinessLogic (" + maxWaterLevel + ", " + maxOilLevel + ")");
     businessLogic(maxWaterLevel, maxOilLevel);
   }
   
   private static void businessLogic(int waterLevel, int oilLevel)
   {
-    int oilThickness = oilLevel - waterLevel;
+//  log(">>> In BusinessLogic (" + waterLevel + ", " + oilLevel + ")");
+    int oilThickness = Math.max(0, oilLevel - waterLevel);
     currentWaterLevel   = waterLevel;
     currentOilThickness = oilThickness;
     
@@ -730,7 +735,8 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
       while (keepWaiting && !currentStatus.equals(ProcessStatus.ALL_OK))
       {
         delay(10); // in seconds
-        if ((System.currentTimeMillis() - started) > (cleaningDelay * 1000)) // Expired
+        if (!currentStatus.equals(ProcessStatus.ALL_OK) && 
+            (System.currentTimeMillis() - started) > (cleaningDelay * 1000)) // Expired
         {
           // Next status level.
           log("Your cleaning delay (" + cleaningDelay + ") has expired. Going to the next level");
@@ -770,6 +776,7 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
           }
         }
       }
+      log("  >>> " + this.getClass().getName() + " completed.");
     }
   }
 }

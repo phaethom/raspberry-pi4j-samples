@@ -64,7 +64,7 @@ var sendValue = function() {
   var ot = document.getElementById("ot").value;
 
   console.log("Water:" + wl + ", Oil:" + ot);
-  var dataMess = { waterlevel: parseInt(wl), oillevel: (parseInt(wl) + parseInt(ot)) };
+  var dataMess = { waterlevel: parseInt(wl) - 1, oillevel: (parseInt(wl) - 1 + parseInt(ot)) };
   console.log(dataMess);
   sendMessage(JSON.stringify({ feed: dataMess }));
 };

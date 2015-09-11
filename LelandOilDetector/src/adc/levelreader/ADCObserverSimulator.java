@@ -45,7 +45,7 @@ public class ADCObserverSimulator
 
   private static void broadcastLevels(int wl, int ol)
   {
-    LelandPrototype.displayAppMess("           >>> Sim >>>  WL: " + wl + ", OL: " + ol);
+//  LelandPrototype.displayAppMess("           >>> Sim >>>  WL: " + wl + ", OL: " + ol);
     currentWaterLevel = wl;
     currentOilLevel   = ol;
   }
