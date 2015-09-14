@@ -23,7 +23,9 @@ dependencies {
   compile project(':RangeSensor')
   compile project(':PIR')
   compile project(':Relay')
+  compile project(':FONA')
   compile project(':RasPISamples')
+  compile project(':LelandOilDetector')
   compile project(':Scala.101')
 }
 

@@ -25,4 +25,5 @@ buildProject FONA
 buildProject Relay
 buildProject WeatherStation
 buildProject RasPiSamples
+buildProject LelandOilDetector
 echo Done!

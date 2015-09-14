@@ -11,7 +11,23 @@ import java.util.Date;
 import org.fusesource.jansi.AnsiConsole;
 
 import adc.levelreader.manager.AirWaterOilInterface;
+import adc.levelreader.manager.PushButtonObserver;
 import adc.levelreader.manager.SevenADCChannelsManager;
+
+import com.pi4j.io.gpio.GpioController;
+
+import com.pi4j.io.gpio.GpioFactory;
+
+import com.pi4j.io.gpio.GpioPinDigitalInput;
+
+import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.PinPullResistance;
+import com.pi4j.io.gpio.RaspiPin;
+
+import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
+import com.pi4j.io.gpio.event.GpioPinListener;
+
+import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 import fona.arduino.FONAClient;
 
@@ -57,7 +73,7 @@ import relay.RelayManager;
  * - a WebSocket server (node.js)
  *       also provides a web interface
  */
-public class LelandPrototype implements AirWaterOilInterface, FONAClient
+public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushButtonObserver
 {
   private final static boolean ansiConsole = true;
   private final static String LOG_FILE = "log.log";
@@ -74,6 +90,9 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
   private static WebSocketClient webSocketClient = null;
   private static ReadWriteFONA smsProvider = null;
   private static RelayManager rm = null;
+  private static Pin RESET_PI = RaspiPin.GPIO_10; // GPIO_10, CE0, #24
+  
+  private static final GpioController gpio = GpioFactory.getInstance();;
   
   private static String wsUri = "";
   private static String phoneNumber_1 = "", 
@@ -119,7 +138,35 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
     {
       data[i] = new LevelMaterial<Float, SevenADCChannelsManager.Material>(0f, SevenADCChannelsManager.Material.UNKNOWN);
     }
+    
+    final GpioPinDigitalInput resetButton = gpio.provisionDigitalInputPin(RESET_PI, PinPullResistance.PULL_DOWN);
+    resetButton.addListener(new GpioPinListenerDigital() {
+      @Override
+      public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
+        if (event.getState().isHigh())
+          onButtonPressed();
+      }
+    });
   }
+  
+  @Override
+  public void onButtonPressed()
+  {
+    log(">>> Reset button has been pressed.");
+    RelayManager.RelayState status = rm.getStatus("00");
+    // log("Relay is:" + status);
+    if (RelayManager.RelayState.OFF.equals(status))
+    {
+      log("Turning relay back on.");
+      try { rm.set("00", RelayManager.RelayState.ON); }
+      catch (Exception ex)
+      {
+        System.err.println(ex.toString());
+      }
+    }
+
+  }
+
     
   private static void initWebSocketConnection(String serverURI)
   {
@@ -703,6 +750,7 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient
            {
              me.notify();
            }
+           gpio.shutdown();
            System.out.println("Program stopped by user's request.");
          }
        });
