@@ -27,7 +27,7 @@ http://192.168.1.1:9876/data/display.html
 
 The relay will turn off when the value read from the ADC means 'Oil', just before the poil reaches the pump.
 
-![Wiring](doc/bold.png "Wiring")
+![Wiring](doc/bold.wiring.png "Wiring")
 
 ## Wiring
 ### Arduino - FONA
@@ -61,3 +61,4 @@ The momentary switch uses the 5V and the Raspberry PI's' `CE0` (#24, GPIO_10).
 
 The relay uses the 5V and the GND, the IN connects to the Raspberry PI's GPIO_00 (#11).
 
+![Prototype](doc/prototype.png "Prototype")

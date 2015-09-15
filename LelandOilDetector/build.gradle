@@ -1,5 +1,9 @@
-apply plugin: 'java'
-apply plugin: 'maven'
+plugins {
+  id 'java'
+  id 'maven'
+  id 'com.moowork.node' version '0.10'
+  id 'com.github.johnrengelman.shadow' version '1.2.2'
+}
 
 def userprofile = System.getenv()['USERPROFILE'] // On Windows...
 if (userprofile == null) { // Linux ?
@@ -55,15 +59,16 @@ task tellMeProxy (description: "Spits out the proxy settings.") << {
 
 // compileJava.dependsOn(tellMeProxy)
 
-//task nodeserver  << {
-//  exec {
-//    workingDir "./node"
-//    executable "node"
-//    args "server.js &"
-//  }
-//}
+task runNodeServer(type: NodeTask) {
+  script = file('./node/server.js')
+//args = ['&']
+  execOverrides {
+    it.ignoreExitValue = true
+//  it.workingDir = './node'
+  }
+}
 
-task run(type: JavaExec, dependsOn: build, description: "Run it.") {
+task run(type: JavaExec, dependsOn: [ build, runNodeServer ], description: "Run it.") {
   main = 'adc.levelreader.main.LelandPrototype'   
   classpath project.configurations.default 
   classpath sourceSets.main.output.classesDir
