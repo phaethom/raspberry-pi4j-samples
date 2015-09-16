@@ -2,7 +2,7 @@
  * @author Olivier Le Diouris
  */
 var displayTWD, displayTWS, displayGUST, thermometer, 
-    displayBaro, displayHum;
+    displayBaro, displayHum, cpuTemp;
     
 var init = function() {
   displayTWD      = new Direction('twdCanvas', 100, 45, 5, true);
@@ -13,6 +13,7 @@ var init = function() {
   thermometer     = new Thermometer('tmpCanvas', 200);
   displayBaro     = new AnalogDisplay('baroCanvas', 100, 1040,  10,  1, true, 40, 980);
   displayHum      = new AnalogDisplay('humCanvas',  100,  100,  10,  1, true, 40);
+  cpuTemp         = new Thermometer('cpuCanvas', 200);
 };
 
 var initWS = function() {
@@ -82,15 +83,16 @@ var changeBorder = function(b) {
   displayHum.setBorder(b);
 };
 
-var TOTAL_WIDTH = 1200;
+var TOTAL_WIDTH = 800;
 
-var resizeDisplays = function(width) {
-  displayTWS.setDisplaySize(80 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
-  displayGUST.setDisplaySize(80 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
-  displayTWD.setDisplaySize(80 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
-  thermometer.setDisplaySize(160 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
-  displayBaro.setDisplaySize(80 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
-  displayHum.setDisplaySize(80 * (Math.min(width, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+var resizeDisplays = function(wwidth) {
+  displayTWS.setDisplaySize(80 * (Math.min(wwidth, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+  displayGUST.setDisplaySize(80 * (Math.min(wwidth, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+  displayTWD.setDisplaySize(80 * (Math.min(wwidth, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+  thermometer.setDisplaySize(160 * (Math.min(wwidth, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+  displayBaro.setDisplaySize(80 * (Math.min(wwidth, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+  displayHum.setDisplaySize(80 * (Math.min(wwidth, TOTAL_WIDTH) / TOTAL_WIDTH)); 
+  cpuTemp.setDisplaySize(160 * (Math.min(wwidth, TOTAL_WIDTH) / TOTAL_WIDTH)); 
 };
   
 var twdArray = [];
@@ -142,20 +144,24 @@ var setValues = function(doc) {
       // Average
 //    displayTWD.animate(averageDir(twdArray));
       displayTWD.setValue(averageDir(twdArray));
+      document.getElementById('winddir-ok').checked = true;
     } catch (err) {
       errMess += ((errMess.length > 0?"\n":"") + "Problem with TWD...");
 //    displayTWD.animate(0.0);
       displayTWD.setValue(0.0);
+      document.getElementById('winddir-ok').checked = false;
     }
 
     try {
       var tws = parseFloat(json.speed.toFixed(2));
       displayTWS.animate(tws);
 //    displayTWS.setValue(tws);
+      document.getElementById('windspeed-ok').checked = true;
     } catch (err) {
       errMess += ((errMess.length > 0?"\n":"") + "Problem with TWS...");
 //    displayTWS.animate(0.0);
       displayTWS.setValue(0.0);
+      document.getElementById('windspeed-ok').checked = false;
     }
     try {
       var gust = parseFloat(json.gust.toFixed(2));
@@ -170,18 +176,22 @@ var setValues = function(doc) {
       var temp = parseFloat(json.temp.toFixed(1));
 //    thermometer.animate(temp);
       thermometer.setValue(temp);
+      document.getElementById('airtemp-ok').checked = true;
     } catch (err) {
       errMess += ((errMess.length > 0?"\n":"") + "Problem with temperature...");
 //    thermometer.animate(0.0);
       thermometer.setValue(0.0);
+      document.getElementById('airtemp-ok').checked = false;
     }
     try {
       var baro = parseFloat(json.press / 100);
-      if (baro != 0) {
+      if (!isNaN(baro) && baro != 0) {
         displayBaro.animate(baro);
 //      displayBaro.setValue(baro);
       }
+      document.getElementById('press-ok').checked = (!isNaN(baro) && baro != 0);
     } catch (err) {
+      document.getElementById('press-ok').checked = false;
 //    errMess += ((errMess.length > 0?"\n":"") + "Problem with air Barometric_Pressure...");
 //    displayBaro.animate(0.0);
 //    displayBaro.setValue(1013.0);
@@ -193,6 +203,7 @@ var setValues = function(doc) {
         if (hum > 0) {
           displayHum.animate(hum);
   //      displayHum.setValue(hum);
+          document.getElementById('hum-ok').checked = true;
         }
       } else {
         document.getElementById('humCanvas').style.display = 'none';
@@ -202,6 +213,18 @@ var setValues = function(doc) {
       document.getElementById('humCanvas').style.display = 'none';
 //    displayHum.animate(0.0);
       displayHum.setValue(0.0);
+      document.getElementById('hum-ok').checked = false;
+    }
+    try {
+      var cpu = parseFloat(json.cputemp.toFixed(1));
+//    thermometer.animate(cpu);
+      cpuTemp.setValue(cpu);
+      document.getElementById('cputemp-ok').checked = true;
+    } catch (err) {
+      errMess += ((errMess.length > 0?"\n":"") + "Problem with CPU temperature...");
+//    thermometer.animate(0.0);
+      cpuTemp.setValue(0.0);
+      document.getElementById('cputemp-ok').checked = false;
     }
 
     if (errMess !== undefined) {

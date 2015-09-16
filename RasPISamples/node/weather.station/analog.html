@@ -62,20 +62,22 @@
     return value;
   };      
 
-  var setup = function(b1, b2) {
+  var setup = function(b1, b2, b3) {
     // divs
-    document.getElementById('displays').style.display = (b1 === true ? 'inline' : 'none');
-    document.getElementById('overview').style.display = (b2 === true ? 'inline' : 'none');
+    document.getElementById('displays-1').style.display = (b1 === true ? 'inline' : 'none');
+    document.getElementById('displays-2').style.display = (b2 === true ? 'inline' : 'none');
+    document.getElementById('overview').style.display = (b3 === true ? 'inline' : 'none');
     // buttons
-    document.getElementById('showDisplays').className = (b1 === true ? 'selectedButton' : 'unselectedButton');
-    document.getElementById('showOverview').className = (b2 === true ? 'selectedButton' : 'unselectedButton');
+    document.getElementById('showDisplays1').className = (b1 === true ? 'selectedButton' : 'unselectedButton');
+    document.getElementById('showDisplays2').className = (b2 === true ? 'selectedButton' : 'unselectedButton');
+    document.getElementById('showOverview').className = (b3 === true ? 'selectedButton' : 'unselectedButton');
   };  
 
-  var showDisplays = function() {
-  	setup(true, false);
+  var showDisplays = function(tab) {
+  	setup(tab==1?true:false, tab==2?true:false, false);
   };  
   var showOverview = function() {
-  	setup(false, true);
+  	setup(false, false, true);
   };    
   
   window.onload = function() {
@@ -152,6 +154,9 @@
     // Humidity
     document.getElementById('humCanvas').width = 192 * (Math.min(ww, totalWidth) / totalWidth);
     document.getElementById('humCanvas').height = 176 * (Math.min(ww, totalWidth) / totalWidth);
+    // CPU TEMP
+    document.getElementById('cpuCanvas').width = 80 * (Math.min(ww, totalWidth) / totalWidth);
+    document.getElementById('cpuCanvas').height = 192 * (Math.min(ww, totalWidth) / totalWidth);
 
     // Displays inside the canvases        
     resizeDisplays(ww); 
@@ -203,7 +208,8 @@
   </head>
   <body bgcolor="black">
     <div style="margin-bottom: -4px;">
-      <span id="showDisplays" onclick="showDisplays();" class="selectedButton">Displays</span>
+      <span id="showDisplays1" onclick="showDisplays(1);" class="selectedButton">Displays 1</span>
+      <span id="showDisplays2" onclick="showDisplays(2);" class="unselectedButton">Displays 2</span>
       <span id="showOverview" onclick="showOverview();" class="unselectedButton">QR Code</span>
       &nbsp;&nbsp;Color Scheme:&nbsp;
       <input type="radio" name="theme" value="black" checked onclick="changeTheme(this.value);">Night&nbsp;
@@ -212,62 +218,88 @@
       <input type="checkbox" id="with-border" checked onclick="changeBorder(this.checked);">With Border
     </div>
     <hr>
-    <div id="displays" style="display: inline;">
-      <!-- Analog Displays -->
-      <table align="center" border="0">
-        <tr>
-          <td align="center">Wind Dir in &deg;</td>
-          <td align="center">Wind in knots</td>
-          <td align="center">Gusts in knots</td>
-          <td align="center">Air&deg;C</td>
-        </tr>
-        <tr>
-          <td align="center" valign="top" rowspan="1">
-            <canvas id="twdCanvas" width="192" height="176" title="Wind Direction in degrees"></canvas>
-          </td>
-          <td align="center" valign="top" rowspan="1">
-            <canvas id="twsCanvas" width="192" height="176" title="Wind Speed in knots"></canvas>
-          </td>
-          <td align="center" valign="top" rowspan="1">
-            <canvas id="gustCanvas" width="192" height="176" title="Gust Speed in knots"></canvas>
-          </td>
-          <td align="center" valign="top" rowspan="1">
-            <canvas id="tmpCanvas" width="80" height="192" title="Temperature in Celcius"></canvas>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="4">
-            <hr/>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" colspan="4">
-            <table>
+    <table border="0">
+      <tr>
+        <td valign="top">
+          <b>Available Data</b>
+          <hr>
+          <input type="checkbox" id="winddir-ok" disabled="true">Wind Direction
+          <br>
+          <input type="checkbox" id="windspeed-ok" disabled="true">Wind Speed
+          <br>
+          <input type="checkbox" id="airtemp-ok" disabled="true">Air Temp
+          <br>
+          <input type="checkbox" id="press-ok" disabled="true">Pressure
+          <br>
+          <input type="checkbox" id="hum-ok" disabled="true">Humidity
+          <br>
+          <input type="checkbox" id="cputemp-ok" disabled="true">CPU Temp
+        </td>
+        <td>
+          <div id="displays-1" style="display: inline;">
+            <!-- Analog Displays -->
+            <table align="center" border="0">
               <tr>
-                <td align="center">Barometer in hPa</td>
-                <td align="center">Rel. Humidity in %</td>
+                <td align="center">Wind Dir in &deg;</td>
+                <td align="center">Wind in knots</td>
+                <td align="center">Gusts in knots</td>
+                <td align="center">Air&deg;C</td>
               </tr>
               <tr>
                 <td align="center" valign="top" rowspan="1">
-                  <canvas id="baroCanvas" width="192" height="176" title="Atmospheric Pressure in hPa"></canvas>
+                  <canvas id="twdCanvas" width="192" height="176" title="Wind Direction in degrees"></canvas>
                 </td>
                 <td align="center" valign="top" rowspan="1">
-                  <canvas id="humCanvas" width="192" height="176" title="Relative Humidity in %"></canvas>
+                  <canvas id="twsCanvas" width="192" height="176" title="Wind Speed in knots"></canvas>
+                </td>
+                <td align="center" valign="top" rowspan="1">
+                  <canvas id="gustCanvas" width="192" height="176" title="Gust Speed in knots"></canvas>
+                </td>
+                <td align="center" valign="top" rowspan="1">
+                  <canvas id="tmpCanvas" width="80" height="192" title="Air Temperature in Celcius"></canvas>
                 </td>
               </tr>
-            </table>
-          </td>
-        </tr>
-      </table>   
-    </div>
-    <div id="overview" style="display: none;">
-      <p align="center">
-        Scan this QR code from your smart phone or tablet
-        <br>
-        <img src="weather-pi.att.net.jpg">
-      </p>
-    </div>
-    <div id="err-mess"></div>
+            </table>   
+          </div>
+          <div id="displays-2" style="display: none;">
+            <!-- Analog Displays -->
+            <table align="center" border="0">
+              <tr>
+                <td align="center" colspan="4">
+                  <table>
+                    <tr>
+                      <td align="center">Barometer in hPa</td>
+                      <td align="center">Rel. Humidity in %</td>
+                      <td align="center">CPU Temp&deg;C</td>
+                    </tr>
+                    <tr>
+                      <td align="center" valign="top" rowspan="1">
+                        <canvas id="baroCanvas" width="192" height="176" title="Atmospheric Pressure in hPa"></canvas>
+                      </td>
+                      <td align="center" valign="top" rowspan="1">
+                        <canvas id="humCanvas" width="192" height="176" title="Relative Humidity in %"></canvas>
+                      </td>
+                      <td align="center" valign="top" rowspan="1">
+                        <canvas id="cpuCanvas" width="80" height="192" title="CPU Temperature in Celcius"></canvas>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>   
+          </div>
+          <div id="overview" style="display: none;">
+            <p align="center">
+              Scan this QR code from your smart phone or tablet
+              <br>
+              <img src="weather-pi.att.net.jpg">
+            </p>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <div id="err-mess" style="display: none;"></div>
+    <hr>
     <address>The HTML5 Weather Console</address>
   </body>
 </html>
