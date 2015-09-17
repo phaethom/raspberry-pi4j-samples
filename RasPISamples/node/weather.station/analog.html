@@ -38,6 +38,7 @@
     <link rel="stylesheet" href="css/black.css" type="text/css" id="theme"/>
     <script type="text/javascript" src="widgets/AnalogDisplay.js"></script>
     <script type="text/javascript" src="widgets/Thermometer.js"></script>
+    <script type="text/javascript" src="widgets/Pluviometer.js"></script>
     <script type="text/javascript" src="widgets/Direction.js"></script>
 
     <script type="text/javascript" src="weather.analog.js"></script>
@@ -66,11 +67,11 @@
     // divs
     document.getElementById('displays-1').style.display = (b1 === true ? 'inline' : 'none');
     document.getElementById('displays-2').style.display = (b2 === true ? 'inline' : 'none');
-    document.getElementById('overview').style.display = (b3 === true ? 'inline' : 'none');
+    document.getElementById('overview').style.display   = (b3 === true ? 'inline' : 'none');
     // buttons
     document.getElementById('showDisplays1').className = (b1 === true ? 'selectedButton' : 'unselectedButton');
     document.getElementById('showDisplays2').className = (b2 === true ? 'selectedButton' : 'unselectedButton');
-    document.getElementById('showOverview').className = (b3 === true ? 'selectedButton' : 'unselectedButton');
+    document.getElementById('showOverview').className  = (b3 === true ? 'selectedButton' : 'unselectedButton');
   };  
 
   var showDisplays = function(tab) {
@@ -233,6 +234,8 @@
           <br>
           <input type="checkbox" id="hum-ok" disabled="true">Humidity
           <br>
+          <input type="checkbox" id="rain-ok" disabled="true">Rain
+          <br>
           <input type="checkbox" id="cputemp-ok" disabled="true">CPU Temp
         </td>
         <td>
@@ -270,6 +273,7 @@
                     <tr>
                       <td align="center">Barometer in hPa</td>
                       <td align="center">Rel. Humidity in %</td>
+                      <td align="center">Rain in mm/h</td>
                       <td align="center">CPU Temp&deg;C</td>
                     </tr>
                     <tr>
@@ -278,6 +282,9 @@
                       </td>
                       <td align="center" valign="top" rowspan="1">
                         <canvas id="humCanvas" width="192" height="176" title="Relative Humidity in %"></canvas>
+                      </td>
+                      <td align="center" valign="top">
+                        <canvas id="rainCanvas" width="90" height="165" title="Rain"/> <!-- class="displayCanvas"/-->
                       </td>
                       <td align="center" valign="top" rowspan="1">
                         <canvas id="cpuCanvas" width="80" height="192" title="CPU Temperature in Celcius"></canvas>

@@ -2,7 +2,7 @@
  * @author Olivier Le Diouris
  */
 var displayTWD, displayTWS, displayGUST, thermometer, 
-    displayBaro, displayHum, cpuTemp;
+    displayBaro, displayHum, cpuTemp, displayRain;
     
 var init = function() {
   displayTWD      = new Direction('twdCanvas', 100, 45, 5, true);
@@ -13,6 +13,7 @@ var init = function() {
   thermometer     = new Thermometer('tmpCanvas', 200);
   displayBaro     = new AnalogDisplay('baroCanvas', 100, 1040,  10,  1, true, 40, 980);
   displayHum      = new AnalogDisplay('humCanvas',  100,  100,  10,  1, true, 40);
+  displayRain     = new Pluviometer('rainCanvas');
   cpuTemp         = new Thermometer('cpuCanvas', 200);
 };
 
@@ -188,13 +189,15 @@ var setValues = function(doc) {
       if (!isNaN(baro) && baro != 0) {
         displayBaro.animate(baro);
 //      displayBaro.setValue(baro);
+      } else {
+        displayBaro.setValue(980.0);
       }
       document.getElementById('press-ok').checked = (!isNaN(baro) && baro != 0);
     } catch (err) {
       document.getElementById('press-ok').checked = false;
 //    errMess += ((errMess.length > 0?"\n":"") + "Problem with air Barometric_Pressure...");
 //    displayBaro.animate(0.0);
-//    displayBaro.setValue(1013.0);
+      displayBaro.setValue(980.0);
     }
     try {
       if (json.hum !== undefined) {
@@ -214,6 +217,17 @@ var setValues = function(doc) {
 //    displayHum.animate(0.0);
       displayHum.setValue(0.0);
       document.getElementById('hum-ok').checked = false;
+    }
+    try {
+      var rain = parseFloat(json.rain.toFixed(2));
+      displayRain.animate(rain);
+//    displayTWS.setValue(tws);
+      document.getElementById('rain-ok').checked = true;
+    } catch (err) {
+      errMess += ((errMess.length > 0?"\n":"") + "Problem with Rain...");
+//    displayTWS.animate(0.0);
+      displayRain.setValue(0.0);
+      document.getElementById('rain-ok').checked = false;
     }
     try {
       var cpu = parseFloat(json.cputemp.toFixed(1));
