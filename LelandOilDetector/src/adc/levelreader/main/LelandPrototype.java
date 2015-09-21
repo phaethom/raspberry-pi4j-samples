@@ -75,7 +75,7 @@ import relay.RelayManager;
  */
 public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushButtonObserver
 {
-  private final static boolean ansiConsole = true;
+  private final static boolean ansiConsole = "true".equals(System.getProperty("ansi.console", "false"));
   private final static String LOG_FILE = "log.log";
   
   private static BufferedWriter fileLogger = null;
@@ -167,7 +167,6 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
 
   }
 
-    
   private static void initWebSocketConnection(String serverURI)
   {
     try
@@ -560,7 +559,7 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
       AnsiConsole.out.println(rpad(mess, " ", 80));    
     }
     else
-      log(mess);
+      log("AppMess>> " + mess);
   }
 
   public final static void displayAppErr(Exception ex)
@@ -711,9 +710,7 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
     }
     delay(1);
     
-    final SevenADCChannelsManager sacm = new SevenADCChannelsManager(lp);
-
-    wsUri         = props.getProperty("ws.uri", "ws://localhost:9876/"); 
+    wsUri         = props.getProperty("ws.uri", ""); 
     phoneNumber_1 = props.getProperty("phone.number.1", "14153505547");
     phoneNumber_2 = props.getProperty("phone.number.2", "14153505547");
     phoneNumber_3 = props.getProperty("phone.number.3", "14153505547");
@@ -730,8 +727,19 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
       ex.printStackTrace();
     }    
     
-    initWebSocketConnection(wsUri);
+    if (wsUri.trim().startsWith("ws://"))
+    {
+      log(">>> Connecting to the WebSocket server [" + wsUri + "]");
+      initWebSocketConnection(wsUri);
+    }
+    else
+    {
+      log(">>> No WebSocket server");
+      delay(1);
+    }
     
+    final SevenADCChannelsManager sacm = new SevenADCChannelsManager(lp);
+
     // CLS
     if (ansiConsole)
       AnsiConsole.out.println(EscapeSeq.ANSI_CLS); 

@@ -10,6 +10,8 @@ import adc.levelreader.main.LelandPrototype;
 
 import adc.utils.EscapeSeq;
 
+import adc.utils.LowPassFilter;
+
 import java.text.DecimalFormat;
 import java.text.Format;
 
@@ -21,8 +23,9 @@ import org.fusesource.jansi.AnsiConsole;
 public class SevenADCChannelsManager
 {
   // Thresholds are in %
-  private final static int WATER_THRESHOLD = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("water.threshold", "50"));
-  private final static int OIL_THRESHOLD   = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("oil.threshold",   "30"));
+  private final static int WATER_THRESHOLD = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("water.threshold",      "50"));
+  private final static int OIL_THRESHOLD   = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("oil.threshold",        "30"));
+  private final static double ALFA         = Double.parseDouble(LelandPrototype.getAppProperties().getProperty("low.pass.filter.alfa", "0.5"));
   
   private final static Format DF4  = new DecimalFormat("#000");
   private final static Format DF32 = new DecimalFormat("#0.00");
@@ -83,15 +86,17 @@ public class SevenADCChannelsManager
          @Override
          public void valueUpdated(ADCObserver.MCP3008_input_channels inputChannel, int newValue) 
          {
+           // new value [0, 1023] ~ [0x0000, 0x03FF] ~ [0&0, 0&1111111111]
 //         if (inputChannel.equals(channel))
            {
              int ch = inputChannel.ch();
-             int volume = (int)(newValue / 10.23); // [0, 1023] ~ [0x0000, 0x03FF] ~ [0&0, 0&1111111111]
+             int volume = (int)(newValue / 10.23); // volume in % [0..100]. 
              channelValues[ch]  = newValue; 
              channelVolumes[ch] = volume;
              
              smoothedChannel[ch].add(volume);
              while (smoothedChannel[ch].size() > WINDOW_WIDTH) smoothedChannel[ch].remove(0);
+          // smoothedChannel[ch] = LowPassFilter.lowPass2(smoothedChannel[ch], 0.5);
              smoothedChannelVolumes[ch] = smooth(ch);
                    
              Material material = Material.UNKNOWN;
@@ -113,7 +118,7 @@ public class SevenADCChannelsManager
 //           }
              
              // DEBUG
-             if (false)
+             if ("true".equals(System.getProperty("debug", "false")))
              {
                AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 30 + ch));
                AnsiConsole.out.print("Channel " + ch + ": Value " + lpad(Integer.toString(newValue), " ", 4) + 
@@ -145,13 +150,22 @@ public class SevenADCChannelsManager
       obs.stop();    
   }
 
+  
   private float smooth(int ch)
   {
     float size = smoothedChannel[ch].size();
     float sigma = 0;
-    for (int v : smoothedChannel[ch])
-      sigma += v;
-    
+    if (false)
+    {
+      for (int v : smoothedChannel[ch])
+        sigma += v;
+    }
+    else
+    {
+      List<Integer> lpf = LowPassFilter.lowPass2(smoothedChannel[ch], ALFA);
+      for (int v : lpf)
+        sigma += v;
+    }
     return sigma / size;
   }
   
