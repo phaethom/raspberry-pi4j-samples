@@ -12,6 +12,8 @@ import adc.utils.EscapeSeq;
 
 import adc.utils.LowPassFilter;
 
+import java.io.IOException;
+
 import java.text.DecimalFormat;
 import java.text.Format;
 
@@ -45,7 +47,7 @@ public class SevenADCChannelsManager
    * - Air   : less than 30%
    */
   
-  private static ADCObserver.MCP3008_input_channels channel[] = null;
+  protected static ADCObserver.MCP3008_input_channels channel[] = null;
   private final int[] channelValues  = new int[] { 0, 0, 0, 0, 0, 0, 0 }; // [0..1023]
   private final int[] channelVolumes = new int[] { 0, 0, 0, 0, 0, 0, 0 }; // [0..100] %
   
@@ -90,6 +92,21 @@ public class SevenADCChannelsManager
 //         if (inputChannel.equals(channel))
            {
              int ch = inputChannel.ch();
+             
+             if ("true".equals(LelandPrototype.getAppProperties().getProperty("log.channels", "false")))
+             {
+               try
+               {
+                 String data = Integer.toString(newValue) + ";";
+                 LelandPrototype.getChannelLoggers()[ch].write(data);
+                 LelandPrototype.getChannelLoggers()[ch].flush();
+               }
+               catch (IOException ioe)
+               {
+                 ioe.printStackTrace();
+               }
+             }
+             
              int volume = (int)(newValue / 10.23); // volume in % [0..100]. 
              channelValues[ch]  = newValue; 
              channelVolumes[ch] = volume;
@@ -141,6 +158,11 @@ public class SevenADCChannelsManager
         }
       };
     observer.start();         
+  }
+  
+  public static ADCObserver.MCP3008_input_channels[] getChannel()
+  {
+    return channel;  
   }
   
   public void quit()

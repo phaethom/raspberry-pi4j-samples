@@ -39,6 +39,8 @@ import java.io.IOException;
 
 import java.net.URI;
 
+import java.text.Format;
+
 import java.util.Properties;
 
 import org.java_websocket.client.WebSocketClient;
@@ -77,8 +79,12 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
 {
   private final static boolean ansiConsole = "true".equals(System.getProperty("ansi.console", "false"));
   private final static String LOG_FILE = "log.log";
+  public final static Format CHANNEL_NF = new DecimalFormat("00");
+  public final static String CHANNEL_PREFIX = "channel_";
+  public final static String CHANNEL_SUFFIX = ".csv"; 
   
   private static BufferedWriter fileLogger = null;
+  private static BufferedWriter[] channelLogger = null;
   
   private static Properties props = null;
   
@@ -636,6 +642,11 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
     return props;  
   }
   
+  public static BufferedWriter[] getChannelLoggers() 
+  {
+    return channelLogger;
+  }
+  
   public static void log(String s)
   {
     if (fileLogger != null)
@@ -687,7 +698,7 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
 
     LelandPrototype lp = new LelandPrototype();
     final ReadWriteFONA fona;
-    
+
     if ("true".equals(props.getProperty("with.fona", "false")))
     {
       System.setProperty("baud.rate",   props.getProperty("baud.rate"));
@@ -740,6 +751,15 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
     
     final SevenADCChannelsManager sacm = new SevenADCChannelsManager(lp);
 
+    if ("true".equals(props.getProperty("log.channels", "false")))
+    {
+      channelLogger = new BufferedWriter[SevenADCChannelsManager.getChannel().length];
+      for (int i=0; i<SevenADCChannelsManager.getChannel().length; i++)
+      {
+        channelLogger[i] = new BufferedWriter(new FileWriter(CHANNEL_PREFIX + CHANNEL_NF.format(i) + CHANNEL_SUFFIX));
+      }
+    }
+
     // CLS
     if (ansiConsole)
       AnsiConsole.out.println(EscapeSeq.ANSI_CLS); 
@@ -759,6 +779,20 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
              me.notify();
            }
            gpio.shutdown();
+           if (channelLogger != null)
+           {
+             try
+             {
+               for (BufferedWriter bw : channelLogger)
+               {
+                 bw.close();
+               }
+             }
+             catch (Exception ex)
+             {
+               ex.printStackTrace();
+             }
+           }
            System.out.println("Program stopped by user's request.");
          }
        });
