@@ -29,6 +29,8 @@ public class SevenADCChannelsManager
   private final static int OIL_THRESHOLD   = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("oil.threshold",        "30"));
   private final static double ALFA         = Double.parseDouble(LelandPrototype.getAppProperties().getProperty("low.pass.filter.alfa", "0.5"));
   
+  private final static int START_AFTER     = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("start.after",          "30"));
+  
   private final static Format DF4  = new DecimalFormat("#000");
   private final static Format DF32 = new DecimalFormat("#0.00");
   
@@ -59,6 +61,7 @@ public class SevenADCChannelsManager
 //private int currentLevel = 0;
 
   final ADCObserver obs;
+  private long started = 0;
 
   /* Uses 7 channels among the 8 available */
   public SevenADCChannelsManager(final AirWaterOilInterface client) throws Exception
@@ -125,7 +128,15 @@ public class SevenADCChannelsManager
              else 
                material = Material.AIR;
        //    System.out.println("Channel " + ch + ", Material:" + material + ", volume:" + volume + " (smmoth:" + val + ")");
-             client.setTypeOfChannel(ch, material, volume); // val);
+             // Start after a while
+             long now = System.currentTimeMillis();
+             if ((now - started) > (START_AFTER * 1000))
+               client.setTypeOfChannel(ch, material, volume); // val);
+             else
+             {
+               AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 1));
+               AnsiConsole.out.println("Will start in " + (START_AFTER - ((int)(now - started)/ 1000)) + " s              ");               
+             }
              
 //           int maxLevel = 0;
 //           for (int chan=0; chan<channel.length; chan++)
@@ -154,6 +165,7 @@ public class SevenADCChannelsManager
       {
         public void run()
         {
+          started = System.currentTimeMillis();
           obs.start(-1, 0L); // Tolerance -1: all values
         }
       };
@@ -178,7 +190,7 @@ public class SevenADCChannelsManager
     float size = smoothedChannel[ch].size();
     float sigma = 0;
     if (false)
-    {
+    { // Average
       for (int v : smoothedChannel[ch])
         sigma += v;
     }

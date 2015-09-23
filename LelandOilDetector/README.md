@@ -23,7 +23,7 @@ WebSocket URI can be customized with ws.uri=ws://localhost:9876/
 Default value is ws://localhost:9876/
 
 From any device connected on the RasPI network, reach 
-http://192.168.1.1:9876/data/display.html
+http://192.168.1.1:9876/data/display.html.
 
 The relay will turn off when the value read from the ADC means 'Oil', just before the poil reaches the pump.
 
