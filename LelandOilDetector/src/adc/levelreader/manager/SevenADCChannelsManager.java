@@ -25,11 +25,11 @@ import org.fusesource.jansi.AnsiConsole;
 public class SevenADCChannelsManager
 {
   // Thresholds are in %
-  private final static int WATER_THRESHOLD = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("water.threshold",      "50"));
-  private final static int OIL_THRESHOLD   = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("oil.threshold",        "30"));
+  private final static int WATER_THRESHOLD = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("water.threshold",        "50"));
+  private final static int OIL_THRESHOLD   = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("oil.threshold",          "30"));
   private final static double ALFA         = Double.parseDouble(LelandPrototype.getAppProperties().getProperty("low.pass.filter.alfa", "0.5"));
   
-  private final static int START_AFTER     = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("start.after",          "30"));
+  private final static int START_AFTER     = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("start.after",            "30"));
   
   private final static Format DF4  = new DecimalFormat("#000");
   private final static Format DF32 = new DecimalFormat("#0.00");
@@ -49,7 +49,17 @@ public class SevenADCChannelsManager
    * - Air   : less than 30%
    */
   
-  protected static ADCObserver.MCP3008_input_channels channel[] = null;
+  protected static ADCObserver.MCP3008_input_channels channel[] = new ADCObserver.MCP3008_input_channels[] 
+  {
+    ADCObserver.MCP3008_input_channels.CH0,
+    ADCObserver.MCP3008_input_channels.CH1,
+    ADCObserver.MCP3008_input_channels.CH2,  
+    ADCObserver.MCP3008_input_channels.CH3,  
+    ADCObserver.MCP3008_input_channels.CH4, 
+    ADCObserver.MCP3008_input_channels.CH5, 
+    ADCObserver.MCP3008_input_channels.CH6
+  };
+  
   private final int[] channelValues  = new int[] { 0, 0, 0, 0, 0, 0, 0 }; // [0..1023]
   private final int[] channelVolumes = new int[] { 0, 0, 0, 0, 0, 0, 0 }; // [0..100] %
   
@@ -68,17 +78,6 @@ public class SevenADCChannelsManager
   {
     for (int i=0; i<smoothedChannel.length; i++)
       smoothedChannel[i] = new ArrayList<Integer>(WINDOW_WIDTH);
-    
-    channel = new ADCObserver.MCP3008_input_channels[] 
-    {
-      ADCObserver.MCP3008_input_channels.CH0,
-      ADCObserver.MCP3008_input_channels.CH1,
-      ADCObserver.MCP3008_input_channels.CH2,  
-      ADCObserver.MCP3008_input_channels.CH3,  
-      ADCObserver.MCP3008_input_channels.CH4, 
-      ADCObserver.MCP3008_input_channels.CH5, 
-      ADCObserver.MCP3008_input_channels.CH6
-    };
     
     if ("true".equals(LelandPrototype.getAppProperties().getProperty("simulate.adc", "false")))
       obs = new ADCObserverSimulator(channel); // Simulator
@@ -148,7 +147,7 @@ public class SevenADCChannelsManager
              // DEBUG
              if ("true".equals(System.getProperty("debug", "false")))
              {
-               AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 30 + ch));
+               AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 25 + ch));
                AnsiConsole.out.print("Channel " + ch + ": Value " + lpad(Integer.toString(newValue), " ", 4) + 
                                                        ", " + lpad(Integer.toString(volume), " ", 3) + " (inst)" + 
                                                        ", " + lpad(DF32.format(val), " ", 6) + " (avg)" + 

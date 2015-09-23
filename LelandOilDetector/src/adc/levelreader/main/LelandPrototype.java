@@ -427,7 +427,7 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
     // Debug
     if (ansiConsole)
     {
-      AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 20 + channel));
+      AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 15 + channel));
       Date now = new Date();
       AnsiConsole.out.println(now.toString() + ": Channel " + channel + " >> (" + DF31.format(val) + ") " + materialToString(material) + "       ");
     }
