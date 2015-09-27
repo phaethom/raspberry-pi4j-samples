@@ -25,11 +25,11 @@ import org.fusesource.jansi.AnsiConsole;
 public class SevenADCChannelsManager
 {
   // Thresholds are in %
-  private final static int WATER_THRESHOLD = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("water.threshold",        "50"));
-  private final static int OIL_THRESHOLD   = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("oil.threshold",          "30"));
-  private final static double ALFA         = Double.parseDouble(LelandPrototype.getAppProperties().getProperty("low.pass.filter.alfa", "0.5"));
-  
+  private final static int WATER_THRESHOLD = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("water.threshold",        "75"));
+  private final static int OIL_THRESHOLD   = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("oil.threshold",          "60"));
+  private final static double ALFA         = Double.parseDouble(LelandPrototype.getAppProperties().getProperty("low.pass.filter.alfa",  "0.5"));
   private final static int START_AFTER     = Integer.parseInt(LelandPrototype.getAppProperties().getProperty("start.after",            "30"));
+  private final static long BETWEEN_LOOPS  = Long.parseLong(LelandPrototype.getAppProperties().getProperty("between.loops",           "100"));
   
   private final static Format DF4  = new DecimalFormat("#000");
   private final static Format DF32 = new DecimalFormat("#0.00");
@@ -120,6 +120,7 @@ public class SevenADCChannelsManager
                    
              Material material = Material.UNKNOWN;
              float val =  smoothedChannelVolumes[ch];
+             // Material set with the SMOOTHED value
              if (val > WATER_THRESHOLD)
                material = Material.WATER;
              else if (val > OIL_THRESHOLD)
@@ -130,11 +131,11 @@ public class SevenADCChannelsManager
              // Start after a while
              long now = System.currentTimeMillis();
              if ((now - started) > (START_AFTER * 1000))
-               client.setTypeOfChannel(ch, material, volume); // val);
+               client.setTypeOfChannel(ch, material, val); //volume); // send the smoothed value, and material.
              else
              {
                AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 1));
-               AnsiConsole.out.println("Will start in " + (START_AFTER - ((int)(now - started)/ 1000)) + " s              ");               
+               AnsiConsole.out.println("Will start in " + (START_AFTER - ((int)(now - started)/ 1000)) + " s (" + WATER_THRESHOLD + ", " + OIL_THRESHOLD + ")             ");               
              }
              
 //           int maxLevel = 0;
@@ -165,11 +166,14 @@ public class SevenADCChannelsManager
         public void run()
         {
           started = System.currentTimeMillis();
-          obs.start(-1, 0L); // Tolerance -1: all values
+          obs.start(-1, BETWEEN_LOOPS); // Tolerance -1: all values, pause
         }
       };
     observer.start();         
   }
+  
+  public static int getWaterThreshold() { return WATER_THRESHOLD; }
+  public static int getOilThreshold() { return OIL_THRESHOLD; }
   
   public static ADCObserver.MCP3008_input_channels[] getChannel()
   {

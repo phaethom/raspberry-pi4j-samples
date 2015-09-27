@@ -77,7 +77,10 @@ import relay.RelayManager;
  */
 public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushButtonObserver
 {
+  private final  static int NB_CHANNELS = 7;
+  
   private final static boolean ansiConsole = "true".equals(System.getProperty("ansi.console", "false"));
+  
   private final static String LOG_FILE = "log.log";
   public final static Format CHANNEL_NF = new DecimalFormat("00");
   public final static String CHANNEL_PREFIX = "channel_";
@@ -89,8 +92,13 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
   private static Properties props = null;
   
   private static long cleaningDelay = 0L;  
+  private static int nbSeenInARow   = 40;  
   
   private static LevelMaterial<Float, SevenADCChannelsManager.Material>[] data = null;
+  
+  private static SevenADCChannelsManager.Material[] previousMaterial = new SevenADCChannelsManager.Material[NB_CHANNELS];
+  private static int[] nbSameMaterialInARow = new int[] {0, 0, 0, 0, 0, 0, 0};
+  
   private final static NumberFormat DF31 = new DecimalFormat("000.0");
   private final static NumberFormat DF4  = new DecimalFormat("###0");
   private static WebSocketClient webSocketClient = null;
@@ -139,7 +147,7 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
   public LelandPrototype()
   {
     fonaClient = this;
-    data = new LevelMaterial[7];
+    data = new LevelMaterial[NB_CHANNELS];
     for (int i=0; i<data.length; i++)
     {
       data[i] = new LevelMaterial<Float, SevenADCChannelsManager.Material>(0f, SevenADCChannelsManager.Material.UNKNOWN);
@@ -313,6 +321,7 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
       log(">>> Simulating call to " + to + ", " + content);
   }
   
+  
   // User Interface ... Sovietic! And business logic.
   private static void manageData()
   {
@@ -320,39 +329,65 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
     int maxOilLevel   = -1;
     // Clear the screen, cursor on top left.
     String str = "";
+    int y = 1;
     if (ansiConsole)
     {
    // AnsiConsole.out.println(EscapeSeq.ANSI_CLS); 
-      AnsiConsole.out.println(EscapeSeq.ansiLocate(1, 1));
-      str =        "+---+--------+---------+";
+//    AnsiConsole.out.println(EscapeSeq.ansiLocate(0, y++));
+      // Firts line to erase what was there before starting.
+      AnsiConsole.out.println(EscapeSeq.ansiLocate(0, y++) + 
+                              "WT:" + SevenADCChannelsManager.getWaterThreshold() + 
+                            ", OT:" + SevenADCChannelsManager.getOilThreshold() + "                 ");
+      str = EscapeSeq.ansiLocate(0, y++) + "+---+--------+---------+"; 
       AnsiConsole.out.println(str);
-      str =        "| C |  Vol % |   Mat   |";
+      str = EscapeSeq.ansiLocate(0, y++) + "| C |  Vol % |   Mat   |";
       AnsiConsole.out.println(str);
       
-      str =        "+---+--------+---------+";
+      str = EscapeSeq.ansiLocate(0, y++) + "+---+--------+---------+";
       AnsiConsole.out.println(str);
     }
     for (int chan=data.length - 1; chan >= 0; chan--) // Top to bottom
-    {
-      str = "| " + Integer.toString(chan) + " | " +
+    {      
+      if (previousMaterial[chan] != null && previousMaterial[chan] == data[chan].getMaterial())
+        nbSameMaterialInARow[chan] += 1;
+      else
+        nbSameMaterialInARow[chan] = 0;
+      
+      String color = EscapeSeq.ANSI_BLACK; // ANSI_DEFAULT_BACKGROUND;
+      
+      if (nbSameMaterialInARow[chan] > nbSeenInARow)
+      {
+        if (data[chan].getMaterial().equals(SevenADCChannelsManager.Material.OIL))
+          color = EscapeSeq.ANSI_RED;
+        else if (data[chan].getMaterial().equals(SevenADCChannelsManager.Material.WATER))
+          color = EscapeSeq.ANSI_BLUE;
+      }
+
+      String prefix = EscapeSeq.ansiLocate(0, y++) + 
+                      EscapeSeq.ansiSetTextAndBackgroundColor(EscapeSeq.ANSI_WHITE, color) + EscapeSeq.ANSI_BOLD;
+      String suffix = EscapeSeq.ANSI_NORMAL + EscapeSeq.ANSI_DEFAULT_BACKGROUND + EscapeSeq.ANSI_DEFAULT_TEXT;
+      str = "| " + Integer.toString(chan + 1) + " | " +
                    lpad(DF4.format(data[chan].getPercent()), " ", 4) + " % | " +
                    lpad(materialToString(data[chan].getMaterial()), " ", 7) + " |";
+      str += (" " + nbSameMaterialInARow[chan] + "   ");
       if (maxOilLevel == -1 && data[chan].getMaterial().equals(SevenADCChannelsManager.Material.OIL))
         maxOilLevel = chan;
       if (maxWaterLevel == -1 && data[chan].getMaterial().equals(SevenADCChannelsManager.Material.WATER))
         maxWaterLevel = chan;
       if (ansiConsole)
-        AnsiConsole.out.println(str);
+        AnsiConsole.out.println(prefix + str + suffix);
+
+      previousMaterial[chan] = data[chan].getMaterial();
     }
     if (ansiConsole)
     {
-      str =        "+---+--------+---------+";
+      str = EscapeSeq.ansiLocate(0, y++) + "+---+--------+---------+";
       AnsiConsole.out.println(str);    
     }
     int oilThickness = Math.max(0, maxOilLevel - maxWaterLevel); // (maxOilLevel == -1 ? 0 : (maxOilLevel - (maxWaterLevel == -1 ? 0 : maxWaterLevel)));
     if (ansiConsole)
     {
-      str =        "WL:" + maxWaterLevel + ", OL:" + maxOilLevel + ", OT:" + oilThickness + "      ";
+      str = EscapeSeq.ansiLocate(0, y++) + "WL:" + maxWaterLevel + ", OL:" + maxOilLevel + ", OT:" + oilThickness + "      ";
       AnsiConsole.out.println(str);    
     }
     if (webSocketClient != null)
@@ -687,6 +722,15 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
       nfe.printStackTrace();
     }
     
+    try 
+    { 
+      nbSeenInARow = Integer.parseInt(props.getProperty("seen.in.a.row", "40")); 
+    }
+    catch (NumberFormatException nfe)
+    {
+      nfe.printStackTrace();
+    }
+    
     try
     {
       fileLogger = new BufferedWriter(new FileWriter(LOG_FILE));
@@ -695,6 +739,9 @@ public class LelandPrototype implements AirWaterOilInterface, FONAClient, PushBu
     {
       ex.printStackTrace();
     }
+    
+    if (ansiConsole)
+      AnsiConsole.systemInstall();
 
     LelandPrototype lp = new LelandPrototype();
     final ReadWriteFONA fona;

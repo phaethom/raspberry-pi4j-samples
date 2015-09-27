@@ -107,6 +107,7 @@ public class ADCObserver
    *            of the difference between the last and the current value is greater or equal to this value.
    *            This is the value coming from the ADC, 0..1023.
    *            Default is 5
+   * @param pause Pause between loops, in ms
    */
   public void start(int tol, long pause)
   {
